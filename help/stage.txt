@@ -1,0 +1,28 @@
+HOW TO MOVE THE STAGE
+
+1. Fine stage motion is controlled by holding down the arrow keys.
+   The speed can be varied by simultaneously holding down the
+   SHIFT or CONTROL keys.
+   
+   Up, Down, Left, Right: Normal motion
+   SHIFT-Arrow:           Fast motion
+   CONTROL-Arrow:         Slow motion
+
+2. Fine focus is controlled with the modified
+   ALT-Up and ALT-Down arrow keys.
+
+   ALT-Up:   Approach the sample -- DANGER!
+   ALT-Down: Back away from the sample
+   SHIFT-ALT-Arrow: Fast focus
+   CONTROL-ALT-Arrow: Slow focus
+
+Fast and slow speeds are multiples of the base speed
+and can be modified under the Stage->Properties menu entry.
+
+3. Motion between sample bays can be controlled from the
+   Stage menu:
+   a) Calibration: Left-most bay containing a mirror.
+   b) Cleaning:    Second bay, which generally is left blank.
+   c) Sample 1:    Third bay
+   d) Sample 2:    Right-most bay
+  

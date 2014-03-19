@@ -1,0 +1,10 @@
+HOW TO CALIBRATE THE INSTRUMENT
+
+1. Calibrate XY
+   a) Reduce the trapping laser power.
+   b) Place a mirror on the sample stage
+   c) Focus the central spot
+   d) Calibration->Calibrate XY
+
+2. Calibrate Aberrations
+   Under development

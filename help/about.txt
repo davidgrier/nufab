@@ -1,0 +1,6 @@
+nuFAB 0.9
+
+Written by David G. Grier
+New York University
+
+Copyright (c) 2011-2014 David G. Grier

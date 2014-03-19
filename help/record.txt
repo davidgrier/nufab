@@ -1,0 +1,19 @@
+HOW TO RECORD VIDEO SEQUENCES
+
+To record video sequences, select Video->Record from the menu bar.
+Every snapshot recorded by the video camera will be stored as a file
+whose name includes the timestamp formatted as the number of seconds 
+in the present day, with microsecond resolution.
+
+The directory into which files are recorded can be specified 
+with Video->Directory or from Video->Properties.
+
+The file format for recorded images is a property of the
+recorder that can be chosen from the Video->Properties menu.
+
+The recorder spawns multiple processes to improve performance
+and minimize dropped frames.  If too few of process threads are
+allocated, the recorder may drop frames.  Increasing the number
+of threads increases memory usage, and can overload the computer's
+storage system.  The number of threads is a property of the
+recorder that can be chosen from Video->Properties.

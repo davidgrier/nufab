@@ -1,0 +1,75 @@
+1. Shack-Hartmann
+DONE   a) hexagonal pattern?
+DONE   b) projection pattern?
+DONE   c) gradient calculation
+   d) convert gradient to phase
+   e) scale factor?
+   f) assessment?
+   g) save correction image
+   h) incorporate into calibration system
+
+2. PointGrey control
+   b) Confirm global shutter control, rather than rolling
+   c) Dead pixel compensation
+DONE   e) Handle ORDER in hardware?
+
+3. Stage automation
+DONE   a) Motion control:
+      arrow keys set velocity like virtual joysticks
+      ignore repeat arrows during translation
+      stop on release
+DONE   b) Calibrate positions of bays
+DONE   c) Establish bay and focal plane for mirror 
+DONE   d) Back-off for safe translation
+DONE   e) Cleaning mode (back-off and translate to open bay)
+   f) Sample acquisition
+DONE   g) Check for motion before reporting timeout error.
+DONE   h) joystick-like focus control
+   i) configure locations with xml files
+DONE   j) configure direction and speed of joystick moves
+   k) ensure consistent naming of /dev/ttyACM0 (/dev/prior, e.g.)
+
+4. Z-calibration
+DONE   a) Software autofocus (find z offset for tightest focus)
+   b) shift mirror and refocus
+
+5. Coherent Cube automation
+DONE   a) Shutter
+DONE   b) Status: thermoelectric cooler for stability?
+DONE   c) Power control with stability?
+DONE   d) Integration with nuFab
+   e) Ensure consistent /dev/ttyUSBXXX designation for configuration
+
+6. Overhaul propertysheets so that they work properly
+   a) only update if property is visible
+   b) make sure properties update when they should
+   c) hierarchical sheet (spreadsheet?) for traps
+   d) collapsible pane for main window
+
+7. OpenCV/v4l2
+   a) Handle properties properly
+   b) Gain/brightness.  Exposure?
+
+8. Calibration
+   a) Check for success -- does the trap go where I want?
+   b) nucal_xy should iterate properly
+   c) What should happen on failure?
+   d) LOTS OF ASTIGMATISM!  How to fix?
+
+9. DONE Overhaul event handler for clarity and speed
+
+10. Iterative hologram optimization
+   a) dgphase
+   b) dsphase
+
+11. Running median for holographic mode
+
+12. Buttons for lasers, emergency stage stop and emergency stop.!
+
+13. Generalized traps
+   a) vortex
+   b) ring trap
+   c) line trap
+   d) Bessel beam
+   e) conveyor
+   f) solenoid (dare I say it?)

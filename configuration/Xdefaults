@@ -1,0 +1,25 @@
+!----
+!
+! Xdefaults for nuFAB
+!
+! Save to ~/.Xdefaults to set properties
+!
+!
+
+!---- Lighter background for entire system
+Idl*background:grey90
+
+!---- For Widget_Propertysheet
+Idl*nuFAB*XmLabel*background: lightyellow
+
+!---- For text widgets
+Idl*nuFAB*XmText*background: lightyellow
+Idl*nuFAB*XmText*highlightThickness: 5
+
+!---- For Dialog_Pickfile
+Idl*XmFileSelectionBox.width: 600
+Idl*XmFileSelectionBox.height: 600
+Idl*XmFileSelectionBox*XmList*background: lightyellow
+Idl*XmFileSelectionBox*XmList*HighlightColor: wheat
+Idl*XmFileSelectionBox*XmTextField*background: lightyellow
+Idl*XmFileSelectionBox*XmTextField*HighlightColor: wheat

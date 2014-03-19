@@ -1,0 +1,218 @@
+;+
+; NAME:
+;    fabcamera_V4L2
+;
+; PURPOSE:
+;    Object for acquiring and displaying images from a camera
+;    using libv4l (Video4Linux2) to handle hardware interfacing.
+;
+; SUBCLASSES:
+;    fabcamera
+;
+; PROPERTIES:
+;    CAMERA: index of the V4L2 camera to open
+;    DIMENSIONS: [w,h] dimensions of image (pixels)
+;    GRAYSCALE: if set, images should be cast to grayscale.
+;
+; METHODS:
+;    fabcamera_V4L2::GetProperty
+;
+;    fabcamera_V4L2::SetProperty
+;
+;    fabcamera_V4L2::Snap: Take a picture and transfer it to the 
+;        underlying IDLgrImage
+;
+;    fabcamera_V4L2::Snap(): Take a picture, transfer it to the 
+;        underlying IDLgrImage, and then return the image data 
+;        from the Image object.
+;
+; MODIFICATION HISTORY:
+; 01/26/2011 Written by David G. Grier, New York University
+; 02/25/2011 DGG Adapted from fabcamera_V4L2 to acquire images
+;    directly into the data buffer of the underlying IDLgrImage
+;    object.
+; 03/15/2011 DGG Adapted from fabcamera_OpenCV
+; 03/22/2011 DGG Correctly implemented Snap.
+; 03/23/2011 DGG use _ref_extra in Get/SetProperty and Init
+; 09/16/2013 DGG record timestamp for each acquired frame.
+; 01/01/2014 DGG Overhauled for new fab implementation.
+;
+; Copyright (c) 2011-2014 David G. Grier
+;-
+
+;;;;;
+;
+; fabcamera_V4L2::Snap()
+;
+; inherited from fabcamera::Snap()
+;
+
+;;;;;
+;
+; fabcamera_V4L2::Read
+;
+; Transfers a picture to the image
+;
+pro fabcamera_V4L2::Read
+
+COMPILE_OPT IDL2, HIDDEN
+
+ok = call_external(self.dlm, 'idlv4l2_readframe', /cdecl, self.debug, $
+                   self.fd, *(self.buffer))
+if ok then $
+   self.setproperty, data = *self.buffer
+
+end
+
+;;;;;
+;
+; fabcamera_V4L2::SetProperty
+;
+; Set the camera properties
+;
+; FIXME: This should be implemented properly
+;
+
+;;;;;
+;
+; fabcamera_V4L2::GetProperty
+;
+; Get the properties of the camera or of the
+; underlying IDLgrImage object.
+;
+pro fabcamera_V4L2::GetProperty, device_name = device_name, $
+                                 _ref_extra = re
+
+COMPILE_OPT IDL2, HIDDEN
+
+self.fabcamera::GetProperty, _extra = re
+device_name = self.device_name
+end
+
+;;;;;
+;
+; fabcamera_V4L2::CleanupV4L2
+;
+; Stop capturing and uninitialize V4L2
+;
+pro fabcamera_V4L2::CleanupV4L2
+
+COMPILE_OPT IDL2, HIDDEN
+
+if self.capturing then $
+   ok = call_external(self.dlm, 'idlv4l2_stopcapture', /cdecl, self.debug, $
+                      self.fd)
+if self.initialized then $
+   ok = call_external(self.dlm, 'idlv4l2_uninit', /cdecl, self.debug, $
+                      self.fd)
+ok = call_external(self.dlm, 'idlv4l2_close', /cdecl, self.debug, $
+                   self.fd)
+end
+
+;;;;;
+;
+; fabcamera_V4L2::Cleanup
+;
+; Close video stream
+;
+pro fabcamera_V4L2::Cleanup
+
+COMPILE_OPT IDL2, HIDDEN
+
+self.CleanupV4L2
+self.fabcamera::Cleanup
+ptr_free, self.buffer
+end
+
+;;;;;
+;
+; fabcamera_V4L2::Init
+;
+; Initialize the fabcamera_V4L2 object:
+; Open the video stream
+; Load an image into the IDLgrImage object
+;
+function fabcamera_V4L2::Init, device_name = device_name, $
+                               _ref_extra = re
+
+COMPILE_OPT IDL2, HIDDEN
+
+catch, error
+if (error ne 0L) then begin
+   catch, /cancel
+   return, 0
+endif
+
+;;; look for shared object library in IDL search path
+dlm = 'idlv4l2.so'
+self.dlm = file_search(fab_path(), dlm, /test_executable)
+if ~self.dlm then begin
+   message, 'could not find '+dlm, /inf
+   return, 0B
+endif
+
+if (self.fabcamera::Init(_extra = re) ne 1) then $
+   return, 0B
+
+self.device_name = (isa(device_name, 'string')) ? device_name : '/dev/video0'
+
+ok = call_external(self.dlm, 'idlv4l2_open', /cdecl, self.debug, $
+                   self.device_name, self.device_name, self.fd)
+if ~ok then $
+   return, 0B
+
+w = 0L
+h = 0L
+self.initialized = call_external(self.dlm, 'idlv4l2_init', /cdecl, self.debug, $
+                                 self.fd, w, h)
+if ~self.initialized then begin
+   self.CleanupV4L2
+   return, 0B
+endif
+
+self.capturing = call_external(self.dlm, 'idlv4l2_startcapture', /cdecl, self.debug, $
+                               self.fd)
+if ~self.capturing then begin
+   self.CleanupV4L2
+   return, 0B
+endif
+
+a = bytarr(w, h, /nozero)
+ok = call_external(self.dlm, 'idlv4l2_readframe', /cdecl, self.debug, $
+                   self.fd, a)
+if ~ok then begin
+   self.CleanupV4L2
+   return, 0B
+endif
+
+self.setproperty, data = a
+self.buffer = ptr_new(a, /no_copy)
+self.stream = ptr_new(stream)
+
+self.name = 'fabcamera_V4L2 '
+self.description = 'V4L2 Camera '
+
+return, 1B
+end
+
+;;;;;
+;
+; fabcamera_V4L2__define
+;
+; Define the fabcamera_V4L2 object
+;
+pro fabcamera_V4L2__define
+
+COMPILE_OPT IDL2
+
+struct = {fabcamera_V4L2,     $
+          inherits fabcamera, $
+          dlm: '',            $ ; shared object library
+          device_name: '',    $ ; device file
+          fd: 0L,             $ ; file descriptor for video device
+          initialized: 0,     $
+          capturing: 0,       $
+          buffer: ptr_new(),  $
+          stream: ptr_new()   $
+         }
+end
