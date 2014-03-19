@@ -18,3 +18,9 @@ allows the user to create and manipulate optical traps in real time.
 and software objects exposed in an object-oriented API.  This makes
 possible computer control of parts of the trapping pattern and
 interactive control of other parts.
+
+## Requirements
+
+*nufab* runs under IDL version 8.3 or better on linux or MacOS systems.
+Some elements of hardware control, particularly cameras, requires
+additional interface libraries, which are distributed separately.
