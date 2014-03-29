@@ -5,12 +5,12 @@
 ; PURPOSE:
 ;    Object for parsing XML configuration files
 ;
-; SUBCLASSES:
+; INHERITS:
 ;    IDLffXMLSAX
 ;    IDL_Object
 ;
 ; PROPERTIES:
-;    configuration: ordered hash of nufab properties and values
+;    configuration: hash of nufab properties and values
 ;
 ; METHODS:
 ;    ParseFile, filename

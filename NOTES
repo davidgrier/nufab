@@ -9,8 +9,8 @@ DONE   c) gradient calculation
    h) incorporate into calibration system
 
 2. PointGrey control
-   b) Confirm global shutter control, rather than rolling
-   c) Dead pixel compensation
+DONE   b) Confirm global shutter control, rather than rolling
+NOT NEEDED   c) Dead pixel compensation
 DONE   e) Handle ORDER in hardware?
 
 3. Stage automation
@@ -73,3 +73,14 @@ DONE   d) Integration with nuFab
    d) Bessel beam
    e) conveyor
    f) solenoid (dare I say it?)
+
+14. CGH
+   Consider moving hologram calculation into the trap object.
+   The run-time CGH then would compile single-trap holograms,
+   rather than computing them all.  This would accelerate computation
+   because only traps with changes would have to be computed.  It also
+   would simplify making heterogeneous arrays of traps.
+   ISSUES:
+   a) How to optimize? Should each trap provide its target properties?
+   b) How to attach different CGH pipelines?  To each trap?
+
