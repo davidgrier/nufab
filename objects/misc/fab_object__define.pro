@@ -1,3 +1,30 @@
+;+
+; NAME:
+;    fab_object
+;
+; PURPOSE:
+;    Base class for components of the nuFAB system.
+;
+; INHERITS:
+;    IDL_Object
+;    IDLitComponent
+;
+; METHODS:
+;    See documentation oof IDLitComponent and WIDGET_PROPERTYSHEET
+;    to expose properties for property sheets.
+;
+; PROPERTIES:
+;    ALL [ G ]: ordered hash of all properties and their values
+;
+;    ADJUSTABLE [ G ]: ordered hash of all adjustable properties, and
+;        their current values
+;
+; MODIFICATION HISTORY:
+; 12/15/2013 Written by David G. Grier, New York University
+; 03/29/2014 DGG Added documentation.
+;
+; Copyright (c) 2013-2014 David G. Grier
+;-
 ;;;;;
 ;
 ; fab_object::GetProperty
