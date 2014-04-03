@@ -84,3 +84,4 @@ DONE   d) Integration with nuFab
    a) How to optimize? Should each trap provide its target properties?
    b) How to attach different CGH pipelines?  To each trap?
 
+15. The BNS SLM requires gamma = 0.5
