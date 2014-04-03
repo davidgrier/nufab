@@ -81,7 +81,7 @@ foreach trap, self.traps do begin
 endforeach
 
 ;; phase of the field in the plane of the projecting device
-*self.data = byte((127.5/!pi) * atan(*self.psi, /phase) + !pi)
+*self.data = byte(round((127.5/!pi) * (atan(*self.psi, /phase) + !pi)))
 end
 
 ;;;;;
