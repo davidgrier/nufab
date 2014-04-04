@@ -56,8 +56,9 @@
 ; 10/03/2013 DGG and DBR Project background even if there are no
 ;    traps.
 ; 10/26/2013 DGG Can rely on background being present.
+; 04/05/2014 DGG traps now provide complex amplitudes
 ;
-; Copyright (c) 2011-2013 David G. Grier, David B. Ruffner and Ellery Russel
+; Copyright (c) 2011-2014 David G. Grier, David B. Ruffner and Ellery Russel
 ;-
 
 ;;;;;
@@ -77,7 +78,7 @@ foreach trap, self.traps do begin
    pr = self.mat # (trap.rc - self.rc)
    ex = exp(*self.ikx * pr[0] + *self.ikxsq * pr[2])
    ey = exp(*self.iky * pr[1] + *self.ikysq * pr[2])
-   *self.psi += (trap.alpha * exp(complex(0., trap.phase))) * (ex # ey)
+   *self.psi += trap.alpha * (ex # ey)
 endforeach
 
 ;; phase of the field in the plane of the projecting device

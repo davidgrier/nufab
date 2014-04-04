@@ -10,14 +10,14 @@
 ;    the graphical representation, whose radius depends on axial
 ;    position, z.
 ;
-; SUBCLASSES
+; INHERITS:
 ;    fabTrap
 ;
 ; PROPERTIES:
 ;    RC    [IGS] three-element vector [xc, yc, zc] specifying the trap's
 ;        position [pixels].
 ;
-;    ALPHA [IGS] relative amplitude.
+;    AMPLITUDE [IGS] relative amplitude.
 ;        Default: 1
 ;
 ;    PHASE [IGS] relative phase [radians].
@@ -35,8 +35,9 @@
 ; 02/04/2012 DGG initialize fabTrap before doing tweezer-specific
 ;    initialization.
 ; 12/22/2013 DGG Overhauled for new fab implementation.
+; 04/05/2014 DGG Revised amplitude and phase definitions.
 ;
-; Copyright (c) 2010-2013 David G. Grier
+; Copyright (c) 2010-2014 David G. Grier
 ;-
 
 ;;;;;

@@ -20,7 +20,10 @@
 ;    RC: Three-dimensional position [pixels]
 ;        [IGS]
 ;
-;    ALPHA: Relative amplitude.  Default: 1
+;    ALPHA: Complex amplitude: amplitude * exp(i phase)
+;        [ G ]
+;
+;    AMPLITUDE: Relative amplitude.  Default: 1
 ;        [IGS]
 ;
 ;    PHASE: Phase [radians].  Default: Random value in [0, 2pi].
@@ -29,10 +32,7 @@
 ;    DATA: Trap characteristics: [xc, yc, zc, alpha, phase]
 ;        [ G ]
 ;
-;    AMPLITUDE: Amplitude profile.
-;        [IGS]
-;
-;    PHI: Phase profile
+;    STRUCTURE: Structuring field
 ;        [IGS]
 ;
 ; METHODS:
@@ -70,8 +70,9 @@
 ;    Revised MoveBy method for compatibility with
 ;    fabTrapGroup::MoveBy.  Added OVERRIDE flag to MoveBy method.
 ; 12/22/2013 DGG Overhauled for new fab implementation.
+; 04/05/2014 DGG Revised alpha, phase and structure definitions.
 ;
-; Copyright (c) 2010-2013 David G. Grier
+; Copyright (c) 2010-2014 David G. Grier
 ;-
 
 ;;;;
@@ -171,10 +172,9 @@ pro fabTrap::SetProperty, rc         = rc,        $ ; position
                           xc         = xc,        $
                           yc         = yc,        $
                           zc         = zc,        $
-                          alpha      = alpha,     $    ; relative amplitude
-                          phase      = phase,     $    ; relative phase
-                          amplitude  = amplitude, $    ; structure
-                          phi        = phi,       $
+                          amplitude  = amplitude, $ ; relative amplitude
+                          phase      = phase,     $ ; relative phase
+                          structure  = structure, $ ; structure
                           _ref_extra = re
 
 COMPILE_OPT IDL2, HIDDEN
@@ -206,8 +206,8 @@ if isa(zc, /number, /scalar) then begin
 ;   doproject = 1
 endif
 
-if isa(alpha, /number, /scalar) then begin
-   self.alpha = alpha
+if isa(amplitude, /number, /scalar) then begin
+   self.amplitude = amplitude
 ;   doproject = 1
 endif
 
@@ -216,11 +216,8 @@ if isa(phase, /number, /scalar) then begin
 ;   doproject = 1
 endif
 
-if isa(amplitude, 'pointer') then $
-   self.amplitude = amplitude
-
-if isa(phi, 'pointer') then $
-   self.phi = phi
+if isa(structure, 'pointer') then $
+   self.structure = structure
 
 ;if doproject then self.project
 self.drawgraphic
@@ -236,8 +233,9 @@ pro fabTrap::GetProperty, rc         = rc,        $
                           yc         = yc,        $
                           zc         = zc,        $
                           alpha      = alpha,     $
-                          phase      = phase,     $
                           amplitude  = amplitude, $
+                          phase      = phase,     $
+                          structure  = structure, $
                           phi        = phi,       $
                           data       = data,      $
                           _ref_extra = re
@@ -252,19 +250,19 @@ yc = rc[1]
 zc = rc[2]
 
 if arg_present(alpha) then $
-   alpha = self.alpha
-
-if arg_present(phase) then $
-   phase = self.phase
+   alpha = self.amplitude * exp(complex(0., self.phase))
 
 if arg_present(amplitude) then $
    amplitude = self.amplitude
 
-if arg_present(phi) then $
-   phi = self.phi
+if arg_present(phase) then $
+   phase = self.phase
+
+if arg_present(structure) then $
+   structure = self.structure
 
 if arg_present(data) then $
-   data = [self.rc, self.alpha, self.phase]
+   data = [self.rc, self.amplitude, self.phase]
 
 end
 
@@ -273,10 +271,9 @@ end
 ; fabTrap::Init
 ;
 function fabTrap::Init, rc         = rc,        $
-                        alpha      = alpha,     $
-                        phase      = phase,     $
                         amplitude  = amplitude, $
-                        phi        = phi,       $
+                        phase      = phase,     $
+                        structure  = structure, $
                         _ref_extra = re
 
 COMPILE_OPT IDL2, HIDDEN
@@ -293,16 +290,13 @@ case n_elements(rc) of
 else:
 endcase
 
-self.alpha = isa(alpha, /number, /scalar) ? float(alpha) : 1.
+self.amplitude = isa(amplitude, /number, /scalar) ? float(amplitude) : 1.
 
 self.phase = isa(phase, /number, /scalar) ? float(phase) : $
              2. * !pi * randomu(seed)
 
-if isa(amplitude, 'pointer') then $
-   self.amplitude = amplitude
-
-if isa(phi, 'pointer') then $
-   self.phi = phi
+if isa(structure, 'pointer') then $
+   self.structure = structure
 
 self.drawgraphic
 
@@ -313,7 +307,7 @@ self.registerproperty, 'description', /string
 self.registerproperty, 'xc', /float, description = 'Trap position: x'
 self.registerproperty, 'yc', /float, description = 'Trap position: y'
 self.registerproperty, 'zc', /float, description = 'Trap position: z'
-self.registerproperty, 'alpha', /float, description = 'Relative amplitude', $
+self.registerproperty, 'amplitude', /float, description = 'Relative amplitude', $
    valid_range = [0., 100., 0.01]
 self.registerproperty, 'phase', /float, description = 'Relative phase', $
    valid_range = [0., 2.*!pi, 0.01]
@@ -332,7 +326,7 @@ COMPILE_OPT IDL2, HIDDEN
 if isa(self.parent, 'fabtrapgroup') then $
    self.parent.remove, self
 
-ptr_free, self.amplitude, self.phi
+ptr_free, self.structure
 end
 
 ;;;;
@@ -350,9 +344,8 @@ struct = {fabTrap, $
           inherits IDL_Object,    $
           graphic:   ptr_new(),   $ ; coordinates of graphical representation
           rc:        fltarr(3),   $ ; 3D position [pixels]
-          alpha:     0.,          $ ; relative amplitude
+          amplitude: 0.,          $ ; relative amplitude
           phase:     0.,          $ ; relative phase
-          amplitude: ptr_new(),   $ ; amplitude profile
-          phi:       ptr_new()    $ ; phase profile
+          structure: ptr_new()    $ ; structuring field
          }
 end

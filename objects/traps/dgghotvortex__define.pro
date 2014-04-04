@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;    DGGhotVortex
+;    FABVortex
 ;
 ; PURPOSE:
 ;    This object abstracts an optical vortex as the
@@ -13,6 +13,9 @@
 ; CATEGORY:
 ;    Holographic optical trapping, object graphics
 ;
+; INHERITS:
+;    fabTrap
+;
 ; PROPERTIES:
 ;    DGGhotVortex inherits the properties and methods of
 ;    the DGGhotTrap class
@@ -20,7 +23,7 @@
 ;    RC [IGS] three-element vector [xc, yc, zc] specifying the trap's
 ;        position [pixels].
 ;
-;    ALPHA [IGS] relative amplitude.
+;    AMPLITUDE [IGS] relative amplitude.
 ;        Default: 1
 ;
 ;    PHASE [IGS] relative phase [radians].

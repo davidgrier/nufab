@@ -62,7 +62,8 @@
 ;     or groups of traps.  The Add method now works for both traps and
 ;     groups.  Added traps are bundled into a group.
 ; 12/22/2013 DGG Overhauled for new fab implementation.
-; 01/22/2014 DGG Added RANDOMIZE method
+; 01/22/2014 DGG Added RANDOMIZE method.
+; 04/05/2014 DGG Revised amplitude definition.
 ;
 ; Copyright (c) 2011-2014 David G. Grier
 ;-
@@ -186,8 +187,8 @@ if n_elements(data) ge 5 then begin
    group = fabtrapgroup()
    ntraps = n_elements(data[0,*])
    for n = 0, ntraps-1 do $
-      group.add, fabtweezer(rc    = data[0:2, n], $
-                            alpha = data[3, n], $
+      group.add, fabtweezer(rc = data[0:2, n], $
+                            amplitude = data[3, n], $
                             phase = data[4, n])
    self.add, group
 endif

@@ -105,22 +105,10 @@ if ptr_valid(self.traps) then begin
       *self.phi = gpuadd(pr[0], *self.x, pr[1], *self.y, trap.phase,  $
                          LHS = *self.phi)
       *self.phi = gpuadd(1., *self.phi, pr[2], *self.rsq, 0., LHS = *self.phi)
-      if trap.ell ne 0 then $
-         *self.phi = gpuadd(1., *self.phi, trap.ell, *self.theta, 0., $
-                            LHS = *self.phi)
       if isa(trap.phi) then $
          *self.phi = gpuadd(*self.phi, *trap.phi, LHS = *self.phi)
       *self.a = gpucos(*self.phi, LHS = *self.a, /NONBLOCKING)
       *self.b = gpusin(*self.phi, LHS = *self.b)
-      if isa(trap.amplitude) then begin
-         *self.a = gpumult(*self.a, *trap.amplitude, $
-                           LHS = *self.a, /NONBLOCKING)
-         *self.b = gpumult(*self.b, *trap.amplitude, LHS = *self.b)
-      endif
-      *self.repsi = gpuadd(1., *self.repsi, trap.alpha, *self.a, 0., $
-                           LHS = *self.repsi, /NONBLOCKING)
-      *self.impsi = gpuadd(1., *self.impsi, trap.alpha, *self.b, 0., $
-                           LHS = *self.impsi)
       if (systime(1) - t) ge self.timer then begin
          call_procedure, self.callback, self.userdata
          t = systime(1)
