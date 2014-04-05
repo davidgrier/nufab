@@ -208,11 +208,13 @@ endif
 
 if isa(amplitude, /number, /scalar) then begin
    self.amplitude = amplitude
+   self.alpha = self.amplitude * exp(complex(0., self.phase))
 ;   doproject = 1
 endif
 
 if isa(phase, /number, /scalar) then begin
    self.phase = phase
+   self.alpha = self.amplitude * exp(complex(0., self.phase))
 ;   doproject = 1
 endif
 
@@ -250,7 +252,7 @@ yc = rc[1]
 zc = rc[2]
 
 if arg_present(alpha) then $
-   alpha = self.amplitude * exp(complex(0., self.phase))
+   alpha = self.alpha
 
 if arg_present(amplitude) then $
    amplitude = self.amplitude
@@ -294,6 +296,8 @@ self.amplitude = isa(amplitude, /number, /scalar) ? float(amplitude) : 1.
 
 self.phase = isa(phase, /number, /scalar) ? float(phase) : $
              2. * !pi * randomu(seed)
+
+self.alpha = self.amplitude * exp(complex(0., self.phase))
 
 if isa(structure, 'pointer') then $
    self.structure = structure
@@ -344,6 +348,7 @@ struct = {fabTrap, $
           inherits IDL_Object,    $
           graphic:   ptr_new(),   $ ; coordinates of graphical representation
           rc:        fltarr(3),   $ ; 3D position [pixels]
+          alpha:     complex(0),  $ ; complex amplitude
           amplitude: 0.,          $ ; relative amplitude
           phase:     0.,          $ ; relative phase
           structure: ptr_new()    $ ; structuring field
