@@ -166,6 +166,8 @@ end
 ;
 pro fabVideo::GetProperty, greyscale = greyscale, $
                            camera = camera, $
+                           median = median, $
+                           recorder = recorder, $
                            screen = screen, $
                            framerate = framerate, $
                            timestamp = timestamp, $
@@ -189,6 +191,12 @@ if arg_present(greyscale) then $
 
 if arg_present(camera) then $
    camera = self.camera
+
+if arg_present(median) then $
+   median = self.median
+
+if arg_present(recorder) then $
+   recorder = self.recorder
 
 if arg_present(screen) then $
    screen = self.screen
