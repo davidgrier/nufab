@@ -5,7 +5,7 @@
 ; PURPOSE:
 ;    Video screen for nufab system
 ;
-; SUBCLASSES:
+; INHERITS:
 ;    IDLgrImage
 ;    IDL_Object
 ;
@@ -18,7 +18,7 @@
 ;    timestamp  [ G ]: time stamp of present video frame
 ;    playing    [ GS]: If set, video screen updates at framerate
 ;    hvmmode    [ GS]: If set, video is normalized by background image
-;    background [ G ]: Background image
+;    background [ G ]: Background image for hvmmode
 ;    recording  [ GS]: If set, record video images
 ;    nthreads   [I  ]: number of threads for video recorder
 ;
@@ -29,11 +29,10 @@
 ;    SaveImage: Save one snapshot
 ;    SelectDirectory: Choose directory for recording images
 ;
-;    GetBackground: Compute background image as a running average
-;
 ; MODIFICATION HISTORY:
 ; 01/27/2014 Written by David G. Grier, New York University
 ; 03/04/2014 DGG Implement EXTRA keywords in Init.
+; 04/06/2014 DGG Implemented running median hvmmode with numedian().
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
@@ -50,34 +49,15 @@ self.timer = timer.set(self.time, self)
 self.timestamp = systime(1)
 data = self.camera.read()
 
-self.IDLgrImage::setproperty, data = (self.hvmmode) ? $
-                                     byte(128.*float(data)/*self.background < 255) : $
+self.IDLgrImage::setproperty, data = (self.hvmmode ne 0) ? $
+                                     byte(128.*float(data)/self.median.get() < 255) : $
                                      data
 self.screen.draw
 if self.recording then $
    void = self.recorder.write(data, self.timestamp)
 
-if self.bgcounter gt 0 then begin
-   *self.background += float(data)
-   if self.bgcounter-- eq 1 then begin
-      *self.background /= 100.
-      self.hvmmode = 1
-      print, 'done!'
-   endif
-endif
-end
-
-;;;;;
-;
-; fabVideo::GetBackground
-;
-pro fabVideo::GetBackground
-
-COMPILE_OPT IDL2, HIDDEN
-
-self.hvmmode = 0
-*self.background *= 0
-self.bgcounter = 100
+if (self.hvmmode eq 1) or ((self.hvmmode eq 2) and ~(self.median.initialized)) then $
+   self.median.add, data
 
 end
 
@@ -150,8 +130,8 @@ if isa(playing) then begin
       self.timer = timer.set(self.time, self)
 endif
 
-if isa(hvmmode) then $
-   self.hvmmode = keyword_set(hvmmode)
+if isa(hvmmode, /number, /scalar) then $
+   self.hvmmode = (long(hvmmode) > 0) < 2
       
 if isa(framerate, /scalar, /number) then $
    self.time = 1./double(abs(framerate))
@@ -206,7 +186,7 @@ if arg_present(hvmmode) then $
    hvmmode = self.hvmmode
 
 if arg_present(background) then $
-   background = *self.background
+   background = self.median.get()
 
 if arg_present(recording) then $
    recording = self.recording
@@ -258,7 +238,7 @@ if isa(screen, 'IDLgrWindow') then $
 if ~self.IDLgrImage::Init(imagedata, _extra = re) then $
    return, 0B
 
-self.background = ptr_new(float(imagedata > 1), /no_copy)
+self.median = numedian(3, data = imagedata)
 
 self.time = (isa(framerate, /scalar, /number)) ? 1./double(abs(framerate)) : 1./29.97D
 
@@ -273,7 +253,7 @@ self.registerproperty, 'description', /string
 self.registerproperty, 'playing', /boolean
 self.registerproperty, 'framerate', /float
 self.registerproperty, 'order', /boolean
-self.registerproperty, 'hvmmode', /boolean
+self.registerproperty, 'hvmmode', /integer, valid_range = [0, 2, 1]
 self.registerproperty, 'recording', /boolean
 self.registerproperty, 'directory', /string
 self.registerproperty, 'nthreads', /integer, valid_range = [1, 20, 1]
@@ -300,8 +280,8 @@ struct = {fabVideo, $
           recorder: obj_new(), $
           playing: 0L, $
           hvmmode: 0L, $
+          median: obj_new(), $
           bgcounter: 0L, $
-          background: ptr_new(), $
           recording: 0L, $
           time: 0.D, $
           timer: 0L, $
