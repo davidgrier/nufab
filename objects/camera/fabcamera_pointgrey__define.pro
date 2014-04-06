@@ -352,7 +352,6 @@ if isa(gain, /number, /scalar) then $
    void = self.property('gain', gain)
 
 if isa(hflip, /number, /scalar) then begin
-   print, 'setting hflip:', hflip
    val = '80000000'XUL + (hflip ne 0)
    self.writeregister, '1054'XUL, val
 endif
