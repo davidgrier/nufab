@@ -45,11 +45,7 @@ err = call_external(self.dlm, 'video_readvideoframe', /cdecl, $
                     *self.data, w, h, $
                     self.greyscale, self.debug)
 
-if self.order then $
-   *self.data = reverse(temporary(*self.data), 2)
-
-if self.hflip then $
-   *self.data = reverse(temporary(*self.data), 1)
+*self.data = rotate(temporary(*self.data), (5*self.hflip + 7*self.order) mod 10)
 
 end
 
