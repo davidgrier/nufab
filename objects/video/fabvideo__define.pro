@@ -267,7 +267,7 @@ self.registerproperty, 'name', /string, /hide
 self.registerproperty, 'description', /string
 self.registerproperty, 'playing', /boolean
 self.registerproperty, 'framerate', /float
-self.registerproperty, 'order', /boolean
+self.registerproperty, 'order', enum = ['Normal', 'Flipped']
 self.registerproperty, 'hvmmode', enum = ['Off', 'Running', 'Sample-Hold']
 self.registerproperty, 'recording', $
    enum = ['Paused', 'From Camera', 'From Screen', 'From Window']
