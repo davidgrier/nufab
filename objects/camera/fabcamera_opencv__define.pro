@@ -18,7 +18,8 @@
 ;
 ; MODIFICATION HISTORY
 ; 12/26/2013 Written by David G. Grier, New York University
-; 03/04/2014 DGG Implemented ORDER property
+; 03/04/2014 DGG Implemented ORDER property.
+; 04/06/2014 DGG Implemented HFLIP property.
 ;
 ; Copyright (c) 2013-2014 David G. Grier
 ;-
@@ -46,6 +47,9 @@ err = call_external(self.dlm, 'video_readvideoframe', /cdecl, $
 
 if self.order then $
    *self.data = reverse(temporary(*self.data), 2)
+
+if self.hflip then $
+   *self.data = reverse(temporary(*self.data), 1)
 
 end
 
@@ -125,7 +129,7 @@ self.width = width
 self.height = height
 self.nchannels = nchannels
 
-self.data = (self.nchannels) and ~self.greyscale ? $
+self.data = (self.nchannels gt 1) and ~self.greyscale ? $
             ptr_new(bytarr(self.width, self.height, self.nchannels, /nozero), /no_copy) : $
             ptr_new(bytarr(self.width, self.height, /nozero), /no_copy)
 
