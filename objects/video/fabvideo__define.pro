@@ -19,7 +19,10 @@
 ;    playing    [ GS]: If set, video screen updates at framerate
 ;    hvmmode    [ GS]: If set, video is normalized by background image
 ;    background [ G ]: Background image for hvmmode
-;    recording  [ GS]: If set, record video images
+;    recording  [ GS]: 0: paused, not recording
+;                      1: record video from camera
+;                      2: record video from screen
+;                      3: record video from window
 ;    nthreads   [I  ]: number of threads for video recorder
 ;
 ; METHODS
@@ -33,6 +36,7 @@
 ; 01/27/2014 Written by David G. Grier, New York University
 ; 03/04/2014 DGG Implement EXTRA keywords in Init.
 ; 04/06/2014 DGG Implemented running median hvmmode with numedian().
+;    Implemented recording modes.
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
@@ -53,11 +57,22 @@ self.IDLgrImage::setproperty, data = (self.hvmmode ne 0) ? $
                                      byte(128.*float(data)/self.median.get() < 255) : $
                                      data
 self.screen.draw
-if self.recording then $
-   void = self.recorder.write(data, self.timestamp)
 
 if (self.hvmmode eq 1) or ((self.hvmmode eq 2) and ~(self.median.initialized)) then $
    self.median.add, data
+
+case self.recording of
+   1: void = self.recorder.write(data, self.timestamp)
+   2: begin
+      self.IDLgrImage::getproperty, data = data
+      void = self.recorder.write(data, self.timestamp)
+   end
+   3: begin
+      self.screen.getproperty, image_data = data
+      void = self.recorder.write(data, self.timestamp)
+   end
+   else:
+endcase
 
 end
 
@@ -136,8 +151,8 @@ if isa(hvmmode, /number, /scalar) then $
 if isa(framerate, /scalar, /number) then $
    self.time = 1./double(abs(framerate))
 
-if n_elements(recording) eq 1 then $
-   self.recording = keyword_set(recording)
+if isa(recording, /scalar, /number) then $
+   self.recording = recording
    
 end
 
@@ -254,7 +269,8 @@ self.registerproperty, 'playing', /boolean
 self.registerproperty, 'framerate', /float
 self.registerproperty, 'order', /boolean
 self.registerproperty, 'hvmmode', enum = ['Off', 'Running', 'Sample-Hold']
-self.registerproperty, 'recording', /boolean
+self.registerproperty, 'recording', $
+   enum = ['Paused', 'From Camera', 'From Screen', 'From Window']
 self.registerproperty, 'directory', /string
 self.registerproperty, 'nthreads', /integer, valid_range = [1, 20, 1]
 self.registerproperty, 'greyscale', /boolean, sensitive = 0
