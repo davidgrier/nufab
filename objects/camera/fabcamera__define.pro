@@ -37,6 +37,7 @@
 ; MODIFICATION HISTORY
 ; 12/26/2013 Written by David G. Grier, New York University
 ; 03/04/2014 DGG Implemented ORDER property.
+; 04/06/2014 DGG Enum values for ORDER and HFLIP.
 ;
 ; Copyright (c) 2013-2014 David G. Grier
 ;-
@@ -199,8 +200,8 @@ self.name = 'fabcamera '
 self.description = 'Generic Camera '
 self.setpropertyattribute, 'name', sensitive = 0
 self.setpropertyattribute, 'description', sensitive = 0
-self.registerproperty, 'order', /boolean
-self.registerproperty, 'hflip', /boolean
+self.registerproperty, 'order', enum = ['Normal', 'Flipped']
+self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
 self.registerproperty, 'greyscale', /boolean, sensitive = 0
 self.registerproperty, 'mpp', /float, sensitive = 0
 self.setpropertyattribute, 'mpp', hide = (self.mpp eq 0)
