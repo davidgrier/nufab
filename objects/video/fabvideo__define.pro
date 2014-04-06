@@ -253,7 +253,7 @@ self.registerproperty, 'description', /string
 self.registerproperty, 'playing', /boolean
 self.registerproperty, 'framerate', /float
 self.registerproperty, 'order', /boolean
-self.registerproperty, 'hvmmode', /integer, valid_range = [0, 2, 1]
+self.registerproperty, 'hvmmode', enum = ['Off', 'Running', 'Sample-Hold']
 self.registerproperty, 'recording', /boolean
 self.registerproperty, 'directory', /string
 self.registerproperty, 'nthreads', /integer, valid_range = [1, 20, 1]
