@@ -116,9 +116,9 @@ self.name = 'fablaser '
 self.description = 'Generic Laser '
 self.setpropertyattribute, 'name', sensitive = 0
 self.setpropertyattribute, 'description', sensitive = 0
-self.registerproperty, 'keyswitch', /boolean
-self.registerproperty, 'emission', /boolean
-self.registerproperty, 'shutter', /boolean
+self.registerproperty, 'keyswitch', enum = ['Off', 'ON']
+self.registerproperty, 'emission', enum = ['Off', 'ON']
+self.registerproperty, 'shutter', enum = ['Closed', 'OPEN']
 self.registerproperty, 'power', /float, $
    valid_range = [self.minpower, self.maxpower, (self.maxpower - self.minpower)/100. > 0.01]
 self.registerproperty, 'current', /float, $
