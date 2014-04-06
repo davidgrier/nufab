@@ -13,8 +13,6 @@
 ;    a = numedian([order])
 ;
 ; OPTIONAL ARGUMENT:
-;    order: number of orders for median buffer hierarchy.
-;        Effective buffer size is 3^(order + 1).
 ;
 ; PROPERTIES:
 ;    data: image data for initializing median calculation
@@ -22,6 +20,10 @@
 ;
 ;    dimensions: [nx, ny] dimensions of image buffer
 ;        [IGS]: resets median buffer if set
+;
+;    order: number of orders for median buffer hierarchy.
+;        Effective buffer size is 3^(order + 1).
+;        [IGS]: setting order restarts initialization
 ;
 ;    initialized: flag: 1 if median buffer fully initialized
 ;        [ GS]: setting initialized to 0 resets median buffer
@@ -78,11 +80,25 @@ end
 ;
 ; numedian::SetProperty
 ;
-pro numedian::SetProperty, dimensions = dimensions, $
+pro numedian::SetProperty, order = order, $
+                           dimensions = dimensions, $
                            data = data, $
                            initialized = initialized
 
 COMPILE_OPT IDL2, HIDDEN
+
+if isa(order, /number, /scalar) then begin
+   self.order = (long(order) > 0) < 10
+   if self.order eq 0 then $
+      self.next = obj_new() $
+   else begin
+      if isa(self.next, 'numedian') then $
+         self.next.setproperty, order = self.order - 1 $
+      else $
+         self.next = numedian(order = order - 1, dimensions = self.dimensions)
+   endelse
+   self.initialized = 0
+endif
 
 if isa(self.next, 'numedian') then $
    self.next.setproperty, dimensions = dimensions, data = data, initialized = initialized
@@ -112,6 +128,7 @@ end
 ; numedian::GetProperty
 ;
 pro numedian::GetProperty, ndx = ndx, $
+                           order = order, $
                            dimensions = dimensions, $
                            buffer = buffer, $
                            initialized = initialized
@@ -120,6 +137,9 @@ COMPILE_OPT IDL2, HIDDEN
 
 if arg_present(ndx) then $
    ndx = self.ndx
+
+if arg_present(order) then $
+   order = self.order
 
 if arg_present(dimensions) then $
    dimensions = self.dimensions
@@ -136,14 +156,15 @@ end
 ;
 ; numedian::Init()
 ;
-function numedian::Init, order, $
+function numedian::Init, order = order, $
                          data = data, $
                          dimensions = dimensions
 
 COMPILE_OPT IDL2, HIDDEN
 
 if order gt 0 then begin
-   self.next = numedian(--order, data = data, dimensions = dimensions)
+   self.order = order
+   self.next = numedian(order = self.order-1, data = data, dimensions = dimensions)
 endif
 
 if isa(dimensions, /number) and (n_elements(dimensions) eq 2) then begin
@@ -164,6 +185,7 @@ end
 ;;;;;
 ;
 ; numedian::Cleanup
+;
 pro numedian::Cleanup
 
 COMPILE_OPT IDL2
@@ -173,7 +195,10 @@ if isa(self.next, 'numedian') then $
 ptr_free, self.buffer
 end
 
-
+;;;;;
+;
+; numedial__define
+;
 pro numedian__define
 
 COMPILE_OPT IDL2
@@ -181,9 +206,10 @@ COMPILE_OPT IDL2
 struct = {numedian, $
           inherits IDL_Object, $
           buffer: ptr_new(), $
-          next: obj_new(), $
           dimensions: [0L, 0], $
           ndx: 0L, $
-          initialized: 0L $
+          initialized: 0L, $
+          order: 0L, $
+          next: obj_new() $
          }
 end

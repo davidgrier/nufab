@@ -124,6 +124,7 @@ end
 pro fabVideo::SetProperty, greyscale = greyscale, $
                            playing =  playing, $
                            hvmmode = hvmmode, $
+                           hvmorder = hvmorder, $
                            screen = screen, $
                            framerate = framerate, $
                            recording = recording, $
@@ -147,6 +148,9 @@ endif
 
 if isa(hvmmode, /number, /scalar) then $
    self.hvmmode = (long(hvmmode) > 0) < 2
+
+if isa(hvmorder, /number, /scalar) then $
+   self.median.order = hvmorder
       
 if isa(framerate, /scalar, /number) then $
    self.time = 1./double(abs(framerate))
@@ -167,6 +171,7 @@ pro fabVideo::GetProperty, greyscale = greyscale, $
                            timestamp = timestamp, $
                            playing = playing, $
                            hvmmode = hvmmode, $
+                           hvmorder = hvmorder, $
                            background = background, $
                            recording = recording, $
                            width = width, $
@@ -199,6 +204,9 @@ if arg_present(playing) then $
 
 if arg_present(hvmmode) then $
    hvmmode = self.hvmmode
+
+if arg_present(hvmorder) then $
+   hvmorder = self.median.order
 
 if arg_present(background) then $
    background = self.median.get()
@@ -234,6 +242,7 @@ end
 function fabVideo::Init, camera = camera, $
                          screen = screen, $
                          framerate = framerate, $
+                         hvmorder = hvmorder, $
                          nthreads = nthreads, $
                          directory = directory, $
                          _ref_extra = re
@@ -253,7 +262,8 @@ if isa(screen, 'IDLgrWindow') then $
 if ~self.IDLgrImage::Init(imagedata, _extra = re) then $
    return, 0B
 
-self.median = numedian(3, data = imagedata)
+order = isa(hvmorder, /number, /scalar) ? (hvmorder > 0) < 10 : 3
+self.median = numedian(order = order, data = imagedata)
 
 self.time = (isa(framerate, /scalar, /number)) ? 1./double(abs(framerate)) : 1./29.97D
 
@@ -269,6 +279,7 @@ self.registerproperty, 'playing', /boolean
 self.registerproperty, 'framerate', /float
 self.registerproperty, 'order', enum = ['Normal', 'Flipped']
 self.registerproperty, 'hvmmode', enum = ['Off', 'Running', 'Sample-Hold']
+self.registerproperty, 'hvmorder', /integer, valid_range = [0, 10, 1]
 self.registerproperty, 'recording', $
    enum = ['Paused', 'From Camera', 'From Screen', 'From Window']
 self.registerproperty, 'directory', /string
@@ -296,6 +307,7 @@ struct = {fabVideo, $
           recorder: obj_new(), $
           playing: 0L, $
           hvmmode: 0L, $
+          hvmorder: 0L, $
           median: obj_new(), $
           bgcounter: 0L, $
           recording: 0L, $
