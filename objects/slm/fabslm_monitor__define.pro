@@ -7,8 +7,8 @@
 ;    spatial light modulator whose interface is implemented
 ;    with an X-Window display.
 ;
-; CATEGORY:
-;    Computational holography, hardware control, object graphics
+; INHERITS:
+;    fabslm
 ;
 ; PROPERTIES:
 ;    DATA: Byte-valued hologram
@@ -38,9 +38,10 @@
 ; 11/04/2011 DGG updated object creation syntax.
 ; 12/09/2011 DGG inherit IDL_Object.  Remove KC.  Documentation fixes.
 ; 05/04/2012 DGG check that DIM is a number in Init
-; 12/20/2013 DGG overhauled for new fab version
+; 12/20/2013 DGG overhauled for new fab version.
+; 04/06/2014 DGG try to set TLB_FRAME_ATTR properties.
 ;
-; Copyright (c) 2011-2013, David G. Grier
+; Copyright (c) 2011-2014, David G. Grier
 ;-
 
 ;;;;;
@@ -133,9 +134,11 @@ if ~self.finddevice(primary = primary) then $
 
 ;;; Widget hierarchy
 self.wtlb = (keyword_set(primary)) ? $
-            widget_base(title = 'SLM', resource_name = 'SLM') : $
             widget_base(title = 'SLM', resource_name = 'SLM', $
-                        display_name = self.device_name)
+	                tlb_frame_attr=31) : $
+            widget_base(title = 'SLM', resource_name = 'SLM', $
+                        display_name = self.device_name, $
+                        tlb_frame_attr=31)
 
 wslm = widget_draw(self.wtlb, $
                    xsize = self.dimensions[0], $

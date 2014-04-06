@@ -62,7 +62,7 @@ DONE   d) Integration with nuFab
    a) dgphase
    b) dsphase
 
-11. Running median for holographic mode
+DONE 11. Running median for holographic mode
 
 12. Buttons for lasers, emergency stage stop and emergency stop.!
 
@@ -84,4 +84,4 @@ DONE   d) Integration with nuFab
    a) How to optimize? Should each trap provide its target properties?
    b) How to attach different CGH pipelines?  To each trap?
 
-15. The BNS SLM requires gamma = 0.5
+DONE 15. The BNS SLM requires gamma = 0.5
