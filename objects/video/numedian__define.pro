@@ -64,9 +64,9 @@ if n_params() ne 1 then return
 
 if isa(self.next, 'numedian') then begin
    self.next.add, data
-   (*self.buffer)[self.ndx++, *, *] = self.next.get()
-endif $
-else if array_equal(size(data, /dimensions), self.dimensions) then $
+   if self.next.ndx eq 0 then $
+      (*self.buffer)[self.ndx++, *, *] = self.next.get()      
+endif else if array_equal(size(data, /dimensions), self.dimensions) then $
    (*self.buffer)[self.ndx++, *, *] = data
 
 if self.ndx eq 3 then begin
@@ -93,7 +93,7 @@ if isa(order, /number, /scalar) then begin
       self.next = obj_new() $
    else begin
       if isa(self.next, 'numedian') then $
-         self.next.setproperty, order = self.order - 1 $
+         self.next.order = self.order - 1 $
       else $
          self.next = numedian(order = order - 1, dimensions = self.dimensions)
    endelse
@@ -105,7 +105,8 @@ if isa(self.next, 'numedian') then $
 
 if isa(dimensions, /number) then begin
    self.dimensions = long(dimensions)
-   self.buffer = ptr_new(bytarr([3, self.dimensions]))
+   self.buffer = ptr_new(replicate(1B, [3, self.dimensions]))
+   self.ndx = 1L
    self.initialized = 0
 endif
 
@@ -114,12 +115,12 @@ if isa(data, /number, /array) then begin
    self.buffer = ptr_new(bytarr([3, self.dimensions]))
    for i = 0, 2 do $
       (*self.buffer)[i, *, *] = data
-   self.ndx = 0L
+   self.ndx = 1L
    self.initialized = 0
 endif
 
 if isa(initialized, /number, /scalar) then $
-   self.initialized = long(initialized) < 2 > 0
+   self.initialized = keyword_set(initialized)
 
 end
 
@@ -169,7 +170,7 @@ endif
 
 if isa(dimensions, /number) and (n_elements(dimensions) eq 2) then begin
    self.dimensions = long(dimensions)
-   self.buffer = ptr_new(bytarr([3, self.dimensions]))
+   self.buffer = ptr_new(replicate(1B, [3, self.dimensions]))
 endif
 
 if isa(data, /number, /array) and (size(data, /n_dimensions) eq 2) then begin
@@ -177,7 +178,10 @@ if isa(data, /number, /array) and (size(data, /n_dimensions) eq 2) then begin
    self.buffer = ptr_new(bytarr([3, self.dimensions]))
    for i = 0, 2 do $
       (*self.buffer)[i, *, *] = data
+   self.ndx = 1
 endif
+
+self.initialized = 0
 
 return, 1B
 end
