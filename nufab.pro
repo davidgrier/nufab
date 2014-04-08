@@ -11,6 +11,9 @@
 ; CALLING SEQUENCE:
 ;    nufab
 ;
+; KEYWORDS:
+;    state: state of the system in the form of a hash.
+;
 ; COMMON BLOCKS:
 ;    Widget hierarchy is managed by XMANAGER, which uses common blocks.
 ;
@@ -19,6 +22,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 12/20/2013 Written by David G. Grier, New York University
+; 04/08/2014 DGG Return state as keyword.
 ;
 ; Copyright (c) 2013-2014 David G. Grier
 ;-
@@ -65,7 +69,7 @@ end
 ;
 ; nufab
 ;
-pro nufab
+pro nufab, state = state
 
 COMPILE_OPT IDL2
 
