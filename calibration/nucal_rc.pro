@@ -7,6 +7,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 01/28/2014 Written by David G. Grier, New York University
+; 04/08/2014 DGG Assume setup is handled already.
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
@@ -19,8 +20,8 @@ if isa(event, 'hash') then $
 else $
    widget_control, event.top, get_uvalue = s
 
-if ~nucal_setup(s) then $
-   return
+;if ~nucal_setup(s) then $
+;   return
 
 s['trappingpattern'].clear
 a = nufab_snap(s)

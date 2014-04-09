@@ -8,6 +8,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 01/22/2014 Written by David G. Grier, New York University
+; 04/08/2014 DGG Assume setup is handled already.
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
@@ -20,8 +21,8 @@ if isa(event, 'hash') then $
 else $
    widget_control, event.top, get_uvalue = s
 
-if ~nucal_setup(s) then $
-   return
+;if ~nucal_setup(s) then $
+;   return
 
 ; region of interest near central spot
 rc = s['cgh'].rc

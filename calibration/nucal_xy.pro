@@ -15,6 +15,7 @@
 ; 11/20/2011 DGG Exclude central spot from search for projected trap.
 ; 12/28/2013 DGG Overhauled for new fab implementation
 ; 01/14/2014 DGG Scale SLM pixels rather than trap positions.
+; 04/08/2014 DGG Assume setup is handled already.
 ;
 ; Copyright (c) 2011-2014 David G. Grier
 ;-
@@ -73,8 +74,8 @@ if isa(event, 'hash') then $
 else $
    widget_control, event.top, get_uvalue = s
 
-if ~nucal_setup(s) then $
-   return
+;if ~nucal_setup(s) then $
+;   return
 
 cgh = s['cgh']
 

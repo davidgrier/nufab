@@ -7,6 +7,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 01/24/2014 Written by David G. Grier, New York University
+; 04/08/2014 DGG Assume setup is handled already.
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
@@ -122,8 +123,8 @@ else $
 if s.haskey('error') then $
    return
 
-if ~nucal_setup(s) then $
-   return
+;if ~nucal_setup(s) then $
+;   return
 
 ogain = s['camera'].gain
 
