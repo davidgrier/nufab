@@ -90,14 +90,16 @@ void = widget_button(calibration_menu, value = 'Restore...', $
                      event_pro = 'nucal_restore')
 void = widget_button(calibration_menu, value = 'Reset', $
                      event_pro = 'nucal_reset')
-void = widget_button(calibration_menu, value = 'Calibrate RC...', $
-                     event_pro = 'nucal_rc')
-void = widget_button(calibration_menu, value = 'Calibrate XY...', $
-                     event_pro = 'nucal_xy')
-void = widget_button(calibration_menu, value = 'Calibrate KC...', $
-                     event_pro = 'nucal_kc')
-void = widget_button(calibration_menu, value = 'Calibrate ROI...', $
-                     event_pro = 'nucal_roi')
+void = widget_button(calibration_menu, value = 'Calibrate Geometry...', $
+                     event_pro = 'uncal_geometry')
+;void = widget_button(calibration_menu, value = 'Calibrate RC...', $
+;                     event_pro = 'nucal_rc')
+;void = widget_button(calibration_menu, value = 'Calibrate XY...', $
+;                     event_pro = 'nucal_xy')
+;void = widget_button(calibration_menu, value = 'Calibrate KC...', $
+;                     event_pro = 'nucal_kc')
+;void = widget_button(calibration_menu, value = 'Calibrate ROI...', $
+;                     event_pro = 'nucal_roi')
 void = widget_button(calibration_menu, value = 'Calibrate Aberrations...', $
                      event_pro = 'nucal_shackhartmann')
 
