@@ -74,7 +74,7 @@ void = widget_button(stage_menu, value = 'Calibration Bay', $
 void = widget_button(stage_menu, value = 'Cleaning Bay', $
                      event_pro = 'nucal_stage_tocleaning')
 void = widget_button(stage_menu, value = 'Sample Bay 1', $
-                     event_pro = 'nucal_stagesample1')
+                     event_pro = 'nucal_stage_tosample1')
 void = widget_button(stage_menu, value = 'Sample Bay 2', $
                      event_pro = 'nucal_stagesample2')
 
