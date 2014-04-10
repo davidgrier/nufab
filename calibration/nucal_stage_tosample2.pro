@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;    nucal_stagesample2
+;    nucal_stage_tosample2
 ;
 ; PURPOSE:
 ;    Move stage to sample bay 2
@@ -10,7 +10,7 @@
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
-pro nucal_stagesample2, event
+pro nucal_stage_tosample2, event
 
 COMPILE_OPT IDL2, HIDDEN
 
