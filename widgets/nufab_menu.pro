@@ -70,13 +70,13 @@ void = widget_button(stage_menu, value = 'Properties...', $
 void = widget_button(stage_menu, value = 'Set Origin', $
                      event_pro = 'nucal_stagesetorigin')
 void = widget_button(stage_menu, value = 'Calibration Bay', $
-                     event_pro = 'nucal_stagegotoorigin')
+                     event_pro = 'nucal_stage_tocalibration')
 void = widget_button(stage_menu, value = 'Cleaning Bay', $
-                     event_pro = 'nucal_stagecleaning')
+                     event_pro = 'nucal_stage_tocleaning')
 void = widget_button(stage_menu, value = 'Sample Bay 1', $
-                     event_pro = 'nucal_stagesample1')
+                     event_pro = 'nucal_stage_tosample1')
 void = widget_button(stage_menu, value = 'Sample Bay 2', $
-                     event_pro = 'nucal_stagesample2')
+                     event_pro = 'nucal_stage_tosample2')
 
 ;;;
 ;;; CALIBRATION
@@ -91,15 +91,7 @@ void = widget_button(calibration_menu, value = 'Restore...', $
 void = widget_button(calibration_menu, value = 'Reset', $
                      event_pro = 'nucal_reset')
 void = widget_button(calibration_menu, value = 'Calibrate Geometry...', $
-                     event_pro = 'uncal_geometry')
-;void = widget_button(calibration_menu, value = 'Calibrate RC...', $
-;                     event_pro = 'nucal_rc')
-;void = widget_button(calibration_menu, value = 'Calibrate XY...', $
-;                     event_pro = 'nucal_xy')
-;void = widget_button(calibration_menu, value = 'Calibrate KC...', $
-;                     event_pro = 'nucal_kc')
-;void = widget_button(calibration_menu, value = 'Calibrate ROI...', $
-;                     event_pro = 'nucal_roi')
+                     event_pro = 'nucal_geometry')
 void = widget_button(calibration_menu, value = 'Calibrate Aberrations...', $
                      event_pro = 'nucal_shackhartmann')
 

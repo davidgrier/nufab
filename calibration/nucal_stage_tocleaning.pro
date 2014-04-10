@@ -1,16 +1,16 @@
 ;+
 ; NAME:
-;    nucal_stagesample2
+;    nucal_stage_tocleaning
 ;
 ; PURPOSE:
-;    Move stage to sample bay 2
+;    Move stage to cleaning bay
 ;
 ; MODIFICATION HISTORY:
-; 02/13/2014 Written by David G. Grier, New York University
+; 02/12/2014 Written by David G. Grier, New York University
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
-pro nucal_stagesample2, event
+pro nucal_stage_tocleaning, event
 
 COMPILE_OPT IDL2, HIDDEN
 
@@ -24,5 +24,5 @@ s['imagelaser'].shutter = 0
 
 stage = s['stage']
 stage.z = 10000L                ; back off 1 mm (0.1 um resolution)
-stage.x = long(84000.)        ; shift by 1 inch (1 um resolution)
+stage.x = long(27000.)          ; shift by 1 inch (1 um resolution)
 end

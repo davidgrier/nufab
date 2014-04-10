@@ -61,6 +61,7 @@
 ; 01/01/2014 DGG Overhauled for new fab implementation.
 ; 02/05/2014 DGG Implemented Velocity() method
 ; 03/02/2014 DGG Removed Step method
+; 04/09/2014 DGG Read should not time out during motion
 ;
 ; Copyright (c) 2011-2014, David G. Grier
 ;-
@@ -152,7 +153,7 @@ pro fabstage_Prior::MoveTo, r, relative = relative
 
 COMPILE_OPT IDL2, HIDDEN
 
-str = keyword_set(relative) ? 'GR' : 'G'
+cmd = keyword_set(relative) ? 'GR' : 'G'
 
 case n_elements(r) of
    1: begin 
@@ -166,10 +167,15 @@ case n_elements(r) of
       return
    endelse
 endcase
-str += ',' + strjoin(strtrim(pos, 2), ',')
+cmd += ',' + strjoin(strtrim(pos, 2), ',')
 
-if ~self.command(str, expect = 'R') then $
-   self.error = obj_class(self) + '::MoveTo: ' + self.error
+self.port.clear                 ; clear serial port
+self.port.write, cmd            ; transmit motion command to stage
+repeat begin                    ; get response, when available
+   res = self.port.read(err = err)
+endrep until strlen(res) gt 0
+if ~strcmp(res, 'R') then $     ; check for errors
+   self.error = obj_class(self) + '::MoveTo:' + res
 
 end
 
