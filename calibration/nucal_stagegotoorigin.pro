@@ -9,7 +9,7 @@ else $
 
 stage = s['stage']
 
-if stage.z lt 500 then $
+if stage.z lt 1000 then $
    stage.z = 1000
 stage.x = 0
 stage.z = 0
