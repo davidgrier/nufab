@@ -56,9 +56,9 @@ void = widget_button(traps_menu, value = 'Clear', uvalue = 'CLEAR')
 ;;; LASERS
 ;;;
 laser_menu = widget_button(bar, value = 'Lasers', /menu)
-void = widget_button(laser_menu, value = 'Image Laser...', $
+void = widget_button(laser_menu, value = 'Imaging...', $
                      event_pro = 'fab_properties', uvalue = 'IMAGELASER')
-void = widget_button(laser_menu, value = 'Trap Laser...', $
+void = widget_button(laser_menu, value = 'Trapping...', $
                      event_pro = 'fab_properties', uvalue = 'TRAPLASER')
 
 ;;;
