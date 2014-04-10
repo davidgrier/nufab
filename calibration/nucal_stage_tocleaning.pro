@@ -1,6 +1,6 @@
 ;+
 ; NAME:
-;    nucal_stagecleaning
+;    nucal_stage_tocleaning
 ;
 ; PURPOSE:
 ;    Move stage to cleaning bay
@@ -10,7 +10,7 @@
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
-pro nucal_stagecleaning, event
+pro nucal_stage_tocleaning, event
 
 COMPILE_OPT IDL2, HIDDEN
 

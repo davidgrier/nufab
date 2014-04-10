@@ -72,7 +72,7 @@ void = widget_button(stage_menu, value = 'Set Origin', $
 void = widget_button(stage_menu, value = 'Calibration Bay', $
                      event_pro = 'nucal_stage_tocalibration')
 void = widget_button(stage_menu, value = 'Cleaning Bay', $
-                     event_pro = 'nucal_stagecleaning')
+                     event_pro = 'nucal_stage_tocleaning')
 void = widget_button(stage_menu, value = 'Sample Bay 1', $
                      event_pro = 'nucal_stagesample1')
 void = widget_button(stage_menu, value = 'Sample Bay 2', $
