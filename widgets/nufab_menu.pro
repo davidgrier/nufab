@@ -91,7 +91,7 @@ void = widget_button(calibration_menu, value = 'Restore...', $
 void = widget_button(calibration_menu, value = 'Reset', $
                      event_pro = 'nucal_reset')
 void = widget_button(calibration_menu, value = 'Calibrate Geometry...', $
-                     event_pro = 'uncal_geometry')
+                     event_pro = 'nucal_geometry')
 ;void = widget_button(calibration_menu, value = 'Calibrate RC...', $
 ;                     event_pro = 'nucal_rc')
 ;void = widget_button(calibration_menu, value = 'Calibrate XY...', $
