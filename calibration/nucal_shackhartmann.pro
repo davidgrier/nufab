@@ -137,26 +137,26 @@ endfor
 dr = r1 - r0
 
 ;;; Gradients of phase
-dxp = griddata(rs[0, *], rs[1, *], dr[0, *], $
-               start = [0, 0], dimension = slmdim, delta = [1, 1], $
-               /radial_basis_function)
+;; dxp = griddata(rs[0, *], rs[1, *], dr[0, *], $
+;;                start = [0, 0], dimension = slmdim, delta = [1, 1], $
+;;                /radial_basis_function)
 
-dyp = griddata(rs[0, *], rs[1, *], dr[1, *], $
-               start = [0, 0], dimension = slmdim, delta = [1, 1], $
-               /radial_basis_function)
+;; dyp = griddata(rs[0, *], rs[1, *], dr[1, *], $
+;;                start = [0, 0], dimension = slmdim, delta = [1, 1], $
+;;                /radial_basis_function)
 
-;;; Use Fourier derivative theorem to obtain phase from gradients
-kxp = fft(dxp - mean(dxp), -1, /center)
-kyp = fft(dyp - mean(dyp), -1, /center)
-kx = rebin(findgen(slmdim[0]) - slmdim[0]/2., slmdim)
-ky = rebin(findgen(1, slmdim[1]) - slmdim[1]/2., slmdim)
-ksq = kx^2 + ky^2 > 1.
-kx /= ksq
-ky /= ksq
-phase = imaginary(fft(kx * kxp + ky * kyp, 1, /center))
+;; ;;; Use Fourier derivative theorem to obtain phase from gradients
+;; kxp = fft(dxp - mean(dxp), -1, /center)
+;; kyp = fft(dyp - mean(dyp), -1, /center)
+;; kx = rebin(findgen(slmdim[0]) - slmdim[0]/2., slmdim)
+;; ky = rebin(findgen(1, slmdim[1]) - slmdim[1]/2., slmdim)
+;; ksq = kx^2 + ky^2 > 1.
+;; kx /= ksq
+;; ky /= ksq
+;; phase = imaginary(fft(kx * kxp + ky * kyp, 1, /center))
 
-;;; scale phase
-phase -= min(phase)
+;; ;;; scale phase
+;; phase -= min(phase)
 
 ;p = plot(rs, symbol = 'o', linestyle = '', /sym_filled, $
 ;         xrange = [0, slmdim[0]], yrange = [0, slmdim[1]])
