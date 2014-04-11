@@ -31,6 +31,6 @@ if s.haskey('action') then begin
       nuevent_grouproi, s $
    else $
       nuevent_clearselection, s
-   widget_control, event.id, draw_motion_events = 0
+   widget_control, event.id, draw_motion_events = 0 ; stop watching mouse motions
 endif
 end
