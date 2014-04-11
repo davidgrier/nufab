@@ -13,7 +13,7 @@
 ;
 ; SIDE EFFECTS:
 ;    Terminates mouse-driven motion events.
-;    Completes ROI selections
+;    Completes ROI selections.
 ;
 ; MODIFICATION HISTORY:
 ; 01/29/2014 Written by David G. Grier, New York University
