@@ -25,6 +25,6 @@ roi = nufab_roi(r0 = [event.x, event.y]) ; Create ROI
 s['overlay'].add, roi                    ; ... show it in GUI
 s['roi'] = roi                           ; ... use it to select traps
 s['action'] = 4                          ; state 4: grouping
-widget_control, event.id, /draw_motion_events
-
+widget_control, event.id, /draw_motion_events ; start generating events
+                                         ; when then mouse moves across the screen
 end
