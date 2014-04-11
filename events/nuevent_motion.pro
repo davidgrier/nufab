@@ -32,9 +32,9 @@ widget_control, event.top, get_uvalue = s
 xy = [event.x, event.y]
 
 case s['action'] of
-   2: s['selected'].moveto, xy
-   3: s['selected'].rotateto, xy
-   4: if s.haskey('roi') then $
+   2: s['selected'].moveto, xy   ; translating
+   3: s['selected'].rotateto, xy ; rotating
+   4: if s.haskey('roi') then $  ; creating ROI (grouping)
       s['roi'].r1 = xy
    else:
 endcase
