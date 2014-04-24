@@ -7,6 +7,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 01/02/2014 Written by David G. Grier, New York University
+; 04/23/2014 DGG updated support for recording
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
@@ -23,8 +24,9 @@ case uval of
    'SNAPSHOT': video.saveimage
    'RECDIR': video.selectdirectory
    'RECORD': begin
-      video.record = ~video.record
-      widget_control, event.id, set_value = (video.record) ? $
+      video.recording = (video.recording gt 0) ? 0 : 1
+      widget_control, event.id, $
+                      set_value = (video.recording gt 0) ? $
                       'Stop Recording!' : 'Record'
    end
 
