@@ -96,6 +96,13 @@ void = widget_button(calibration_menu, value = 'Calibrate Aberrations...', $
                      event_pro = 'nucal_shackhartmann')
 
 ;;;
+;;; ANALYSIS
+;;;
+analysis_menu = widget_button(bar, value = 'Analysis', /menu)
+void = widget_button(analysis_menu, value = 'Something Nice', $
+                     uvalue = 'NICE')
+
+;;;
 ;;; HELP
 ;;;
 help_menu = widget_button(bar, value = 'Help', /menu, event_pro = 'fab_help')
