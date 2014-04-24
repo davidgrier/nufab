@@ -24,6 +24,9 @@
 ;        on the current display to simulate an SLM.
 ;        [IG ]
 ;
+;    GAMMA: Gamma factor for presenting hologram data on SLM display
+;        [IGS]
+;
 ; METHODS:
 ;    SetProperty
 ;    GetProperty
@@ -40,6 +43,7 @@
 ; 05/04/2012 DGG check that DIM is a number in Init
 ; 12/20/2013 DGG overhauled for new fab version.
 ; 04/06/2014 DGG try to set TLB_FRAME_ATTR properties.
+; 04/24/2014 DGG Introduced GAMMA property.
 ;
 ; Copyright (c) 2011-2014, David G. Grier
 ;-
@@ -50,13 +54,18 @@
 ;
 ; Set SLM properties
 ;
-pro fabslm_monitor::SetProperty, data = data
+pro fabslm_monitor::SetProperty, data = data, $
+                                 gamma = gamma
 
 COMPILE_OPT IDL2, HIDDEN
 
-self.hologram.setproperty, data = data
-self.slm.draw
+if isa(data, /number, /array) then $
+   self.hologram.setproperty, data = data
 
+if isa(gamma, /number, /scalar) then $
+   self.palette.setproperty, gamma = gamma
+
+self.slm.draw
 end
 
 ;;;;;
@@ -67,7 +76,8 @@ end
 ;
 pro fabslm_monitor::GetProperty, device_name = device_name, $
                                  dimensions = dimensions, $
-                                 data = data
+                                 data = data, $
+                                 gamma = gamma
                         
 COMPILE_OPT IDL2, HIDDEN
     
@@ -79,6 +89,9 @@ if arg_present(dimensions) then $
 
 if arg_present(data) then $
    data = self.hologram.data
+
+if arg_present(gamma) then $
+   self.palette.getproperty, gamma = gamma
 
 end
 
@@ -118,6 +131,7 @@ end
 ;
 function fabslm_monitor::Init, device_name = device_name, $
                                primary = primary, $
+                               gamma = gamma, $
                                _ref_extra = re
 
 
@@ -151,8 +165,11 @@ widget_control, self.wtlb, /realize
 widget_control, wslm, get_value = slm
 self.slm = slm
 
+ramp = bindgen(256)
+mygamma = isa(gamma, /number, /scalar) ? (float(gamma) > 0.) < 10. : 1.
+self.palette = IDLgrPalette(ramp, ramp, ramp, gamma = mygamma)
 data = bytarr(self.dimensions)
-self.hologram = IDLgrImage(data)
+self.hologram = IDLgrImage(data, palette = self.palette)
 
 model = IDLgrModel()
 model.add, self.hologram
@@ -191,6 +208,7 @@ struct = {fabslm_monitor, $
           device_name: '',           $ ; name of SLM device
           wtlb:        0L,           $ ; top-level base
           slm:         obj_new(),    $ ; IDLgrWindow for drawing
-          hologram:    obj_new()     $ ; IDLgrImage for data
+          hologram:    obj_new(),    $ ; IDLgrImage for data
+          palette:     obj_new()     $ ; lookup table for displaying holograms on SLM
          }
 end
