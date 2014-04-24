@@ -45,6 +45,7 @@ if tag_names(event, /structure_name) eq 'WIDGET_BUTTON' then begin
          s['video'].play = 0
          widget_control, event.top, /destroy
       end
+      else: ; unrecognized event -- ignore silently for now [FIXME].
    endcase
 endif
 
