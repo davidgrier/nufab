@@ -19,10 +19,10 @@
 ;
 ;    fabcamera_V4L2::SetProperty
 ;
-;    fabcamera_V4L2::Snap: Take a picture and transfer it to the 
+;    fabcamera_V4L2::Read: Take a picture and transfer it to the 
 ;        underlying IDLgrImage
 ;
-;    fabcamera_V4L2::Snap(): Take a picture, transfer it to the 
+;    fabcamera_V4L2::Read(): Take a picture, transfer it to the 
 ;        underlying IDLgrImage, and then return the image data 
 ;        from the Image object.
 ;
@@ -42,9 +42,9 @@
 
 ;;;;;
 ;
-; fabcamera_V4L2::Snap()
+; fabcamera_V4L2::Read()
 ;
-; inherited from fabcamera::Snap()
+; inherited from fabcamera::Read()
 ;
 
 ;;;;;
@@ -58,9 +58,10 @@ pro fabcamera_V4L2::Read
 COMPILE_OPT IDL2, HIDDEN
 
 ok = call_external(self.dlm, 'idlv4l2_readframe', /cdecl, self.debug, $
-                   self.fd, *(self.buffer))
-if ok then $
-   self.setproperty, data = *self.buffer
+                   self.fd, *self.data)
+;                   self.fd, *(self.buffer))
+;if ok then $
+;   self.setproperty, data = *self.buffer
 
 end
 
@@ -121,7 +122,7 @@ COMPILE_OPT IDL2, HIDDEN
 
 self.CleanupV4L2
 self.fabcamera::Cleanup
-ptr_free, self.buffer
+;ptr_free, self.buffer
 end
 
 ;;;;;
@@ -156,10 +157,12 @@ if (self.fabcamera::Init(_extra = re) ne 1) then $
 
 self.device_name = (isa(device_name, 'string')) ? device_name : '/dev/video0'
 
+fd = 0L
 ok = call_external(self.dlm, 'idlv4l2_open', /cdecl, self.debug, $
-                   self.device_name, self.device_name, self.fd)
+                   self.device_name, fd)
 if ~ok then $
    return, 0B
+self.fd = fd
 
 w = 0L
 h = 0L
@@ -185,8 +188,9 @@ if ~ok then begin
    return, 0B
 endif
 
-self.setproperty, data = a
-self.buffer = ptr_new(a, /no_copy)
+self.data = ptr_new(a, /no_copy)
+;self.setproperty, data = a
+;self.buffer = ptr_new(a, /no_copy)
 self.stream = ptr_new(stream)
 
 self.name = 'fabcamera_V4L2 '
@@ -212,7 +216,7 @@ struct = {fabcamera_V4L2,     $
           fd: 0L,             $ ; file descriptor for video device
           initialized: 0,     $
           capturing: 0,       $
-          buffer: ptr_new(),  $
+;          buffer: ptr_new(),  $
           stream: ptr_new()   $
          }
 end
