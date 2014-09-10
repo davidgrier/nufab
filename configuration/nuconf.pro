@@ -31,9 +31,12 @@ COMPILE_OPT IDL2, HIDDEN
 if ~(parser = fab_configurationparser()) then $
    return = hash('error', 'could not initialize configuration parser')
 
-fn = file_search(fab_path(), 'default.xml', count = count)
+default_configuration = 'nuconf_default.xml'
+fn = file_search(fab_path(), default_configuration, count = count)
 if ~(count gt 0) then $
-   return, hash('error', 'could not open default configuration file')
+   return, hash('error', $
+                'could not open default configuration file: ' + $
+                default_configuration)
 parser.parsefile, fn[0]
 
 filenames = file_search('~/.nufab/*.xml', /test_read, count = count)
