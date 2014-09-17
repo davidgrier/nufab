@@ -7,6 +7,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 04/08/2014 Written by David G. Grier, New York University
+; 09/17/2014 DGG quit on errors from subprocesses
 ;
 ; Copyright (c) 2014 David G. Grier
 ;-
@@ -23,8 +24,27 @@ if ~nucal_setup(s) then $
    return
 
 nucal_rc, s                     ; coordinates of optical axis on camera
+if s.haskey('error') then begin
+   message, s['error'], /inf
+   return
+endif
+
 nucal_xy, s                     ; rotation and scaling of camera plane
+if s.haskey('error') then begin
+   message, s['error'], /inf
+   return
+endif
+
 nucal_kc, s                     ; coordinates of optical axis on SLM
+if s.haskey('error') then begin
+   message, s['error'], /inf
+   return
+endif
+
 nucal_roi, s                    ; area of SLM in input pupil
+if s.haskey('error') then begin
+   message, s['error'], /inf
+   return
+endif
 
 end
