@@ -78,6 +78,10 @@ else $
 ;   return
 
 cgh = s['cgh']
+;;; Save present calibrations in case this process fails
+oq = cgh.q
+oaspect_ratio = cgh.aspect_ratio
+oangle = cgh.angle
 
 ;;; Place a trap at calibration points, and compare
 ;;; measured positions with specified positions
@@ -126,6 +130,15 @@ cgh.aspect_ratio /= aspect_ratio
 cgh.angle -= angle
 
 trap.state = 1
+
+; FIXME: Test for correctness
+; place a trap, and make sure that the trap goes where intended
+; if not, restore previous calibrations and throw an error
+; cgh.q = oq
+; cgh.aspect_ratio = oaspect_ratio
+; cgh.angle = oangle
+; s['error'] = 'NUCAL_XY: Could not find trap after calibration procedure'
+; return
 
 if s.haskey('propertysheet') then $
    widget_control, s['propertysheet'], /refresh_property
