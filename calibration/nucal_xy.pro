@@ -16,6 +16,7 @@
 ; 12/28/2013 DGG Overhauled for new fab implementation
 ; 01/14/2014 DGG Scale SLM pixels rather than trap positions.
 ; 04/08/2014 DGG Assume setup is handled already.
+; 04/21/2014 DGG Seek traps in normalized image
 ;
 ; Copyright (c) 2011-2014 David G. Grier
 ;-
@@ -23,42 +24,27 @@
 ;
 ; NUCAL_XY_FIND
 ;
-; Find the position of the brightest point on the screen
-; that is not the central spot
+; Find the position of the brightest point on the 
+; normalized image
 ;
 function nucal_xy_find, s
 
 COMPILE_OPT IDL2, HIDDEN
 
 wait, 0.1
-a = nufab_snap(s) ; acquire image
-a = median(a, 7)
-q = fastfeature(a, 64, pickn = 2, count = count)
-;b = bpass(a, 2, 21)
-;q = feature(b, 21, pickn = pickn, count = count, /quiet)
+a = float(nufab_snap(s)) ; acquire image
+a /= s['xy_bg']
+
+; candidate features are (at least 5 times) brighter 
+; than the background
+q = fastfeature(a, 5, pickn = 1, count = count)
 
 if count lt 1 then begin
-   s['error'] = 'NUCAL_XY_FIND: no features'
+   s['error'] = 'NUCAL_XY_FIND: found no features'
    return, [0, 0]
 endif
 
-im = image(a)
-pl = plot(q[0, *], q[1, *], symbol = 'o', linestyle = '', color = 'yellow', over = im)
-
-rc = s['cgh'].rc
-delta = sqrt((q[0, *] - rc[0])^2 + (q[1, *] - rc[1])^2)
-w = where(delta gt 20, count)
-
-if count lt 1 then begin
-   s['error'] = 'NUCAL_XY_FIND: only central spot'
-   return, [0, 0]
-endif else if count eq 1 then begin
-   return, q[0:1, w]
-endif else begin
-   m = max(q[2, *], ndx)
-   return, q[0:1,ndx]
-endelse
-
+return, q[0:1]
 end
 
 ;;;;;;
@@ -89,9 +75,14 @@ oq = cgh.q
 oaspect_ratio = cgh.aspect_ratio
 oangle = cgh.angle
 
+;;; Clear the screen
+s['trappingpattern'].clear
+
+;;; acquire background image
+s['xy_bg'] = float(nufab_snap(s)) > 1
+
 ;;; Place a trap at calibration points, and compare
 ;;; measured positions with specified positions
-s['trappingpattern'].clear
 rc = cgh.rc
 trap = fabtrapgroup(fabtweezer(rc = rc), rs = rc, state = 0)
 s['trappingpattern'].add, trap
@@ -99,8 +90,8 @@ s['trappingpattern'].add, trap
 ;;; coordinates of calibration points
 npts = 5
 dim = s['camera'].dimensions
-x = (findgen(npts) + 1.)/(npts + 1) * dim[0]
-y = (findgen(npts) + 1.)/(npts + 1) * dim[1]
+x = rc[0] + [-2:2] * dim[0]/(2.*npts)
+y = rc[1] + [-2:2] * dim[1]/(2.*npts)
 
 ;;; calibrate along x:
 p = findgen(2, npts)
@@ -128,25 +119,23 @@ endif
 
 ;;; adjust geometry
 q = sqrt(f1[1]^2 + f2[1]^2)
-aspect_ratio = sqrt(f3[1]^2 + f4[1]^2)/q
-angle = 90./!pi * (atan(f2[1], f1[1]) - atan(f3[1], f4[1]))
-
 cgh.q /= q
-cgh.aspect_ratio /= aspect_ratio
-cgh.angle -= angle
+cgh.aspect_ratio /= sqrt(f3[1]^2 + f4[1]^2)/q
+cgh.angle -= 90./!pi * (atan(f2[1], f1[1]) - atan(f3[1], f4[1]))
 
-trap.state = 1
-
-; FIXME: Test for correctness
-; place a trap, and make sure that the trap goes where intended
-; if not, restore previous calibrations and throw an error
-if s.haskey('error') then begin
+;;; test for correctness
+rc = [100, 100, 0]
+trap.moveto, rc, /override
+r = nucal_xy_find(s)
+if sqrt(total((r - rc)^2)) gt 0.01*min(dim) then begin
+   s['error'] = 'NUCAL_XY: Calibration out of tolerance'
    cgh.q = oq
    cgh.aspect_ratio = oaspect_ratio
    cgh.angle = oangle
-   s['error'] = 'NUCAL_XY: Could not find trap after calibration procedure'
-   return
 endif
+
+trap.state = 1.
+s.remove, 'xy_bg'
 
 if s.haskey('propertysheet') then $
    widget_control, s['propertysheet'], /refresh_property
