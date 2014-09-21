@@ -53,7 +53,7 @@ b = b[xy[0]-rad:xy[0]+rad, xy[1]-rad:xy[1]+rad]
 q = fastfeature(b, 32, pickn = 1, count = count)
 
 if count lt 1 then begin
-   s['error'] = 'no trap image in range'
+   s['error'] = 'NUCAL_KC_FINDTRAP: no trap image in range'
    q = [0, 0]
 endif
 
@@ -153,11 +153,8 @@ endfor
 f = poly_fit(ky, delta, 1)
 kc[1] = -f[0]/f[1]
 
-if s.haskey('error') then begin
-   message, s['error'], /inf
-   s.remove, 'error'
+if s.haskey('error') then $
    return
-endif
    
 s['cgh'].kc = kc
 s['camera'].gain = ogain
