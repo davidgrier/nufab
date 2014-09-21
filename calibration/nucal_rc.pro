@@ -33,6 +33,6 @@ if count eq 1 then begin
    if s.haskey('propertysheet') then $
       widget_control, s['propertysheet'], /refresh_property
 endif else $
-   s['error'] = 'could not locate central spot'
+   s['error'] = 'NUCAL_RC: could not locate central spot'
 
 end
