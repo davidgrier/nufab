@@ -134,11 +134,13 @@ trap.state = 1
 ; FIXME: Test for correctness
 ; place a trap, and make sure that the trap goes where intended
 ; if not, restore previous calibrations and throw an error
-; cgh.q = oq
-; cgh.aspect_ratio = oaspect_ratio
-; cgh.angle = oangle
-; s['error'] = 'NUCAL_XY: Could not find trap after calibration procedure'
-; return
+if s.haskey('error') then begin
+   cgh.q = oq
+   cgh.aspect_ratio = oaspect_ratio
+   cgh.angle = oangle
+   s['error'] = 'NUCAL_XY: Could not find trap after calibration procedure'
+   return
+endif
 
 if s.haskey('propertysheet') then $
    widget_control, s['propertysheet'], /refresh_property
