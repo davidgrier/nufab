@@ -38,16 +38,19 @@ q = fastfeature(a, 64, pickn = 2, count = count)
 ;q = feature(b, 21, pickn = pickn, count = count, /quiet)
 
 if count lt 1 then begin
-   s['error'] = 'no features'
+   s['error'] = 'NUCAL_XY_FIND: no features'
    return, [0, 0]
 endif
+
+;im = image(a)
+;pl = plot(q[0, *], q[1, *], symbol = 'o', linestyle = '', color = 'yellow', over = pl)
 
 rc = s['cgh'].rc
 delta = sqrt((q[0, *] - rc[0])^2 + (q[1, *] - rc[1])^2)
 w = where(delta gt 20, count)
 
 if count lt 1 then begin
-   s['error'] = 'only central spot'
+   s['error'] = 'NUCAL_XY_FIND: only central spot'
    return, [0, 0]
 endif else if count eq 1 then begin
    return, q[0:1, w]
