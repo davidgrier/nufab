@@ -43,7 +43,7 @@ if count lt 1 then begin
 endif
 
 im = image(a)
-pl = plot(q[0, *], q[1, *], symbol = 'o', linestyle = '', color = 'yellow', over = pl)
+pl = plot(q[0, *], q[1, *], symbol = 'o', linestyle = '', color = 'yellow', over = im)
 
 rc = s['cgh'].rc
 delta = sqrt((q[0, *] - rc[0])^2 + (q[1, *] - rc[1])^2)
@@ -85,12 +85,9 @@ if s.haskey('error') then $
 
 cgh = s['cgh']
 ;;; Save present calibrations in case this process fails
-ozc = cgh.zc
 oq = cgh.q
 oaspect_ratio = cgh.aspect_ratio
 oangle = cgh.angle
-
-cgh.zc = 0. ; calibrate in focal plane
 
 ;;; Place a trap at calibration points, and compare
 ;;; measured positions with specified positions
@@ -150,8 +147,6 @@ if s.haskey('error') then begin
    s['error'] = 'NUCAL_XY: Could not find trap after calibration procedure'
    return
 endif
-
-cgh.zc = ozc                    ; restore previous plane
 
 if s.haskey('propertysheet') then $
    widget_control, s['propertysheet'], /refresh_property

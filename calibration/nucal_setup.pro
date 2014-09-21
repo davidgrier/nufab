@@ -27,8 +27,7 @@ else $
 if s.haskey('error') then $
    return, 0B
 
-;;; Calibrate in the focal plane
-s['cgh'].zc = 0
+nucal_reset, s
 
 ;;; Set camera to minimum sensitivity
 if ~s.haskey('camera') then begin
