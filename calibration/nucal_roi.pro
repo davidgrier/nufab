@@ -24,6 +24,9 @@ else $
 ;if ~nucal_setup(s) then $
 ;   return
 
+if s.haskey('error') then $
+   return
+
 ; region of interest near central spot
 rc = s['cgh'].rc
 dim = s['camera'].dimensions

@@ -24,6 +24,9 @@ else $
 ;if ~nucal_setup(s) then $
 ;   return
 
+if s.haskey('error') then $
+   return
+
 s['trappingpattern'].clear
 a = nufab_snap(s)
 a = median(a, 5)

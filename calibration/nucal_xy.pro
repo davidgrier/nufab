@@ -77,6 +77,9 @@ else $
 ;if ~nucal_setup(s) then $
 ;   return
 
+if s.haskey('error') then $
+   return
+
 cgh = s['cgh']
 ;;; Save present calibrations in case this process fails
 oq = cgh.q
