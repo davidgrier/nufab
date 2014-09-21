@@ -42,8 +42,8 @@ if count lt 1 then begin
    return, [0, 0]
 endif
 
-;im = image(a)
-;pl = plot(q[0, *], q[1, *], symbol = 'o', linestyle = '', color = 'yellow', over = pl)
+im = image(a)
+pl = plot(q[0, *], q[1, *], symbol = 'o', linestyle = '', color = 'yellow', over = pl)
 
 rc = s['cgh'].rc
 delta = sqrt((q[0, *] - rc[0])^2 + (q[1, *] - rc[1])^2)
