@@ -89,6 +89,7 @@
 ; 09/15/2013 DGG Support for callbacks during CGH calculation.
 ; 10/03/2013 DGG Support for different BACKGROUND types.
 ; 10/26/2013 DGG Project background by default.
+; 02/10/2015 DGG Updated TRAPS definition.
 ;
 ; Copyright (c) 2011-2013 David G. Grier
 ;-
@@ -588,7 +589,7 @@ struct = {fabCGH, $
           inherits fab_object,        $ 
           slm:          obj_new(),    $ ; target SLM
           data:         ptr_new(),    $ ; byte-valued hologram
-          traps:        list(),       $ ; list of trap objects
+          traps:        obj_new(),    $ ; list of trap objects
           rc:           fltarr(3),    $ ; center of trap coordinate system
           mat:          fltarr(3, 3), $ ; transformation matrix
           kc:           fltarr(2),    $ ; center of hologram on SLM
