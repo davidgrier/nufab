@@ -68,8 +68,9 @@
 ; 05/15/2012 DGG Write method returns empty string on failure.
 ; 09/16/2013 DGG Write accepts optional TIME argument.
 ; 12/20/2013 DGG major overhaul for new fab implementation.
+; 02/10/2015 DGG update declaration of BRIDGES.
 ;
-; Copyright (c) 2011-2013, David G. Grier
+; Copyright (c) 2011-2015, David G. Grier
 ;-
 
 ;;;;;
@@ -282,7 +283,7 @@ COMPILE_OPT IDL2, HIDDEN
 
 struct = {fabRecorder,            $
           inherits   IDL_Object,  $
-          bridges:   list(),      $ ; bridge objects
+          bridges:   obj_new(),   $ ; bridge objects
           directory: '',          $ ; directory for recording images
           formats:   strarr(8),   $ ; recognized formats
           format:    '',          $ ; file format
