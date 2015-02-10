@@ -27,8 +27,9 @@
 ; 01/28/2014 DGG Clamp values, rather than raising an error
 ;    when values are out of range
 ; 03/04/2014 DGG Implement ORDER property
+; 02/10/2015 DGG Updated PROPERTIES definition.
 ;
-; Copyright (c) 2013-2014 David G. Grier
+; Copyright (c) 2013-2015 David G. Grier
 ;-
 
 ;;;;;
@@ -524,9 +525,9 @@ pro fabcamera_PointGrey__define
 
 COMPILE_OPT IDL2, HIDDEN
 
-struct = {fabcamera_PointGrey, $
-          inherits fabcamera,  $
-          dlm: '',             $ 
-          properties: hash()   $
+struct = {fabcamera_PointGrey,  $
+          inherits fabcamera,   $
+          dlm: '',              $ 
+          properties: obj_new() $
          }
 end
