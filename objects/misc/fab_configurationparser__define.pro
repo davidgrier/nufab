@@ -30,8 +30,9 @@
 ;    
 ; MODIFICATION HISTORY:
 ; 12/29/2013 Written by David G. Grier, New York University
+; 02/10/2015 DGG Updated object definition.
 ;
-; Copyright (c) 2013 David G. Grier
+; Copyright (c) 2013-2015 David G. Grier
 ;-
 
 ;;;;;
@@ -155,6 +156,6 @@ COMPILE_OPT IDL2, HIDDEN
 struct = {fab_configurationparser, $
           inherits IDLffXMLSAX, $
           inherits IDL_Object, $
-          configuration: hash() $
+          configuration: obj_new() $
          }
 end
