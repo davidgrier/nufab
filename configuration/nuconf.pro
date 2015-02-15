@@ -3,7 +3,7 @@
 ;    nuconf()
 ;
 ; PURPOSE:
-;    Parse configuration files to assembe nufab system
+;    Parse configuration files to assemble nufab system
 ;
 ; PROCEDURE:
 ;    Parses the default.xml configuration file, and then looks
@@ -16,13 +16,8 @@
 ; MODIFICATION HISTORY:
 ; 12/25/2013 Written by David G. Grier, New York University
 ;
-; Copyright (c) 2013-2014 David G. Grier
+; Copyright (c) 2013-2015 David G. Grier
 ;-
-
-;;;;;
-;
-; nuconf
-;
 function nuconf
 
 COMPILE_OPT IDL2, HIDDEN
