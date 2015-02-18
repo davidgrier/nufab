@@ -9,23 +9,22 @@
 ;    fab_object
 ;
 ; PROPERTIES
-;    DATA       [ G ]
-;        byte-valued array of image data
-;
-;    DIMENSIONS [IG ]
-;        [w,h,[3]] dimensions of images
-; 
-;    ORDER      [IGS]
-;        flag: if set, flip image vertically
-;
-;    HFLIP      [IGS]
-;        flag: if set, flip image horizontally
-;
-;    GREYSCALE  [IG ]
-;        flag: If set deliver greyscale images
-;
-;    MPP: Magnification [micrometers/pixel]
-;        [IGS]
+;    DATA
+;        [ G ] byte-valued array of image data
+;    DIMENSIONS
+;        [IG ] [w,h,[3]] dimensions of images
+;    EXPOSURE_TIME
+;        [IGS] exposure time of camera
+;    GAIN
+;        [IGS] gain of camera
+;    ORDER
+;        [IGS] flag: if set, flip image vertically
+;    HFLIP
+;        [IGS] flag: if set, flip image horizontally
+;    GREYSCALE
+;        [IG ] flag: If set deliver greyscale images
+;    MPP
+;        [IGS] Magnification [micrometers/pixel]
 ;
 ; METHODS
 ;    READ()
@@ -38,8 +37,9 @@
 ; 12/26/2013 Written by David G. Grier, New York University
 ; 03/04/2014 DGG Implemented ORDER property.
 ; 04/06/2014 DGG Enum values for ORDER and HFLIP.
+; 02/18/2015 DGG Added EXPOSURE_TIME and GAIN properties
 ;
-; Copyright (c) 2013-2014 David G. Grier
+; Copyright (c) 2013-2015 David G. Grier
 ;-
 
 ;;;;;
@@ -73,6 +73,8 @@ end
 ; fabcamera::SetProperty
 ;
 pro fabcamera::SetProperty, dimensions = dimensions, $
+                            exposure_time = exposure_time, $
+                            gain = gain, $
                             greyscale = greyscale, $
                             order = order, $
                             hflip = hflip, $
@@ -86,6 +88,12 @@ self.fab_object::SetProperty, _extra = re
 
 if isa(dimensions, /number, /array) then $
    message, 'DIMENSIONS can only be set at initialization', /inf
+
+if isa(exposure_time, /scalar, /number) then $
+   self.exposure_time = exposure_time
+
+if isa(gain, /scalar, /number) then $
+   self.gain = gain
 
 if isa(greyscale, /scalar, /number) then $
    message, 'GREYSCALE can only be set at initialization', /inf
@@ -110,6 +118,8 @@ end
 ;
 pro fabcamera::GetProperty, data = data, $
                             dimensions = dimensions, $
+                            exposure_time = exposure_time, $
+                            gain = gain, $
                             greyscale = greyscale, $
                             order = order, $
                             hflip = hflip, $
@@ -129,6 +139,12 @@ if arg_present(dimensions) then $
 
 if arg_present(mpp) then $
    mpp = self.mpp
+
+if arg_present(exposure_time) then $
+   exposure_time = self.exposure_time
+
+if arg_present(gain) then $
+   gain = self.gain
 
 if arg_present(greyscale) then $
    greyscale = self.greyscale
@@ -163,6 +179,8 @@ end
 ; Should be overriden by specific camera implementation
 ;
 function fabcamera::Init, dimensions = dimensions, $
+                          exposure_time = exposure_time, $
+                          gain = gain, $
                           greyscale = greyscale, $
                           order = order, $
                           hflip = hflip, $
@@ -183,6 +201,12 @@ if isa(dimensions, /number, /array) then begin
 endif else $
    dimensions = [640L, 480]
 
+if isa(exposure_time, /scalar, /number) then $
+   self.exposure_time = exposure_time
+
+if isa(gain, /scalar, /number) then $
+   self.gain = gain
+
 if isa(mpp, /scalar, /number) then $
    self.mpp = float(mpp)
 
@@ -202,6 +226,8 @@ self.setpropertyattribute, 'name', sensitive = 0
 self.setpropertyattribute, 'description', sensitive = 0
 self.registerproperty, 'order', enum = ['Normal', 'Flipped']
 self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
+self.registerproperty, 'exposure_time', /float, sensitive = 0
+self.registerproperty, 'gain', /float, sensitive = 0
 self.registerproperty, 'greyscale', /boolean, sensitive = 0
 self.registerproperty, 'mpp', /float, sensitive = 0
 self.setpropertyattribute, 'mpp', hide = (self.mpp eq 0)
@@ -220,6 +246,8 @@ COMPILE_OPT IDL2, HIDDEN
 struct = {fabcamera, $
           inherits fab_object, $
           data: ptr_new(), $
+          exposure_time: 0., $
+          gain: 0., $
           greyscale: 0L, $
           order: 0L, $
           hflip: 0L, $

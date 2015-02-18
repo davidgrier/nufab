@@ -28,6 +28,7 @@
 ;    when values are out of range
 ; 03/04/2014 DGG Implement ORDER property
 ; 02/10/2015 DGG Updated PROPERTIES definition.
+; 02/18/2015 DGG Added EXPOSURE_TIME property as synonym for SHUTTER.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
@@ -70,7 +71,7 @@ self.description = 'PointGrey Camera '
 
 foreach property, properties do begin
    info = self.propertyinfo(property)
-   if ~info.present or ~info.manualSupported then $
+   if ~info.present || ~info.manualSupported then $
       continue
    self.registerproperty, property, /integer, valid_range = [info.min, info.max, 1]
 endforeach
@@ -272,6 +273,7 @@ end
 ;
 pro fabcamera_PointGrey::SetProperty, brightness    = brightness,    $
                                       auto_exposure = auto_exposure, $
+                                      exposure_time = exposure_time, $
                                       sharpness     = sharpness,     $
                                       white_balance = white_balance, $
                                       hue           = hue,           $
@@ -331,7 +333,7 @@ if isa(pan, /number, /scalar) then $
 if isa(tilt, /number, /scalar) then $
    void = self.property('tilt', tilt)
 
-if isa(shutter, /number, /scalar) then $
+if isa(shutter, /number, /scalar) || isa(exposure_time, /number, /scalar) then $
    void = self.property('shutter', shutter)
 
 if isa(gain, /number, /scalar) then $
@@ -376,6 +378,7 @@ pro fabcamera_PointGrey::GetProperty, properties    = properties,    $
                                       zoom          = zoom,          $
                                       pan           = pan,           $
                                       tilt          = tilt,          $
+                                      exposure_time = exposure_time, $
                                       shutter       = shutter,       $
                                       gain          = gain,          $
                                       trigger_mode  = trigger_mode,  $
@@ -427,6 +430,9 @@ if arg_present(pan) then $
 
 if arg_present(tilt) then $
    tilt = self.property('tilt')
+
+if arg_present(exposure_time) then $
+   exposure_time = self.property('shutter')
 
 if arg_present(shutter) then $
    shutter = self.property('shutter')
