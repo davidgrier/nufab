@@ -142,11 +142,15 @@ function fabcamera_PointGrey::Property, property, value, $
 COMPILE_OPT IDL2, HIDDEN
 
 info = self.propertyinfo(property, error = error)
-if error ne 0 then $
+if error ne 0 then begin
+   message, 'Cannot retrieve property info from camera', /inf
    return, -error
+endif
 
-if (error = (~info.present or ~info.manualSupported)) then $
+if (error = (~info.present || ~info.manualSupported)) then begin
+   message, 'Cannot set '+property, /inf
    return, -error
+endif
 
 present = 0L
 absControl = 0L
@@ -157,16 +161,16 @@ valueA = 0UL
 valueB = 0UL
 absValue = 0.
 
-if n_elements(on) eq 1 then $
+if isa(on, /number, /scalar) then $
    onOff = ~keyword_set(on)
 
-if n_elements(off) eq 1 then $
+if isa(off, /number, /scalar) then $
    onOff = keyword_set(off)
 
-if n_elements(auto) eq 1 then $
+if isa(auto, /number, /scalar) then $
    autoManualMode = ~keyword_set(auto)
 
-if n_elements(manual) eq 1 then $
+if isa(manual, /number, /scalar) then $
    autoManualMode = keyword_set(manual)
 
 if n_params() eq 2 then begin
@@ -184,8 +188,10 @@ if n_params() eq 2 then begin
                          self.properties[property], $
                          absControl, onePush, onOff, autoManualMode, $
                          valueA, valueB, absValue)
-   if error ne 0 then $
+   if error ne 0 then begin
+      message, 'Failed to set '+property, /inf
       return, -error
+   endif
 endif
 
 error = call_external(self.dlm, 'read_property', $
@@ -241,6 +247,7 @@ COMPILE_OPT IDL2, HIDDEN
 
 if (error = ~isa(address, 'ulong')) then $
    return
+
 
 if (error = ~isa(value, 'ulong')) then $
    return
