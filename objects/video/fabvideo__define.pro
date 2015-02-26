@@ -49,7 +49,8 @@ pro fabVideo::handleTimerEvent, id, userdata
 
 COMPILE_OPT IDL2, HIDDEN
 
-self.timer = timer.set(self.time, self)
+if self.playing then $
+   self.timer = timer.set(self.time, self)
 self.timestamp = systime(1)
 data = self.camera.read()
 
@@ -127,6 +128,7 @@ pro fabVideo::SetProperty, greyscale = greyscale, $
                            hvmorder = hvmorder, $
                            screen = screen, $
                            framerate = framerate, $
+                           frametime = frametime, $
                            recording = recording, $
                            _ref_extra = re
 
@@ -155,6 +157,9 @@ if isa(hvmorder, /number, /scalar) then $
 if isa(framerate, /scalar, /number) then $
    self.time = 1./double(abs(framerate))
 
+if isa(frametime, /scalar, /number) then $
+   self.time = double(abs(frametime))
+
 if isa(recording, /scalar, /number) then $
    self.recording = recording
    
@@ -170,6 +175,7 @@ pro fabVideo::GetProperty, greyscale = greyscale, $
                            recorder = recorder, $
                            screen = screen, $
                            framerate = framerate, $
+                           frametime = frametime, $
                            timestamp = timestamp, $
                            playing = playing, $
                            hvmmode = hvmmode, $
@@ -203,6 +209,9 @@ if arg_present(screen) then $
 
 if arg_present(framerate) then $
    framerate = 1./self.time
+
+if arg_present(frametime) then $
+   frametime = self.time
 
 if arg_present(timestamp) then $
    timestamp = self.timestamp
