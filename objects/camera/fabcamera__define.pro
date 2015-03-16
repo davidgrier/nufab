@@ -13,16 +13,10 @@
 ;        [ G ] byte-valued array of image data
 ;    DIMENSIONS
 ;        [IG ] [w,h,[3]] dimensions of images
-;    EXPOSURE_TIME
-;        [IGS] exposure time of camera
-;    GAIN
-;        [IGS] gain of camera
 ;    ORDER
 ;        [IGS] flag: if set, flip image vertically
 ;    HFLIP
 ;        [IGS] flag: if set, flip image horizontally
-;    GREYSCALE
-;        [IG ] flag: If set deliver greyscale images
 ;    MPP
 ;        [IGS] Magnification [micrometers/pixel]
 ;
@@ -38,6 +32,8 @@
 ; 03/04/2014 DGG Implemented ORDER property.
 ; 04/06/2014 DGG Enum values for ORDER and HFLIP.
 ; 02/18/2015 DGG Added EXPOSURE_TIME and GAIN properties
+; 03/16/2015 DGG remove references to properties that are not provided
+;    by this base class.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-

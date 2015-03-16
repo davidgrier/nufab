@@ -28,57 +28,46 @@
 ;
 ; fabcamera_opencv::read
 ;
-pro fabcamera_opencv::Read, geometry = geometry
+pro fabcamera_opencv::Read
 
 COMPILE_OPT IDL2, HIDDEN
 
-if n_elements(geometry) eq 2 then begin
-   w = long(geometry[0])
-   h = long(geometry[1])
-endif else begin
-   w = self.width
-   h = self.height
-endelse
+self.data = ptr_new(self.dgghwvideo::read(), /no_copy)
+if self.hflip then $
+   *self.data = reverse(*self.data, 2 - self.grayscale, /overwrite)
+eif self.order then $
+   *self.data = reverse(*self.data, 3 - self.grayscale, /overwrite)
+end
 
-err = call_external(self.dlm, 'video_readvideoframe', /cdecl, $
-                    self.stream, $
-                    *self.data, w, h, $
-                    self.greyscale, self.debug)
+;;;;;
+;
+; fabcamera_opencv::SetProperty
+;
+pro fabcamera_opencv::SetProperty, _ref_extra = ex
 
-*self.data = rotate(temporary(*self.data), (5*self.hflip + 7*self.order) mod 10)
+  COMPILE_OPT IDL2, HIDDEN
 
+  self.dgghwvideo::SetProperty, _extra = ex
+  self.fabcamera::SetProperty, _extra = ex
 end
 
 ;;;;;
 ;
 ; fabcamera_opencv::GetProperty
 ;
-pro fabcamera_opencv::GetProperty, dlm = dlm, $
-                                   number = number, $
-                                   stream = stream, $
-                                   _ref_extra = ex
+pro fabcamera_opencv::GetProperty, _ref_extra = ex
 
 COMPILE_OPT IDL2, HIDDEN
 
+self.dgghwvideo::GetProperty, _extra = ex
 self.fabcamera::GetProperty, _extra = ex
-
-if arg_present(dlm) then $
-   dlm = self.dlm
-
-if arg_present(number) then $
-   number = self.number
-
-if arg_present(stream) then $
-   stream = self.stream
-
 end
                                    
 ;;;;;
 ;
 ; fabcamera_opencv::Init()
 ;
-function fabcamera_opencv::Init, dimensions = dimensions, $
-                                 number = number, $
+function fabcamera_opencv::Init, dimensions = _dimensions, $
                                  _ref_extra = re
 
 COMPILE_OPT IDL2, HIDDEN
@@ -89,48 +78,19 @@ if (error ne 0L) then begin
    return, 0B
 endif
 
-;;; look for shared object library in IDL search path
-dlm = 'idlvideo.so'
-self.dlm = file_search(fab_path(), dlm, /test_executable)
-if ~self.dlm then begin
-   message, 'could not find '+dlm, /inf
-   return, 0B
-endif
-
-if ~self.fabcamera::init(_extra = re) then $
+if ~self.dgghwvideo::init(dimensions = _dimensions, _extra = re) then $
    return, 0B
 
-self.number = (isa(number, /scalar, /number)) ? long(number) > 0 : -1L
+self.dgghwvideo::GetProperty, dimensions = dimensions
 
-stream = 0L
-if isa(dimensions, /number) and n_elements(dimensions) eq 2 then begin
-   width = long(dimensions[0])
-   height = long(dimensions[1])
-endif else begin
-   width = 0L
-   height = 0L
-endelse
-nchannels = 0L
-
-err = call_external(self.dlm, 'video_queryvideocamera', /cdecl, $
-                    self.number, $
-                    stream, width, height, nchannels, $
-                    self.debug)
-if err ne 0 then begin
-   message, 'could not acquire an image', /inf, noprint = ~self.debug
+if ~self.fabcamera::init(dimensions = dimensions, _extra = re) then $
    return, 0B
-endif
-self.stream = stream
-self.width = width
-self.height = height
-self.nchannels = nchannels
 
-self.data = (self.nchannels gt 1) and ~self.greyscale ? $
-            ptr_new(bytarr(self.width, self.height, self.nchannels, /nozero), /no_copy) : $
-            ptr_new(bytarr(self.width, self.height, /nozero), /no_copy)
+self.data = ptr_new(self.dgghwvideo::read(), /no_copy)
 
 self.name = 'fabcamera_opencv '
 self.description = 'OpenCV Camera '
+self.registerproperty, 'grayscale', /boolean
    
 return, 1B
 end
@@ -143,13 +103,8 @@ pro fabcamera_opencv::Cleanup
 
 COMPILE_OPT IDL2, HIDDEN
 
-err = call_external(self.dlm, 'video_closevideosource', /cdecl, $
-                    self.stream, self.debug)
-if err then $
-   message, 'error closing camera', /inf, noprint = ~self.debug
-
 self.fabcamera::Cleanup
-
+self.dgghwvideo::Cleanup
 end
 
 ;;;;;
@@ -161,12 +116,7 @@ pro fabcamera_opencv__define
 COMPILE_OPT IDL2, HIDDEN
 
 struct = {fabcamera_opencv, $
-          inherits fabcamera, $
-          dlm: '', $
-          number: 0L, $         ; camera number
-          stream: 0L, $         ; video stream
-          width: 0L, $
-          height: 0L, $
-          nchannels: 0L $
-          }
+          inherits dgghwvideo, $
+          inherits fabcamera $
+         }
 end
