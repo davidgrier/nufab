@@ -44,10 +44,10 @@
 ;
 function fabcamera::read
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.read
-return, *self.data
+  self.read
+  return, *self.data
 end
 
 ;;;;;
@@ -56,14 +56,14 @@ end
 ;
 pro fabcamera::read
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-dimensions = size(*self.data, /dimensions)
-*self.data = byte(255*randomu(seed, dimensions))
-if self.hflip then $
-   *self.data = reverse(*self.data, 1, /overwrite)
-if self.order then $
-   *self.data = reverse(*self.data, 2, /overwrite)
+  dimensions = size(*self.data, /dimensions)
+  *self.data = byte(255*randomu(seed, dimensions))
+  if self.hflip then $
+     *self.data = reverse(*self.data, 1, /overwrite)
+  if self.order then $
+     *self.data = reverse(*self.data, 2, /overwrite)
 end
 
 ;;;;;
@@ -76,21 +76,21 @@ pro fabcamera::SetProperty, dimensions = dimensions, $
                             mpp = mpp, $
                             _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.fab_object::SetProperty, _extra = re
+  self.fab_object::SetProperty, _extra = re
 
-if isa(dimensions, /number, /array) then $
-   message, 'DIMENSIONS can only be set at initialization', /inf
+  if isa(dimensions, /number, /array) then $
+     message, 'DIMENSIONS can only be set at initialization', /inf
 
-if isa(order, /scalar, /number) then $
-   self.order = (order ne 0)
+  if isa(order, /scalar, /number) then $
+     self.order = (order ne 0)
 
-if isa(hflip, /scalar, /number) then $
-   self.hflip = (hflip ne 0)
+  if isa(hflip, /scalar, /number) then $
+     self.hflip = (hflip ne 0)
 
-if isa(mpp, /scalar, /number) then $
-   self.mpp = mpp
+  if isa(mpp, /scalar, /number) then $
+     self.mpp = mpp
 end
 
 ;;;;;
@@ -104,24 +104,24 @@ pro fabcamera::GetProperty, data = data, $
                             mpp = mpp, $
                             _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.fab_object::GetProperty, _extra = re
+  self.fab_object::GetProperty, _extra = re
 
-if arg_present(data) then $
-   data = *self.data
+  if arg_present(data) then $
+     data = *self.data
 
-if arg_present(dimensions) then $
-   dimensions = size(*self.data, /dimensions)
+  if arg_present(dimensions) then $
+     dimensions = size(*self.data, /dimensions)
 
-if arg_present(mpp) then $
-   mpp = self.mpp
+  if arg_present(mpp) then $
+     mpp = self.mpp
 
-if arg_present(order) then $
-   order = self.order
+  if arg_present(order) then $
+     order = self.order
 
-if arg_present(hflip) then $
-   hflip = self.hflip
+  if arg_present(hflip) then $
+     hflip = self.hflip
 end
                             
 ;;;;;
@@ -130,10 +130,9 @@ end
 ;
 pro fabcamera::Cleanup
 
-COMPILE_OPT IDL2, HIDDEN
-
-ptr_free, self.data
-
+  COMPILE_OPT IDL2, HIDDEN
+  
+  ptr_free, self.data
 end
 
 ;;;;;
@@ -148,37 +147,37 @@ function fabcamera::Init, dimensions = dimensions, $
                           mpp = mpp, $
                           _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if ~self.fab_object::Init(_extra = re) then $
-   return, 0B
+  if ~self.fab_object::Init(_extra = re) then $
+     return, 0B
 
-if isa(dimensions, /number, /array) then begin
-   if ~total(n_elements(dimensions) eq [2, 3]) then $
-      return, 0B
-endif else $
-   dimensions = [640L, 480]
+  if isa(dimensions, /number, /array) then begin
+     if ~total(n_elements(dimensions) eq [2, 3]) then $
+        return, 0B
+  endif else $
+     dimensions = [640L, 480]
 
-if isa(mpp, /scalar, /number) then $
-   self.mpp = float(mpp)
+  if isa(mpp, /scalar, /number) then $
+     self.mpp = float(mpp)
+  
+  if isa(order, /scalar, /number) then $
+     self.order = (order ne 0)
 
-if isa(order, /scalar, /number) then $
-   self.order = (order ne 0)
+  if isa(hflip, /scalar, /number) then $
+     self.hflip = (hflip ne 0)
 
-if isa(hflip, /scalar, /number) then $
-   self.hflip = (hflip ne 0)
+  self.data = ptr_new(make_array(dimensions, /byte), /no_copy)
 
-self.data = ptr_new(make_array(dimensions, /byte), /no_copy)
-
-self.name = 'fabcamera '
-self.description = 'Generic Camera '
-self.setpropertyattribute, 'name', sensitive = 0
-self.setpropertyattribute, 'description', sensitive = 0
-self.registerproperty, 'order', enum = ['Normal', 'Flipped']
-self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
-self.registerproperty, 'mpp', /float, hide = 1
-
-return, 1B
+  self.name = 'fabcamera '
+  self.description = 'Generic Camera '
+  self.setpropertyattribute, 'name', sensitive = 0
+  self.setpropertyattribute, 'description', sensitive = 0
+  self.registerproperty, 'order', enum = ['Normal', 'Flipped']
+  self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
+  self.registerproperty, 'mpp', /float, hide = 1
+  
+  return, 1B
 end
 
 ;;;;;
@@ -187,13 +186,13 @@ end
 ;
 pro fabcamera__define
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-struct = {fabcamera, $
-          inherits fab_object, $
-          data: ptr_new(), $
-          order: 0L, $
-          hflip: 0L, $
-          mpp: 0. $
-         }
+  struct = {fabcamera, $
+            inherits fab_object, $
+            data: ptr_new(), $
+            order: 0L, $
+            hflip: 0L, $
+            mpp: 0. $
+           }
 end
