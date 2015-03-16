@@ -51,8 +51,7 @@ function fabcamera::read
 COMPILE_OPT IDL2, HIDDEN
 
 self.read
-data = *self.data
-return, data
+return, *self.data
 end
 
 ;;;;;
@@ -65,7 +64,10 @@ COMPILE_OPT IDL2, HIDDEN
 
 dimensions = size(*self.data, /dimensions)
 *self.data = byte(255*randomu(seed, dimensions))
-
+if self.hflip then $
+   *self.data = reverse(*self.data, 1, /overwrite)
+if self.order then $
+   *self.data = reverse(*self.data, 2, /overwrite)
 end
 
 ;;;;;
@@ -73,13 +75,9 @@ end
 ; fabcamera::SetProperty
 ;
 pro fabcamera::SetProperty, dimensions = dimensions, $
-                            exposure_time = exposure_time, $
-                            gain = gain, $
-                            greyscale = greyscale, $
                             order = order, $
                             hflip = hflip, $
                             mpp = mpp, $
-                            debug = debug, $
                             _ref_extra = re
 
 COMPILE_OPT IDL2, HIDDEN
@@ -89,15 +87,6 @@ self.fab_object::SetProperty, _extra = re
 if isa(dimensions, /number, /array) then $
    message, 'DIMENSIONS can only be set at initialization', /inf
 
-if isa(exposure_time, /scalar, /number) then $
-   self.exposure_time = exposure_time
-
-if isa(gain, /scalar, /number) then $
-   self.gain = gain
-
-if isa(greyscale, /scalar, /number) then $
-   message, 'GREYSCALE can only be set at initialization', /inf
-
 if isa(order, /scalar, /number) then $
    self.order = (order ne 0)
 
@@ -106,10 +95,6 @@ if isa(hflip, /scalar, /number) then $
 
 if isa(mpp, /scalar, /number) then $
    self.mpp = mpp
-
-if isa(debug, /scalar, /number) then $
-   self.debug = debug
-
 end
 
 ;;;;;
@@ -118,13 +103,9 @@ end
 ;
 pro fabcamera::GetProperty, data = data, $
                             dimensions = dimensions, $
-                            exposure_time = exposure_time, $
-                            gain = gain, $
-                            greyscale = greyscale, $
                             order = order, $
                             hflip = hflip, $
                             mpp = mpp, $
-                            debug = debug, $
                             _ref_extra = re
 
 COMPILE_OPT IDL2, HIDDEN
@@ -140,24 +121,11 @@ if arg_present(dimensions) then $
 if arg_present(mpp) then $
    mpp = self.mpp
 
-if arg_present(exposure_time) then $
-   exposure_time = self.exposure_time
-
-if arg_present(gain) then $
-   gain = self.gain
-
-if arg_present(greyscale) then $
-   greyscale = self.greyscale
-
 if arg_present(order) then $
    order = self.order
 
 if arg_present(hflip) then $
    hflip = self.hflip
-
-if arg_present(debug) then $
-   debug = self.debug
-
 end
                             
 ;;;;;
@@ -179,13 +147,9 @@ end
 ; Should be overriden by specific camera implementation
 ;
 function fabcamera::Init, dimensions = dimensions, $
-                          exposure_time = exposure_time, $
-                          gain = gain, $
-                          greyscale = greyscale, $
                           order = order, $
                           hflip = hflip, $
                           mpp = mpp, $
-                          debug = debug, $
                           _ref_extra = re
 
 COMPILE_OPT IDL2, HIDDEN
@@ -193,19 +157,11 @@ COMPILE_OPT IDL2, HIDDEN
 if ~self.fab_object::Init(_extra = re) then $
    return, 0B
 
-self.debug = keyword_set(debug)
-
 if isa(dimensions, /number, /array) then begin
    if ~total(n_elements(dimensions) eq [2, 3]) then $
       return, 0B
 endif else $
    dimensions = [640L, 480]
-
-if isa(exposure_time, /scalar, /number) then $
-   self.exposure_time = exposure_time
-
-if isa(gain, /scalar, /number) then $
-   self.gain = gain
 
 if isa(mpp, /scalar, /number) then $
    self.mpp = float(mpp)
@@ -218,19 +174,13 @@ if isa(hflip, /scalar, /number) then $
 
 self.data = ptr_new(make_array(dimensions, /byte), /no_copy)
 
-self.greyscale = n_elements(dimensions) eq 2
-
 self.name = 'fabcamera '
 self.description = 'Generic Camera '
 self.setpropertyattribute, 'name', sensitive = 0
 self.setpropertyattribute, 'description', sensitive = 0
 self.registerproperty, 'order', enum = ['Normal', 'Flipped']
 self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
-self.registerproperty, 'exposure_time', /float, sensitive = 0
-self.registerproperty, 'gain', /float, sensitive = 0
-self.registerproperty, 'greyscale', /boolean, sensitive = 0
-self.registerproperty, 'mpp', /float, sensitive = 0
-self.setpropertyattribute, 'mpp', hide = (self.mpp eq 0)
+self.registerproperty, 'mpp', hide = 1
 
 return, 1B
 end
@@ -246,12 +196,8 @@ COMPILE_OPT IDL2, HIDDEN
 struct = {fabcamera, $
           inherits fab_object, $
           data: ptr_new(), $
-          exposure_time: 0., $
-          gain: 0., $
-          greyscale: 0L, $
           order: 0L, $
           hflip: 0L, $
-          mpp: 0., $
-          debug: 0L $
+          mpp: 0. $
          }
 end
