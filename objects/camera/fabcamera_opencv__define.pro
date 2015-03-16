@@ -7,19 +7,16 @@
 ;
 ; INHERITS
 ;    fabcamera
+;    DGGhwVideo
 ;
 ; PROPERTIES
-;    DLM    [ G ]
-;        file specification of object library.
-;
-;    NUMBER [IG ]
-;        index of OpenCV camera.
-;        Default: 0
+;    [IGS] GRAYSCALE: boolean flag to provide grayscale images
 ;
 ; MODIFICATION HISTORY
 ; 12/26/2013 Written by David G. Grier, New York University
 ; 03/04/2014 DGG Implemented ORDER property.
 ; 04/06/2014 DGG Implemented HFLIP property.
+; 03/16/2015 DGG Update for DLM interface
 ;
 ; Copyright (c) 2013-2014 David G. Grier
 ;-
@@ -35,7 +32,7 @@ COMPILE_OPT IDL2, HIDDEN
 self.data = ptr_new(self.dgghwvideo::read(), /no_copy)
 if self.hflip then $
    *self.data = reverse(*self.data, 2 - self.grayscale, /overwrite)
-eif self.order then $
+if self.order then $
    *self.data = reverse(*self.data, 3 - self.grayscale, /overwrite)
 end
 
@@ -72,11 +69,11 @@ function fabcamera_opencv::Init, dimensions = _dimensions, $
 
 COMPILE_OPT IDL2, HIDDEN
 
-catch, error
-if (error ne 0L) then begin
-   catch, /cancel
-   return, 0B
-endif
+;catch, error
+;if (error ne 0L) then begin
+;   catch, /cancel
+;   return, 0B
+;endif
 
 if ~self.dgghwvideo::init(dimensions = _dimensions, _extra = re) then $
    return, 0B
