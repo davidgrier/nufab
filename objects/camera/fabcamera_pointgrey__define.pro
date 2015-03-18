@@ -44,8 +44,8 @@ pro fabcamera_PointGrey::RegisterProperties
 
   self.name = 'fabcamera_pointgrey '
   self.description = 'PointGrey Camera '
-
-  foreach property, properties do begin
+  
+  foreach property, self.properties.keys() do begin
      info = self.propertyinfo(property)
      if ~info.present || ~info.manualSupported then $
         continue
@@ -62,8 +62,8 @@ pro fabcamera_PointGrey::RegisterProperties
   
   self.setpropertyattribute, 'trigger_mode', sensitive = 0
   self.setpropertyattribute, 'trigger_delay', sensitive = 0
-  self.setpropretyattribute, 'brightness', sensitive = 0
-  self.setpropertyattribute, 'auto_exposure', sensistive = 0
+  self.setpropertyattribute, 'brightness', sensitive = 0
+  self.setpropertyattribute, 'auto_exposure', sensitive = 0
   self.setpropertyattribute, 'frame_rate', sensitive = 0
 end
 
@@ -152,10 +152,7 @@ function fabcamera_PointGrey::Init, _ref_extra = re
   if ~self.dgghwpointgrey::Init(_extra = re) then $
      return, 0B
 
-  self.data = ptr_new(self.dgghwpointgrey::read())
-  ;; can we use NO_COPY safely?
-
-  self.grayscale = (size(*self.data, /n_dimensions) eq 2)
+  self.data = ptr_new(self.dgghwpointgrey::read(), /no_copy)
 
   self.registerproperties
 
@@ -172,9 +169,8 @@ pro fabcamera_PointGrey__define
 
   COMPILE_OPT IDL2, HIDDEN
 
-  struct = {fabcamera_PointGrey,     $
-            inherits fabcamera,      $
-            inherits dgghwpointgrey, $
-            grayscale: 0L            $
+  struct = {fabcamera_PointGrey,    $
+            inherits fabcamera,     $
+            inherits dgghwpointgrey $
            }
 end
