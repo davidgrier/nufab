@@ -7,8 +7,8 @@
 ;    a trapping pattern and transmits it to a spatial light modulator
 ;    (SLM) for projection.
 ;
-; CATEGORY:
-;    Computational holography, objects
+; INHERITS:
+;    fab_object
 ;
 ; PROPERTIES:
 ;    SLM    [IGS] Object of type fabSLM for which holograms will be
@@ -46,10 +46,6 @@
 ;    fabCGH::Compute
 ;        Use traps to compute hologram according to SLM
 ;        specifications, then transfer the hologram to the SLM.
-;
-;    fabCGH::Refine
-;        Perform one iteration of hologram refinement, and
-;        then transfer the hologram to the SLM.
 ;
 ;    fabCGH::Allocate
 ;        Allocate computational resources based on SLM
@@ -90,77 +86,21 @@
 ; 10/03/2013 DGG Support for different BACKGROUND types.
 ; 10/26/2013 DGG Project background by default.
 ; 02/10/2015 DGG Updated TRAPS definition.
+; 03/22/2015 DGG Removed extraneous definitions and functions
 ;
-; Copyright (c) 2011-2013 David G. Grier
+; Copyright (c) 2011-2015 David G. Grier
 ;-
-
-;;;;;
-;
-; fabCGH::InstallBackground
-;
-pro fabCGH::InstallBackground, background
-
-COMPILE_OPT IDL2, HIDDEN
-
-if ~isa(self.slm, 'fabSLM') then return
-
-if array_equal(size(background, /dimensions), self.slm.dimensions) then begin
-   switch typename(background) of
-      'BYTE':
-      'INT':
-      'LONG':
-      'ULONG':
-      'LONG64':
-      'ULONG64': begin
-         *self.background = exp((2.*!pi/max(background)) * complex(0., background))
-         break
-      end
-      'FLOAT':
-      'DOUBLE': begin
-         *self.background = exp(complex(0., background))
-         break
-      end
-      'COMPLEX':
-      'DCOMPLEX': begin
-         *self.background = complex(background)
-         break
-      end
-      else: *self.background = complexarr(self.slm.dimensions)
-   endswitch
-endif
-end
-
-;;;;;
-;
-; fabCGH::Refine
-;
-; Perform one iteration of hologram refinement
-;
-pro fabCGH::Refine
-
-COMPILE_OPT IDL2, HIDDEN
-
-; Base class does not know how to do refinement.
-; Derived classes must do the work.
-end
-
 ;;;;;
 ;
 ; fabCGH::Reset
 ;
 pro fabCGH::Reset
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-slm = self.slm
-self.kc = slm.dimensions/2.
-self.roi = [0, 0, slm.dimensions-1]
-self.q = 2./min(slm.dimensions)
-self.aspect_ratio = 1.
-self.mat = identity(3)
-self.precompute
-self.project
-
+  self.setdefaults
+  self.precompute
+  self.project
 end
 
 ;;;;;
@@ -169,10 +109,10 @@ end
 ;
 pro fabCGH::Project
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.compute
-self.slm.data = *self.data
+  self.compute
+  self.slm.data = *self.data
 end
 
 ;;;;;
@@ -184,11 +124,7 @@ end
 ;
 pro fabCGH::Compute
 
-COMPILE_OPT IDL2, HIDDEN
-
-self.refining = 0B
-
-*self.data = *self.background
+  COMPILE_OPT IDL2, HIDDEN
 
 end
 
@@ -201,7 +137,7 @@ end
 ;
 pro fabCGH::Precompute
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
 end
 
@@ -209,42 +145,48 @@ end
 ;
 ; fabCGH::Deallocate
 ;
-; Free allocated resources
-;
 pro fabCGH::Deallocate
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-ptr_free, self.background
-
+  if ptr_valid(data) then ptr_free, data
 end
 
 ;;;;;
 ;
-; fabCGH::Allocate
+; fabCGH::Allocate()
 ;
-; Allocate memory and define coordinates
+function fabCGH::Allocate
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if ~isa(self.slm, 'fabSLM') then $
+     return, 0B
+
+  data = bytarr(self.slm.dimensions)
+  self.data = ptr_new(data, /no_copy)
+  
+  return, 1B
+end
+
+;;;;;
 ;
-pro fabCGH::Allocate
+; fabCGH::RegisterSLM()
+;
+function fabCGH::RegisterSLM, slm
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if ~isa(self.slm, 'fabSLM') then $
-   return
+  if ~isa(slm, 'fabSLM') then $
+     return, 0B
 
-slm = self.slm
-self.kc = float(self.slm.dimensions)/2.
-self.setpropertyattribute, 'xi',  VALID_RANGE = [0., (slm.dimensions)[1], 0.1]
-self.setpropertyattribute, 'eta', VALID_RANGE = [0., (slm.dimensions)[0], 0.1]
+  if isa(self.slm, 'fabSLM') then $
+     self.deallocate
 
-;; data
-data = bytarr(slm.dimensions)
-self.data = ptr_new(data, /no_copy)
+  self.slm = slm
+  self.setdefaults
 
-;; background
-background = complexarr(slm.dimensions)
-self.background = ptr_new(background, /no_copy)
-
+  return, self.allocate()
 end
 
 ;;;;;
@@ -256,13 +198,12 @@ end
 pro fabCGH::GetProperty, slm          = slm,          $
                          traps        = traps,        $
                          data         = data,         $
-                         background   = bg,           $
                          rc           = rc,           $
                          xc           = xc,           $
                          yc           = yc,           $
                          zc           = zc,           $
-                         w            = w,            $
-                         h            = h,            $
+                         width        = width,        $
+                         height       = height,       $
                          q            = q,            $
                          aspect_ratio = aspect_ratio, $
                          aspect_z     = aspect_z,     $
@@ -271,85 +212,35 @@ pro fabCGH::GetProperty, slm          = slm,          $
                          xi           = xi,           $
                          eta          = eta,          $
                          roi          = roi,          $
-                         x            = x,            $
-                         y            = y,            $
-                         rsq          = rsq,          $
-                         theta        = theta,        $
                          _ref_extra   = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.IDLitComponent::GetProperty, _extra = re
+  self.IDLitComponent::GetProperty, _extra = re
 
-if arg_present(slm) then $
-   slm = self.slm
+  if arg_present(slm) then slm = self.slm
+  if arg_present(traps) then traps = self.traps
+  if arg_present(data) then data = *self.slm.data
 
-if arg_present(traps) then $
-   traps = self.traps
+  if arg_present(rc) then rc = self.rc
+  if arg_present(xc) then xc = self.rc[0]
+  if arg_present(yc) then yc = self.rc[1]
+  if arg_present(zc) then zc = self.rc[2]
 
-if arg_present(data) then $
-   data = *self.slm.data
+  if arg_present(width) && isa(self.slm, 'fabSLM') then $
+     width = (self.slm.dimensions)[0]
+  if arg_present(height) && isa(self.slm, 'fabSLM') then $
+     height = (self.slm.dimensions)[1]
 
-if arg_present(background) then $
-   background = *self.background
+  if arg_present(q) then q = self.q
+  if arg_present(aspect_ratio) then aspect_ratio = self.aspect_ratio
+  if arg_present(aspect_z) then aspect_z = self.mat[2, 2]
+  if arg_present(angle) then angle = 180./!pi * atan(self.mat[1], self.mat[0])
+  if arg_present(kc) then kc = self.kc
+  if arg_present(xi) then xi = self.kc[0]
+  if arg_present(eta) then eta = self.kc[1]
 
-if arg_present(rc) then $
-   rc = self.rc
-
-if arg_present(xc) then $
-   xc = self.rc[0]
-
-if arg_present(yc) then $
-   yc = self.rc[1]
-
-if arg_present(zc) then $
-   zc = self.rc[2]
-
-if arg_present(w) then $
-   w = (self.slm.dimensions)[0]
-
-if arg_present(h) then $
-   h = (self.slm.dimensions)[1]
-
-if arg_present(q) then $
-   q = self.q
-
-if arg_present(aspect_ratio) then $
-   aspect_ratio = self.aspect_ratio
-
-if arg_present(aspect_z) then $
-   aspect_z = self.mat[2, 2]
-
-if arg_present(angle) then $
-   angle = 180./!pi * atan(self.mat[1], self.mat[0])
-
-if arg_present(kc) then $
-   kc = self.kc
-
-if arg_present(xi) then $
-   xi = self.kc[0]
-
-if arg_present(eta) then $
-   eta = self.kc[1]
-
-if arg_present(roi) then $
-   roi = self.roi
-
-if arg_present(x) then $
-   x = self.x
-
-if arg_present(y) then $
-   y = self.y
-
-if arg_present(rsq) then $
-   rsq = self.rsq
-
-if arg_present(theta) then $
-   theta = self.theta
-
-if arg_present(name) then $
-   name = self.name
-
+  if arg_present(roi) then roi = self.roi
 end
 
 ;;;;;
@@ -360,7 +251,6 @@ end
 ;
 pro fabCGH::SetProperty, slm          = slm,          $
                          traps        = traps,        $
-                         background   = bg,           $
                          rc           = rc,           $
                          xc           = xc,           $
                          yc           = yc,           $
@@ -375,90 +265,95 @@ pro fabCGH::SetProperty, slm          = slm,          $
                          roi          = roi,          $
                          _ref_extra   = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.IDLitComponent::SetProperty, _extra = re
+  self.IDLitComponent::SetProperty, _extra = re
 
-doprecompute = 0
-if isa(slm, 'fabSLM') then begin
-   self.slm = slm
-   dimensions = slm.dimensions
-   self.kc = dimensions/2.
-   self.roi = [0, 0, dimensions-1]
-   self.q = 2./min(slm.dimensions)
-   self.setpropertyattribute, 'xi', valid_range = [0, dimensions[0]-1, 0.5]
-   self.setpropertyattribute, 'eta', valid_range = [0, dimensions[1]-1, 0.5]
-   self.allocate
-   doprecompute = 1
-endif
+  doprecompute = 0
+  if isa(slm, 'fabSLM') then $
+     doprecompute = self.RegisterSLM(slm)
 
-if isa(traps, 'list') then $
-   if traps.count() eq 0 then $
-      self.traps.remove, /all $
-   else if isa(traps[0], 'fabtrap') then $
-      self.traps = traps 
+  if isa(traps, 'list') then $
+     if traps.count() eq 0 then $
+        self.traps.remove, /all $
+     else if isa(traps[0], 'fabtrap') then $
+        self.traps = traps 
 
-if isa(bg, /number, /array) then $
-   self.installbackground, bg
+  if isa(rc, /number) then begin
+     case n_elements(rc) of
+        2: self.rc[0:1] = float(rc)
+        3: self.rc = float(rc)
+        else:
+     endcase
+  endif
+  if isa(xc, /scalar, /number) then self.rc[0] = float(xc)
+  if isa(yc, /scalar, /number) then self.rc[1] = float(yc)
+  if isa(zc, /scalar, /number) then self.rc[2] = float(zc)
 
-if isa(rc, /number) then begin
-   case n_elements(rc) of
-      2: self.rc[0:1] = rc
-      3: self.rc = rc
-      else:
-   endcase
-endif
+  if isa(q, /number, /scalar) then begin
+     self.q = float(q)
+     doprecompute = 1
+  endif
 
-if isa(xc, /scalar, /number) then $
-   self.rc[0] = float(xc)
+  if isa(aspect_ratio, /number, /scalar) then begin
+     self.aspect_ratio = float(aspect_ratio)
+     doprecompute = 1
+  endif
 
-if isa(yc, /scalar, /number) then $
-   self.rc[1] = float(yc)
+  if isa(aspect_z, /number, /scalar) then $
+     self.mat[2, 2] = float(aspect_z)
 
-if isa(zc, /scalar, /number) then $
-   self.rc[2] = float(zc)
+  if isa(angle, /number, /scalar) then begin
+     theta = angle * !pi/180.
+     self.mat[0:1, 0:1] = [[cos(theta), sin(theta)], [-sin(theta), cos(theta)]]
+  endif
 
-if isa(q, /number, /scalar) then begin
-   self.q = float(q)
-   doprecompute = 1
-endif
+  if (isa(kc, /number) and n_elements(kc) eq 2) then begin
+     self.kc = float(kc)
+     doprecompute = 1
+  endif
 
-if isa(aspect_ratio, /number, /scalar) then begin
-   self.aspect_ratio = float(aspect_ratio)
-   doprecompute = 1
-endif
+  if isa(xi, /scalar, /number) then begin
+     self.kc[0] = float(xi)
+     doprecompute = 1
+  endif
 
-if isa(aspect_z, /number, /scalar) then $
-   self.mat[2, 2] = float(aspect_z)
+  if isa(eta, /scalar, /number) then begin
+     self.kc[1] = float(eta)
+     doprecompute = 1
+  endif
 
-if isa(angle, /number, /scalar) then begin
-   theta = angle * !pi/180.
-   self.mat[0:1, 0:1] = [[cos(theta), sin(theta)], [-sin(theta), cos(theta)]]
-endif
+  if isa(roi, /number) and n_elements(roi) eq 4 then begin
+     self.roi = long(roi)
+     doprecompute = 1
+  endif
 
-if (isa(kc, /number) and n_elements(kc) eq 2) then begin
-   self.kc = float(kc)
-   doprecompute = 1
-endif
+  if doprecompute then self.precompute
+  self.project
+end
 
-if isa(xi, /scalar, /number) then begin
-   self.kc[0] = float(xi)
-   doprecompute = 1
-endif
 
-if isa(eta, /scalar, /number) then begin
-   self.kc[1] = float(eta)
-   doprecompute = 1
-endif
 
-if isa(roi, /number) and n_elements(roi) eq 4 then begin
-   self.roi = long(roi)
-   doprecompute = 1
-endif
+;;;;;
+;
+; fabCGH::SetDefaults
+;
+pro fabCGH::SetDefaults
 
-if doprecompute then self.precompute
-self.project
-   
+  COMPILE_OPT IDL2, HIDDEN
+  
+  if ~isa(self.slm, 'fabSLM') then $
+     return
+  
+  slm = self.slm
+  dimensions = slm.dimensions
+  self.kc = float(dimensions)/2.
+  self.roi = [0, 0, dimensions-1]
+  self.q = 2./min(dimensions)
+  self.aspect_ratio = 1.
+  self.mat = identity(3)
+  self.setpropertyattribute, 'xi',  VALID_RANGE = [0., dimensions[1]]
+  self.setpropertyattribute, 'eta', VALID_RANGE = [0., dimensions[0]]
 end
 
 ;;;;;
@@ -467,7 +362,6 @@ end
 ;
 function fabCGH::Init, slm          = slm,   $
                        traps        = traps, $
-                       background   = bg, $
                        rc           = rc,    $
                        q            = q,            $
                        aspect_ratio = aspect_ratio, $
@@ -477,81 +371,65 @@ function fabCGH::Init, slm          = slm,   $
                        roi          = roi,   $
                        _ref_extra   = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if (self.IDLitComponent::Init(_extra = re) ne 1) then $
-   return, 0
+  if (self.IDLitComponent::Init(_extra = re) ne 1) then $
+     return, 0B
 
-self.name = 'fabCGH '
-self.description = 'CGH Calculation Pipeline '
-self.setpropertyattribute, 'name', /hide
-self.registerproperty, 'xc', /float
-self.registerproperty, 'yc', /float
-self.registerproperty, 'zc', /float
-self.registerproperty, 'w', /integer, name = 'Width', sensitive = 0
-self.registerproperty, 'h', /integer, name = 'Height', sensitive = 0
-self.registerproperty, 'q', /float
-self.registerproperty, 'aspect_ratio', /float
-self.registerproperty, 'aspect_z', /float
-self.registerproperty, 'angle', /float
-self.registerproperty, 'xi', /float
-self.registerproperty, 'eta', /float
+  self.name = 'fabCGH '
+  self.description = 'CGH Calculation Pipeline '
+  self.setpropertyattribute, 'name', /hide
+  self.registerproperty, 'xc', /float
+  self.registerproperty, 'yc', /float
+  self.registerproperty, 'zc', /float
+  self.registerproperty, 'width', /integer, sensitive = 0
+  self.registerproperty, 'height', /integer, sensitive = 0
+  self.registerproperty, 'q', /float
+  self.registerproperty, 'aspect_ratio', /float
+  self.registerproperty, 'aspect_z', /float
+  self.registerproperty, 'angle', /float
+  self.registerproperty, 'xi', /float
+  self.registerproperty, 'eta', /float
 
-if isa(slm, 'fabSLM') then begin
-   self.slm = slm
-   dimensions = slm.dimensions
-   self.kc = dimensions/2.
-   self.roi = [0, 0, dimensions-1]
-   self.q = 2./min(dimensions)
-   self.setpropertyattribute, 'xi', valid_range = [0, dimensions[0]-1, 0.5]
-   self.setpropertyattribute, 'eta', valid_range = [0, dimensions[1]-1, 0.5]
-   self.allocate
-endif
+  if isa(rc, /number) then begin
+     case n_elements(rc) of
+        2: self.rc[0:1] = float(rc)
+        3: self.rc = float(rc)
+        else:
+     endcase
+  endif
 
-if isa(bg, /number, /array) then $
-   self.installbackground, bg
+  if isa(q, /number, /scalar) then $
+     self.q = float(q)
 
-if isa(rc, /number) then begin
-   case n_elements(rc) of
-      2: self.rc[0:1] = float(rc)
-      3: self.rc = float(rc)
-      else:
-   endcase
-endif
+  self.aspect_ratio = isa(aspect_ratio, /number, /scalar) ? float(aspect_ratio) : 1.
 
-if isa(q, /number, /scalar) then $
-   self.q = float(q)
+  self.mat = identity(3)
+  
+  if isa(angle, /number, /scalar) then begin
+     theta = angle * !pi/180.
+     self.mat[0:1, 0:1] = [[cos(theta), sin(theta)], [-sin(theta), cos(theta)]]
+  endif
 
-self.aspect_ratio = isa(aspect_ratio, /number, /scalar) ? float(aspect_ratio) : 1.
+  if isa(aspect_z, /number, /scalar) then $
+     self.mat[2, 2] = float(aspect_z)
 
-self.mat = identity(3)
+  if isa(kc, /number) && n_elements(kc) eq 2 then $
+     self.kc = float(kc)
 
-if isa(aspect_z, /number, /scalar) then $
-   self.mat[2, 2] = float(aspect_z)
+  if isa(roi, /number) && n_elements(roi) eq 4 then $
+     self.roi = long(roi)
 
-if isa(angle, /number, /scalar) then begin
-   theta = angle * !pi/180.
-   self.mat[0:1, 0:1] = [[cos(theta), sin(theta)], [-sin(theta), cos(theta)]]
-endif
+  if isa(slm, 'fabSLM') && self.registerslm(slm) then $
+     self.precompute
 
-if isa(kc, /number) and n_elements(kc) eq 2 then $
-   self.kc = float(kc)
+  if isa(traps, 'list') && isa(traps[0], 'fabTrap') then begin
+        self.traps = traps
+        self.project
+  endif else $
+     self.traps = list()
 
-if isa(roi, /number) and n_elements(roi) eq 4 then $
-   self.roi = long(roi)
-
-if isa(slm, 'fabslm') then $
-   self.precompute
-
-if isa(traps, 'list') then begin
-   if isa(traps[0], 'fabTrap') then begin
-      self.traps = traps
-      self.project
-   endif
-endif else $
-   self.traps = list()
-
-return, 1
+return, 1B
 end
 
 ;;;;;
@@ -560,19 +438,9 @@ end
 ;
 pro fabCGH::Cleanup
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-; Cleaning up SLM should be parent's task
-; if isa(self.slm) then obj_destroy, self.slm
-
-self.deallocate
-
-ptr_free, self.x,     $
-          self.y,     $
-          self.theta, $
-          self.rsq, $
-          self.data
-
+  self.deallocate
 end
 
 ;;;;;
@@ -583,24 +451,18 @@ end
 ;
 pro fabCGH__define
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-struct = {fabCGH, $
-          inherits fab_object,        $ 
-          slm:          obj_new(),    $ ; target SLM
-          data:         ptr_new(),    $ ; byte-valued hologram
-          traps:        obj_new(),    $ ; list of trap objects
-          rc:           fltarr(3),    $ ; center of trap coordinate system
-          mat:          fltarr(3, 3), $ ; transformation matrix
-          kc:           fltarr(2),    $ ; center of hologram on SLM
-          q:            0.,           $ ; conversion to inverse pixels in SLM plane
-          aspect_ratio: 0.,           $ ; qy/qx
-          x:            ptr_new(),    $ ; coordinates in SLM plane
-          y:            ptr_new(),    $ ;
-          rsq:          ptr_new(),    $ ; polar coordinates in SLM plane
-          theta:        ptr_new(),    $ ;
-          roi:          lonarr(4),    $ ; active region of SLM
-          background:   ptr_new(),    $ ; background hologram
-          refining:     0B            $ ; set if refining the hologram
-         }
+  struct = {fabCGH, $
+            inherits fab_object,        $ 
+            slm:          obj_new(),    $ ; target SLM
+            data:         ptr_new(),    $ ; byte-valued hologram
+            traps:        obj_new(),    $ ; list of trap objects
+            rc:           fltarr(3),    $ ; center of trap coordinate system
+            mat:          fltarr(3, 3), $ ; transformation matrix
+            roi:          lonarr(4),    $ ; active region of SLM
+            kc:           fltarr(2),    $ ; center of hologram on SLM
+            q:            0.,           $ ; conversion to inverse pixels in SLM plane
+            aspect_ratio: 0.            $ ; qy/qx
+           }
 end

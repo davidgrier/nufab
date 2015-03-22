@@ -80,43 +80,41 @@ pro fabCGH_cuda::Deallocate
 
   COMPILE_OPT IDL2, HIDDEN
 
-  self->fabCGH::Deallocate
+  catch, error
+  if error ne 0L then begin
+     catch, /cancel
+     return
+  endif
+
+  self.fabCGH::Deallocate
   cudacgh_free, self.cgh
 end
 
 ;;;;;
 ;
-; fabCGH_cuda::Allocate
+; fabCGH_cuda::Allocate()
 ;
 ; Allocate memory and define coordinates
 ;
-pro fabCGH_cuda::Allocate
+function fabCGH_cuda::Allocate
 
   COMPILE_OPT IDL2, HIDDEN
 
-  ;; interrogate SLM and allocate hologram
-  self.fabCGH::Allocate
+  catch, error
+  if error ne 0L then begin
+     catch, /cancel
+     return, 0B
+  endif
 
-  ;; allocate resources for CGH algorithm
-  dim = self.slm.dimensions
-  self.cgh = cudacgh_allocate(dim[0], dim[1])
+  if ~self.fabCGH::Allocate() then $
+     return, 0B
+  
+  ;; allocate CUDA resources for CGH algorithm
+  dimensions = self.slm.dimensions
+  self.cgh = cudacgh_allocate(dimensions[0], dimensions[1])
+
+  return, 1B
 end
-
-;;;;;
-;
-; fabCGH_cuda::GetProperty
-;
-; Get properties for CGH object
-;
-; inherited from fabCGH
-
-;;;;;
-;
-; fabCGH_cuda::SetProperty
-;
-; Set properties for CGH object
-;
-; inherited from fabCGH
 
 ;;;;;
 ;
