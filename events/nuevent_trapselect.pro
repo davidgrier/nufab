@@ -60,6 +60,8 @@ case event.press of
          s['selected'] = group
       endelse
    end
+
+   else: ;; some weird button press -- ignore it
 endcase
 
 end
