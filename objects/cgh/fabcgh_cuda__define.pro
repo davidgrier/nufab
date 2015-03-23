@@ -58,6 +58,13 @@ pro fabCGH_cuda::Compute
 
   COMPILE_OPT IDL2, HIDDEN
 
+  catch, error
+  if error ne 0 then begin
+     *self.data *= 0b
+     catch, /cancel
+     return
+  endif
+
   cudacgh_initialize, self.cgh
 
   foreach trap, self.traps do begin
@@ -66,7 +73,7 @@ pro fabCGH_cuda::Compute
   endforeach
 
   ;; phase of the field in the plane of the projecting device
-  *self.data = byte(round((127.5/!pi) * cudacgh_getphase(self.cgh)))
+  *self.data = cudacgh_getphase(self.cgh)
 end
 
 ;;;;;
