@@ -27,8 +27,8 @@ trapping pattern.
 ## Requirements
 
 *nufab* runs under IDL version 8.3 or better on GNU/linux or MacOS systems.
-Some elements of hardware control, particularly cameras, requires
-additional interface libraries, which are distributed separately.
+Some elements of hardware control require additional interface libraries,
+which are distributed separately.
 
 ### Camera Libraries
 
