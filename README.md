@@ -33,7 +33,8 @@ additional interface libraries, which are distributed separately.
 ### Camera Libraries
 
 + [*idlvideo*](https://github.com/davidgrier/idlvideo) IDL interface
-for video cameras that are supported by the OpenCV library.
+for video cameras that are supported by the
+[OpenCV](http://opencv.org) library.
 
 + [*idlpgr*](https://github.com/davidgrier/idlpgr) IDL interface
 for [Point Grey](http://www.ptgrey.com/)  video cameras.
