@@ -21,8 +21,7 @@ allows the user to create and manipulate optical traps in real time.
 *nufab* also can be controlled programmatically, with all hardware
 and software objects exposed in an object-oriented API.
 This facilitates a combination of automated and interactive
-control over the instrument and the
-trapping pattern.
+control.
 
 ## Requirements
 
