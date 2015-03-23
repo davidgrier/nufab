@@ -5,36 +5,27 @@
 ; PURPOSE:
 ;    Object class that computes a computer generated hologram (CGH) from
 ;    a trapping pattern and transmits it to a spatial light modulator
-;    (SLM) for projection.  Inherits DGGhotCGH and implements the
-;    fastphase algorithm
+;    (SLM) for projection.
 ;
-; CATEGORY:
-;    Computational holography, objects
+; INHERITS:
+;    fabcgh
 ;
 ; PROPERTIES:
-;    SLM: Object of type DGGhotSLM for which holograms will be
+; [IGS] SLM: Object of type DGGhotSLM for which holograms will be
 ;        computed.  No computation is performed unless this is defined.
-;        [IGS]
 ;
-;    TRAPS: list of fabTrap objects describing the traps
-;        [IGS]        
+; [IGS] TRAPS: list of fabTrap objects describing the traps
 ;
-;    DATA: byte-value hologram, computed from TRAPS according
+; [ G ] DATA: byte-value hologram, computed from TRAPS according
 ;        to SLM specifications.
-;        [ G ]
 ;
-;    RC:  [rx, ry, rz] coordinates of the center of the projected
-;         coordinate system.
-;         Default: [0, 0, 0]
-;        [ GS]
+; [ GS] RC: [rx, ry, rz] coordinates of the center of the projected
+;        coordinate system.
+;        Default: [0, 0, 0]
 ;
-;    MAT: Affine transformation matrix that maps requested trap
-;         coordinates onto the projected coordinate system.
-;         Default: 3 x 3 identity matrix.
-;        [ GS]
-;
-;    BACKGROUND [IGS] background field to be added to hologram.
-;         Default: None.
+; [ GS] MAT: Affine transformation matrix that maps requested trap
+;        coordinates onto the projected coordinate system.
+;        Default: 3 x 3 identity matrix.
 ;
 ; METHODS:
 ;    fabCGH_fast::GetProperty
@@ -58,9 +49,8 @@
 ; 10/26/2013 DGG Can rely on background being present.
 ; 04/05/2014 DGG traps now provide complex amplitudes
 ;
-; Copyright (c) 2011-2014 David G. Grier, David B. Ruffner and Ellery Russel
+; Copyright (c) 2011-2015 David G. Grier, David B. Ruffner and Ellery Russel
 ;-
-
 ;;;;;
 ;
 ; fabCGH_fast::Compute

@@ -11,32 +11,24 @@
 ;    fab_object
 ;
 ; PROPERTIES:
-;    SLM    [IGS] Object of type fabSLM for which holograms will be
+; [IGS] SLM: Object of type fabSLM for which holograms will be
 ;        computed.  No computation is performed unless this is defined.
 ;
-;    TRAPS  [IGS] list of fabTrap objects defining traps
+; [IGS] TRAPS: list of fabTrap objects defining traps
 ;
-;    DATA   [ G ] byte-valued hologram, computed from data in TRAPS according
+; [ G ] DATA: byte-valued hologram, computed from data in TRAPS according
 ;        to SLM specifications.
 ;
-;    RC     [ GS]  [rx, ry, rz] coordinates of the center of the projected
-;         coordinate system.
-;         Default: [0, 0, 0]
+; [ GS] RC: [rx, ry, rz] coordinates of the center of the projected
+;        coordinate system.
+;        Default: [0, 0, 0]
 ;
-;    MAT    [ GS] Affine transformation matrix that maps requested trap
-;         coordinates onto the projected coordinate system.
-;         Default: 3 x 3 identity matrix.
+; [ GS] MAT: Affine transformation matrix that maps requested trap
+;        coordinates onto the projected coordinate system.
+;        Default: 3 x 3 identity matrix.
 ;
-;    KC     [ GS] [xi, eta] coordinates of optical axis on SLM.
-;         Default: Center of SLM.
-;
-;    BACKGROUND [IGS] background field to be added to hologram.
-;         If background is an integer type, assume that it is a scaled
-;         phase, cast into the range 0..2Pi and then cast to a field.
-;         If it is a floating point type, assume that it is a phase
-;         and cast to a field.
-;         If it is complex, then assume it is a field, and do not cast.
-;         Default: None.
+; [ GS] KC: [xi, eta] coordinates of optical axis on SLM.
+;        Default: Center of SLM.
 ;
 ; METHODS:
 ;    fabCGH::GetProperty
@@ -54,12 +46,6 @@
 ;    fabCGH::Deallocate
 ;        Free previously allocated computational resources.
 ;        Should only be called by fabCGH::Cleanup
-;
-; INHERITS:
-;    IDLitComponent: registered properties appear on propertysheet
-;        widgets.
-;
-;    IDL_Object: implicit get and set properties.
 ;
 ; MODIFICATION HISTORY:
 ; 01/20/2011 Written by David G. Grier, New York University

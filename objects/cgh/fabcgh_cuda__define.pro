@@ -46,9 +46,8 @@
 ; MODIFICATION HISTORY:
 ; 03/22/2015 Written by David G. Grier, New York University
 ;
-; Copyright (c) 2015 David G. Grier, David B. Ruffner and Ellery Russel
+; Copyright (c) 2015 David G. Grier
 ;-
-
 ;;;;;
 ;
 ; fabCGH_cuda::Compute
