@@ -151,7 +151,7 @@ pro fabCGH_cuda__define
 
   struct = {fabCGH_cuda, $
             inherits fabCGH, $
-            cgh: bytarr(80), $
+            cgh: bytarr(56), $
             cal: fltarr(4)   $
            }
 end
