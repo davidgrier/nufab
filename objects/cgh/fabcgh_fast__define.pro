@@ -59,20 +59,20 @@
 ;
 pro fabCGH_fast::Compute
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-;; field in the plane of the projecting device
-*self.psi = *self.background
+  ;; field in the plane of the projecting device
+  *self.psi *= 0.
 
-foreach trap, self.traps do begin
-   pr = self.mat # (trap.rc - self.rc)
-   ex = exp(*self.ikx * pr[0] + *self.ikxsq * pr[2])
-   ey = exp(*self.iky * pr[1] + *self.ikysq * pr[2])
-   *self.psi += trap.alpha * (ex # ey)
-endforeach
+  foreach trap, self.traps do begin
+     pr = self.mat # (trap.rc - self.rc)
+     ex = exp(*self.ikx * pr[0] + *self.ikxsq * pr[2])
+     ey = exp(*self.iky * pr[1] + *self.ikysq * pr[2])
+     *self.psi += trap.alpha * (ex # ey)
+  endforeach
 
-;; phase of the field in the plane of the projecting device
-*self.data = byte(round((127.5/!pi) * (atan(*self.psi, /phase) + !pi)))
+  ;; phase of the field in the plane of the projecting device
+  *self.data = byte(round((127.5/!pi) * (atan(*self.psi, /phase) + !pi)))
 end
 
 ;;;;;
@@ -81,14 +81,15 @@ end
 ;
 pro fabCGH_fast::Precompute
 
-COMPILE_OPT IDL2, HIDDEN
-ci = complex(0., 1.)
-kx = self.q * (findgen((self.slm.dimensions)[0]) - self.kc[0])
-ky = -self.q * self.aspect_ratio * (findgen((self.slm.dimensions)[1]) - self.kc[1])
-*self.ikxsq = ci*kx^2
-*self.ikysq = ci*ky^2
-*self.ikx = ci*kx
-*self.iky = ci*ky
+  COMPILE_OPT IDL2, HIDDEN
+  
+  ci = complex(0., 1.)
+  kx = self.q * (findgen((self.slm.dimensions)[0]) - self.kc[0])
+  ky = -self.q * self.aspect_ratio * (findgen((self.slm.dimensions)[1]) - self.kc[1])
+  *self.ikxsq = ci*kx^2
+  *self.ikysq = ci*ky^2
+  *self.ikx = ci*kx
+  *self.iky = ci*ky
 end
 
 ;;;;;
@@ -99,39 +100,40 @@ end
 ;
 pro fabCGH_fast::Deallocate
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self->fabCGH::Deallocate
+  self->fabCGH::Deallocate
 
-ptr_free, self.psi, $
-          self.ikx, self.iky, $
-          self.ikxsq, self.ikysq
+  ptr_free, self.psi, $
+            self.ikx, self.iky, $
+            self.ikxsq, self.ikysq
 end
 
 ;;;;;
 ;
-; fabCGH_fast::Allocate
+; fabCGH_fast::Allocate()
 ;
 ; Allocate memory and define coordinates
 ;
-pro fabCGH_fast::Allocate
+function fabCGH_fast::Allocate
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-;; interrogate SLM and allocate hologram
-self.fabCGH::Allocate
+  ;; interrogate SLM and allocate hologram
+  if ~self.fabCGH::Allocate() then $
+     return, 0B
 
-;; allocate resources for CGH algorithm
-; field in SLM plane
-slm = self.slm
-psi = complexarr(slm.dimensions)
-self.psi = ptr_new(psi, /no_copy)
-; coordinates in SLM plane scaled as wavevectors
-self.ikx = ptr_new(complexarr((slm.dimensions)[0]))
-self.iky = ptr_new(complexarr((slm.dimensions)[1]))
-self.ikxsq = ptr_new(complexarr((slm.dimensions)[0]))
-self.ikysq = ptr_new(complexarr((slm.dimensions)[1]))
+  ;; allocate resources for CGH algorithm
+  ; field in SLM plane
+  dimensions = self.slm.dimensions
+  self.psi = ptr_new(complexarr(dimensions), /no_copy)
+  ; coordinates in SLM plane scaled as wavevectors
+  self.ikx = ptr_new(complexarr(dimensions[0]), /no_copy)
+  self.iky = ptr_new(complexarr(dimensions[1]), /no_copy)
+  self.ikxsq = ptr_new(complexarr(dimensions[0]), /no_copy)
+  self.ikysq = ptr_new(complexarr(dimensions[1]), /no_copy)
 
+  return, 1B
 end
 
 ;;;;;
@@ -140,7 +142,7 @@ end
 ;
 ; Get properties for CGH object
 ;
-; inherited from DGGhotCGH
+; inherited from fabCGH
 
 ;;;;;
 ;
@@ -148,7 +150,7 @@ end
 ;
 ; Set properties for CGH object
 ;
-; inherited from DGGhotCGH
+; inherited from fabCGH
 
 ;;;;;
 ;
@@ -156,23 +158,21 @@ end
 ;
 function fabCGH_fast::Init, _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if ~self.fabCGH::Init(_extra = re) then $
-   return, 0B
+  if ~self.fabCGH::Init(_extra = re) then $
+     return, 0B
 
-self.name = 'fabCGH_fast '
-self.description = 'CPU CGH Pipeline '
-return, 1B
-
+  self.name = 'fabCGH_fast '
+  self.description = 'CPU CGH Pipeline '
+  return, 1B
 end
-
 
 ;;;;;
 ;
 ; fabCGH_fast::Cleanup
 ;
-; inherited from DGGhotCGH
+; inherited from fabCGH
 
 ;;;;;
 ;
@@ -182,14 +182,14 @@ end
 ;
 pro fabCGH_fast__define
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-struct = {fabCGH_fast, $
-          inherits fabCGH,     $
-          psi:      ptr_new(),    $ ; computed field
-          ikx:      ptr_new(),    $
-          iky:      ptr_new(),    $
-          ikxsq:    ptr_new(),    $
-          ikysq:    ptr_new()     $
+  struct = {fabCGH_fast, $
+            inherits fabCGH,     $
+            psi:      ptr_new(), $ ; computed field
+            ikx:      ptr_new(), $
+            iky:      ptr_new(), $
+            ikxsq:    ptr_new(), $
+            ikysq:    ptr_new()  $
          }
 end
