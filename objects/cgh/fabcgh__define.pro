@@ -19,6 +19,9 @@
 ; [ G ] DATA: byte-valued hologram, computed from data in TRAPS according
 ;        to SLM specifications.
 ;
+; [IGS] BACKGROUND: floating-point phase of the background field.
+;        Default: 0.
+;
 ; [ GS] RC: [rx, ry, rz] coordinates of the center of the projected
 ;        coordinate system.
 ;        Default: [0, 0, 0]
@@ -112,6 +115,8 @@ pro fabCGH::Compute
 
   COMPILE_OPT IDL2, HIDDEN
 
+  if ptr_valid(self.background) then $
+     self.data = ptr_new(bytscl(*self.background))
 end
 
 ;;;;;
@@ -135,7 +140,8 @@ pro fabCGH::Deallocate
 
   COMPILE_OPT IDL2, HIDDEN
 
-  if ptr_valid(data) then ptr_free, data
+  if ptr_valid(self.data) then ptr_free, self.data
+  if ptr_valid(self.background) then ptr_free, self.background
 end
 
 ;;;;;
@@ -183,6 +189,7 @@ end
 ;
 pro fabCGH::GetProperty, slm          = slm,          $
                          traps        = traps,        $
+                         background   = background,   $
                          data         = data,         $
                          rc           = rc,           $
                          xc           = xc,           $
@@ -206,6 +213,8 @@ pro fabCGH::GetProperty, slm          = slm,          $
 
   if arg_present(slm) then slm = self.slm
   if arg_present(traps) then traps = self.traps
+  if arg_present(background) then $
+     background = (ptr_valid(self.background)) ? *self.background : 0.
   if arg_present(data) then data = *self.slm.data
 
   if arg_present(rc) then rc = self.rc
@@ -237,6 +246,7 @@ end
 ;
 pro fabCGH::SetProperty, slm          = slm,          $
                          traps        = traps,        $
+                         background   = background,   $
                          rc           = rc,           $
                          xc           = xc,           $
                          yc           = yc,           $
@@ -263,7 +273,17 @@ pro fabCGH::SetProperty, slm          = slm,          $
      if traps.count() eq 0 then $
         self.traps.remove, /all $
      else if isa(traps[0], 'fabtrap') then $
-        self.traps = traps 
+        self.traps = traps
+
+  if isa(background, /number, /array) then begin
+     if ~isa(self.slm, 'fabSLM') then begin
+        message, 'must specify SLM before assigning a background', /info
+        self.background = ptr_new()
+     endif
+     if ~array_equal(size(background, /dimensions), slm.dimensions) then $
+        self.background = ptr_new()
+     self.background = ptr_new(float(background))
+  endif
 
   if isa(rc, /number) then begin
      case n_elements(rc) of
@@ -348,6 +368,7 @@ end
 ;
 function fabCGH::Init, slm          = slm,   $
                        traps        = traps, $
+                       background   = background, $
                        rc           = rc,    $
                        q            = q,            $
                        aspect_ratio = aspect_ratio, $
@@ -409,6 +430,18 @@ function fabCGH::Init, slm          = slm,   $
   if isa(slm, 'fabSLM') && self.registerslm(slm) then $
      self.precompute
 
+  if isa(background, /number, /array) then begin
+     if ~isa(self.slm, 'fabSLM') then begin
+        message, 'must specify SLM before assigning a background', /info
+        return, 0B
+     endif
+     if ~array_equal(size(background, /dimensions), slm.dimensions) then begin
+        message, 'background must have the same dimensions as SLM', /info
+        return, 0B
+     endif
+     self.background = ptr_new(float(background))
+  endif
+  
   if isa(traps, 'list') && isa(traps[0], 'fabTrap') then begin
         self.traps = traps
         self.project
@@ -443,6 +476,7 @@ pro fabCGH__define
             inherits fab_object,        $ 
             slm:          obj_new(),    $ ; target SLM
             data:         ptr_new(),    $ ; byte-valued hologram
+            background:   ptr_new(),    $ ; float-valued background phase
             traps:        obj_new(),    $ ; list of trap objects
             rc:           fltarr(3),    $ ; center of trap coordinate system
             mat:          fltarr(3, 3), $ ; transformation matrix

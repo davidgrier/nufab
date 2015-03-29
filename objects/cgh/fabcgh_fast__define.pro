@@ -62,7 +62,10 @@ pro fabCGH_fast::Compute
   COMPILE_OPT IDL2, HIDDEN
 
   ;; field in the plane of the projecting device
-  *self.psi *= 0.
+  if ptr_valid(self.background) then $
+     *self.psi = *self.background $
+  else $
+     *self.psi *= 0.
 
   foreach trap, self.traps do begin
      pr = self.mat # (trap.rc - self.rc)
@@ -150,18 +153,47 @@ end
 ;
 ; Set properties for CGH object
 ;
-; inherited from fabCGH
+pro fabCGH_fast::SetProperty, background = background, $
+                              _ref_extra = re
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  self.fabCGH::SetProperty, _extra = re
+  
+  if isa(background, /number, /array) then begin
+     if ~isa(self.slm, 'fabSLM') then begin
+        message, 'must specify SLM before assigning a background', /info
+        self.background = ptr_new()
+     endif
+     if ~array_equal(size(background, /dimensions), slm.dimensions) then $
+        self.background = ptr_new()
+     self.background = ptr_new(exp(complex(0, 1) * background))
+  endif
+end
 
 ;;;;;
 ;
 ; fabCGH_fast::Init
 ;
-function fabCGH_fast::Init, _ref_extra = re
+function fabCGH_fast::Init, background = background, $
+                            _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
   if ~self.fabCGH::Init(_extra = re) then $
      return, 0B
+
+  if isa(background, /number, /array) then begin
+     if ~isa(self.slm, 'fabSLM') then begin
+        message, 'must specify SLM before assigning a background', /info
+        return, 0B
+     endif
+     if ~array_equal(size(background, /dimensions), slm.dimensions) then begin
+        message, 'background must have the same dimensions as SLM', /info
+        return, 0B
+     endif
+     self.background = ptr_new(exp(complex(0, 1) * background))
+  endif
 
   self.name = 'fabCGH_fast '
   self.description = 'CPU CGH Pipeline '

@@ -65,7 +65,10 @@ pro fabCGH_cuda::Compute
      return
   endif
 
-  cudacgh_initialize, self.cgh
+  if ptr_valid(self.background) then $
+     cudacgh_initialize, self.cgh, *self.background $
+  else $
+     cudacgh_initialize, self.cgh
 
   foreach trap, self.traps do begin
      p = [self.mat # (trap.rc - self.rc), trap.amplitude, trap.phase]
