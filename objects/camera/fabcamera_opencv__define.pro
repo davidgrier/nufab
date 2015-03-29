@@ -30,9 +30,9 @@ pro fabcamera_opencv::Read
 
   self.data = ptr_new(self.dgghwvideo::read(), /no_copy)
   if self.hflip then $
-     *self.data = reverse(*self.data, 2 - self.grayscale, /overwrite)
+     *self.data = reverse(temporary(*self.data), 2 - self.grayscale, /overwrite)
   if self.order then $
-     *self.data = reverse(*self.data, 3 - self.grayscale, /overwrite)
+     *self.data = reverse(temporary(*self.data), 3 - self.grayscale, /overwrite)
 end
 
 ;;;;;
