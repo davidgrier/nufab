@@ -29,7 +29,6 @@ pro fabcamera_opencv::Read
   COMPILE_OPT IDL2, HIDDEN
 
   self.data = ptr_new(self.dgghwvideo::read(), /no_copy)
-  print, self.hflip
   if self.hflip then $
      *self.data = reverse(temporary(*self.data), 2 - self.grayscale, /overwrite)
   
@@ -107,8 +106,8 @@ pro fabcamera_opencv__define
 
   COMPILE_OPT IDL2, HIDDEN
   
-  struct = {fabcamera_opencv, $
-            inherits dgghwvideo, $
-            inherits fabcamera $
+  struct = {fabcamera_opencv,   $
+            inherits fabcamera, $
+            inherits dgghwvideo $
            }
 end
