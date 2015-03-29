@@ -84,10 +84,10 @@ pro fabcamera::SetProperty, dimensions = dimensions, $
      message, 'DIMENSIONS can only be set at initialization', /inf
 
   if isa(order, /scalar, /number) then $
-     self.order = (order ne 0)
+     self.order = keyword_set(order)
 
   if isa(hflip, /scalar, /number) then $
-     self.hflip = (hflip ne 0)
+     self.hflip = keyword_set(hflip)
 
   if isa(mpp, /scalar, /number) then $
      self.mpp = mpp
@@ -111,8 +111,11 @@ pro fabcamera::GetProperty, data = data, $
   if arg_present(data) then $
      data = *self.data
 
-  if arg_present(dimensions) then $
+  if arg_present(dimensions) then begin
      dimensions = size(*self.data, /dimensions)
+     if n_elements(dimensions) eq 3 then $
+        dimensions = dimensions[where(dimensions ne 3)]
+  endif
 
   if arg_present(mpp) then $
      mpp = self.mpp
