@@ -26,7 +26,8 @@ cgh_object = (configuration.haskey('cgh_object')) ? $
 if configuration.haskey('cgh_rc') then $
    if execute('a = '+configuration['cgh_rc'], 1, 1) then $
       rc = a $
-   else if configuration.haskey('camera') then $
+   else if (configuration.haskey('camera') && $
+            isa(configuration['camera'], 'fabcamera') then $
       rc = configuration['camera'].dimensions/2.
 
 if configuration.haskey('cgh_kc') then $
