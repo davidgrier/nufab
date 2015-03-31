@@ -33,7 +33,8 @@ COMPILE_OPT IDL2, HIDDEN
 widget_control, event.top, get_uvalue = s
 xy = [event.x, event.y]
 
-void = timer.fire(s['video'].timer)
+if float(!version.release) ge 8.4 then $
+   void = timer.fire(s['video'].timer)
 
 case s['action'] of
    2: s['selected'].moveto, xy   ; translating
