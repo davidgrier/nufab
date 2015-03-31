@@ -71,8 +71,9 @@
 ;    fabTrapGroup::MoveBy.  Added OVERRIDE flag to MoveBy method.
 ; 12/22/2013 DGG Overhauled for new fab implementation.
 ; 04/05/2014 DGG Revised alpha, phase and structure definitions.
+; 03/30/2015 DGG Clean up IDLgrPolyline.
 ;
-; Copyright (c) 2010-2014 David G. Grier
+; Copyright (c) 2010-2015 David G. Grier
 ;-
 
 ;;;;
@@ -326,6 +327,8 @@ end
 pro fabTrap::Cleanup
 
 COMPILE_OPT IDL2, HIDDEN
+
+self.IDLgrPolyline::Cleanup
 
 if isa(self.parent, 'fabtrapgroup') then $
    self.parent.remove, self
