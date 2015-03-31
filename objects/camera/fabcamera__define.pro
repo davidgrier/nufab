@@ -34,6 +34,7 @@
 ; 02/18/2015 DGG Added EXPOSURE_TIME and GAIN properties
 ; 03/16/2015 DGG remove references to properties that are not provided
 ;    by this base class.
+; 03/30/2015 DGG clean up fab_object.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
@@ -134,7 +135,8 @@ end
 pro fabcamera::Cleanup
 
   COMPILE_OPT IDL2, HIDDEN
-  
+
+  self.fab_object::Cleanup
   ptr_free, self.data
 end
 

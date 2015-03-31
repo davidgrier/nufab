@@ -33,6 +33,7 @@
 ; 12/15/2013 Written by David G. Grier, New York University
 ; 03/29/2014 DGG Added documentation.
 ; 02/15/2015 DGG Added HasProperty method.
+; 03/30/2015 DGG Clean up IDLitComponent.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
@@ -90,6 +91,17 @@ if arg_present(adjustable) then begin
    endforeach
 endif
 
+end
+
+;;;;;
+;
+; fab_object::Cleanup
+;
+pro fab_object::Cleanup
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  self.IDLitComponent::Cleanup
 end
 
 ;;;;;

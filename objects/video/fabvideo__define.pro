@@ -38,7 +38,7 @@
 ; 03/04/2014 DGG Implement EXTRA keywords in Init.
 ; 04/06/2014 DGG Implemented running median hvmmode with numedian().
 ;    Implemented recording modes.
-; 03/30/2015 DGG Timer ID available as a property.
+; 03/30/2015 DGG Timer ID available as a property.  Clean up IDLgrImage.
 ;
 ; Copyright (c) 2014-2015 David G. Grier
 ;-
@@ -253,6 +253,7 @@ pro fabVideo::Cleanup
 
 COMPILE_OPT IDL2, HIDDEN
 
+self.IDLgrImage::Cleanup
 obj_destroy, self.camera
 obj_destroy, self.recorder
 
