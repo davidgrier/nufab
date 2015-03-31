@@ -11,6 +11,7 @@
 ;
 ; PROPERTIES
 ;    camera     [RG ]: fabcamera object that provides images
+;    timer      [ G ]: ID of active timer
 ;    width      [ G ]: width of camera image
 ;    height     [ G ]: height of camera image
 ;    screen     [RG ]: IDLgrWindow on which the image is drawn
@@ -37,8 +38,9 @@
 ; 03/04/2014 DGG Implement EXTRA keywords in Init.
 ; 04/06/2014 DGG Implemented running median hvmmode with numedian().
 ;    Implemented recording modes.
+; 03/30/2015 DGG Timer ID available as a property.
 ;
-; Copyright (c) 2014 David G. Grier
+; Copyright (c) 2014-2015 David G. Grier
 ;-
 
 ;;;;;
@@ -171,6 +173,7 @@ end
 ;
 pro fabVideo::GetProperty, greyscale = greyscale, $
                            camera = camera, $
+                           timer = timer, $
                            median = median, $
                            recorder = recorder, $
                            screen = screen, $
@@ -197,6 +200,9 @@ if arg_present(greyscale) then $
 
 if arg_present(camera) then $
    camera = self.camera
+
+if arg_present(timer) then $
+   timer = self.timer
 
 if arg_present(median) then $
    median = self.median

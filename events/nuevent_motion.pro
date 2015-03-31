@@ -21,8 +21,10 @@
 ;
 ; MODIFICATION HISTORY:
 ; 01/29/2014 Written by David G. Grier, New York University
+; 03/30/2015 DGG figure video timer during motion events to prevent
+;    event pile-up.
 ;
-; Copyright (c) 2014 David G. Grier
+; Copyright (c) 2014-2015 David G. Grier
 ;-
 pro nuevent_motion, event
 
@@ -30,6 +32,8 @@ COMPILE_OPT IDL2, HIDDEN
 
 widget_control, event.top, get_uvalue = s
 xy = [event.x, event.y]
+
+void = timer.fire(s['video'].timer)
 
 case s['action'] of
    2: s['selected'].moveto, xy   ; translating
