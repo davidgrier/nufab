@@ -121,8 +121,10 @@
 ; 06/11/2012 DGG don't clobber self.rs[2] when setting rs[0:1]
 ; 12/22/2013 DGG Overhaul for new fab implementation.
 ; 01/22/2014 DGG Added RANDOMIZE method
+; 05/15/2015 DGG turn off math errors during rotations to quell
+;     harmless floating point underflow errors.
 ;
-; Copyright (c) 2011-2013 David G. Grier
+; Copyright (c) 2011-2015 David G. Grier
 ;-
 
 ;;;;;
@@ -194,6 +196,9 @@ pro fabTrapGroup::RotateTo, xy, $
 
 COMPILE_OPT IDL2, HIDDEN
 
+except = !except
+!except = 0
+
 if ~self.ismoveable(override = override) then $
    return
 
@@ -213,6 +218,8 @@ foreach trap, traps do begin
    trap.rc = q.rotatevector(rn - self.rc) + self.rc
 endforeach
 self.rs = q.rotatevector(self.rs - self.rc) + self.rc
+
+!except = except
 
 self.project
 
