@@ -30,6 +30,7 @@
 ; 02/10/2015 DGG Updated PROPERTIES definition.
 ; 02/18/2015 DGG Added EXPOSURE_TIME property as synonym for SHUTTER.
 ; 03/16/2015 DGG Updated for DLM interface
+; 05/26/2015 DGG Use underlying image buffer rather than copying.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
@@ -77,7 +78,7 @@ pro fabcamera_PointGrey::Read
 
   COMPILE_OPT IDL2, HIDDEN
 
-  self.data = ptr_new(self.dgghwpointgrey::read(), /no_copy)
+  self.dgghwpointgrey::read
   if self.order then $
      *self.data = reverse(temporary(*self.data), 3 - self.grayscale, /overwrite)
 end
@@ -152,7 +153,8 @@ function fabcamera_PointGrey::Init, _ref_extra = re
   if ~self.dgghwpointgrey::Init(_extra = re) then $
      return, 0B
 
-  self.data = ptr_new(self.dgghwpointgrey::read(), /no_copy)
+  ptr_free, self.data
+  self.data = self._data
 
   self.registerproperties
 
