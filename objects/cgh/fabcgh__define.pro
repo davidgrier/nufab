@@ -176,7 +176,6 @@ function fabCGH::RegisterSLM, slm
      self.deallocate
 
   self.slm = slm
-  self.setdefaults
 
   return, self.allocate()
 end
@@ -406,6 +405,9 @@ function fabCGH::Init, slm          = slm,   $
      endcase
   endif
 
+  if isa(slm, 'fabSLM') && self.registerslm(slm) then $
+     self.setdefaults
+
   if isa(q, /number, /scalar) then $
      self.q = float(q)
 
@@ -427,7 +429,7 @@ function fabCGH::Init, slm          = slm,   $
   if isa(roi, /number) && n_elements(roi) eq 4 then $
      self.roi = long(roi)
 
-  if isa(slm, 'fabSLM') && self.registerslm(slm) then $
+  if isa(self.slm, 'fabSLM') then $
      self.precompute
 
   if isa(background, /number, /array) then begin

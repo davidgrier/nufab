@@ -31,10 +31,11 @@ function nucal_xy_find, s
 
 COMPILE_OPT IDL2, HIDDEN
 
-wait, 0.1
+wait, 0.5
 a = float(nufab_snap(s)) ; acquire image
 a /= s['xy_bg']
 
+tvscl, a
 ; candidate features are (at least 5 times) brighter 
 ; than the background
 q = fastfeature(a, 5, pickn = 1, count = count)
@@ -98,6 +99,7 @@ p = findgen(2, npts)
 for n = 0, npts-1 do begin
    trap.moveto, [x[n], y[0], 0.], /override
    p[*, n] = nucal_xy_find(s)
+   print, x[n], y[0], 'p', p[*,n]
 endfor
 f1 = poly_fit(x, p[0, *], 1)
 f2 = poly_fit(x, p[1, *], 1)
