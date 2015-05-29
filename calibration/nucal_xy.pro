@@ -31,11 +31,9 @@ function nucal_xy_find, s
 
 COMPILE_OPT IDL2, HIDDEN
 
-wait, 0.5
-a = float(nufab_snap(s)) ; acquire image
+a = float(nufab_snap(s, delay = 0.2)) ; acquire image
 a /= s['xy_bg']
 
-tvscl, a
 ; candidate features are (at least 5 times) brighter 
 ; than the background
 q = fastfeature(a, 5, pickn = 1, count = count)
@@ -80,7 +78,7 @@ oangle = cgh.angle
 s['trappingpattern'].clear
 
 ;;; acquire background image
-s['xy_bg'] = float(nufab_snap(s)) > 1
+s['xy_bg'] = float(nufab_snap(s, delay = 0.2)) > 1
 
 ;;; Place a trap at calibration points, and compare
 ;;; measured positions with specified positions
@@ -99,7 +97,6 @@ p = findgen(2, npts)
 for n = 0, npts-1 do begin
    trap.moveto, [x[n], y[0], 0.], /override
    p[*, n] = nucal_xy_find(s)
-   print, x[n], y[0], 'p', p[*,n]
 endfor
 f1 = poly_fit(x, p[0, *], 1)
 f2 = poly_fit(x, p[1, *], 1)
@@ -126,15 +123,15 @@ cgh.aspect_ratio /= sqrt(f3[1]^2 + f4[1]^2)/q
 cgh.angle -= 90./!pi * (atan(f2[1], f1[1]) - atan(f3[1], f4[1]))
 
 ;;; test for correctness
-rc = [100, 100, 0]
-trap.moveto, rc, /override
-r = nucal_xy_find(s)
-if sqrt(total((r - rc)^2)) gt 0.01*min(dim) then begin
-   s['error'] = 'NUCAL_XY: Calibration out of tolerance'
-   cgh.q = oq
-   cgh.aspect_ratio = oaspect_ratio
-   cgh.angle = oangle
-endif
+;rc = [100, 100, 0]
+;trap.moveto, rc, /override
+;r = nucal_xy_find(s)
+;if sqrt(total((r - rc)^2)) gt 0.01*min(dim) then begin
+;   s['error'] = 'NUCAL_XY: Calibration out of tolerance'
+;   cgh.q = oq
+;   cgh.aspect_ratio = oaspect_ratio
+;   cgh.angle = oangle
+;endif
 
 trap.state = 1.
 s.remove, 'xy_bg'

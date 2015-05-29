@@ -24,8 +24,7 @@ camera = s['camera']
 repeat begin
    ogain = camera.gain
    camera.gain = ogain+1
-   wait, 0.1
-   a = nufab_snap(s)
+   a = nufab_snap(s, delay = 0.2)
    rad = 100
    max = max(a[xy[0]-rad:xy[0]+rad, xy[1]-rad:xy[1]+rad])
 endrep until max gt 200 || camera.gain eq ogain
@@ -42,8 +41,7 @@ function nucal_kc_findtrap, s, xy
 
 COMPILE_OPT IDL2, HIDDEN
 
-wait, 0.1
-a = nufab_snap(s)
+a = nufab_snap(s, delay = 0.2)
 ;b = bpass(a, 2, 21)
 b = median(a, 7)
 rad = 100

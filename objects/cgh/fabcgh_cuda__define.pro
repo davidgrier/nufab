@@ -127,6 +127,29 @@ end
 
 ;;;;;
 ;
+; fabCGH_cuda::GetProperty
+;
+pro fabCGH_cuda::GetProperty, _ref_extra = re
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  self.fabCGH::GetProperty, _extra = re
+end
+
+;;;;;
+;
+; fabCGH_cuda::SetProperty
+;
+pro fabCGH_cuda::SetProperty, _ref_extra = re
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  self.fabCGH::SetProperty, _extra = re
+  self.cal = [self.kc, self.q, self.aspect_ratio]
+end
+
+;;;;;
+;
 ; fabCGH_cuda::Init
 ;
 function fabCGH_cuda::Init, _ref_extra = re
