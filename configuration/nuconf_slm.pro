@@ -24,7 +24,7 @@ if configuration.haskey('slm_device_name') then $
    device_name = configuration['slm_device_name']
 
 if configuration.haskey('slm_dimensions') then $
-   if execute('a = '+configuration['camera_dimensions'], 1, 1) then $
+   if execute('a = '+configuration['slm_dimensions'], 1, 1) then $
       dimensions = a
 
 slm = obj_new(slm_object, device_name = device_name, dimensions = dimensions)

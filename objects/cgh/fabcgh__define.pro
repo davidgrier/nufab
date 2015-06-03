@@ -176,7 +176,6 @@ function fabCGH::RegisterSLM, slm
      self.deallocate
 
   self.slm = slm
-  self.setdefaults
 
   return, self.allocate()
 end
@@ -204,6 +203,7 @@ pro fabCGH::GetProperty, slm          = slm,          $
                          kc           = kc,           $
                          xi           = xi,           $
                          eta          = eta,          $
+                         mat          = mat,          $
                          roi          = roi,          $
                          _ref_extra   = re
 
@@ -234,6 +234,7 @@ pro fabCGH::GetProperty, slm          = slm,          $
   if arg_present(kc) then kc = self.kc
   if arg_present(xi) then xi = self.kc[0]
   if arg_present(eta) then eta = self.kc[1]
+  if arg_present(mat) then mat = self.mat
 
   if arg_present(roi) then roi = self.roi
 end
@@ -406,6 +407,9 @@ function fabCGH::Init, slm          = slm,   $
      endcase
   endif
 
+  if isa(slm, 'fabSLM') && self.registerslm(slm) then $
+     self.setdefaults
+
   if isa(q, /number, /scalar) then $
      self.q = float(q)
 
@@ -427,7 +431,7 @@ function fabCGH::Init, slm          = slm,   $
   if isa(roi, /number) && n_elements(roi) eq 4 then $
      self.roi = long(roi)
 
-  if isa(slm, 'fabSLM') && self.registerslm(slm) then $
+  if isa(self.slm, 'fabSLM') then $
      self.precompute
 
   if isa(background, /number, /array) then begin

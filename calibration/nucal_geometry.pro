@@ -21,13 +21,13 @@ if isa(event, 'hash') then $
 else $
    widget_control, event.top, get_uvalue = s
 
-if ~nucal_setup(s) then $
-   return
+;if ~nucal_setup(s) then $
+;   return
 
 nucal_rc, s                     ; coordinates of optical axis on camera
 nucal_xy, s                     ; rotation and scaling of camera plane
-nucal_kc, s                     ; coordinates of optical axis on SLM
-nucal_roi, s                    ; area of SLM in input pupil
+;nucal_kc, s                     ; coordinates of optical axis on SLM
+;nucal_roi, s                    ; area of SLM in input pupil
 
 if s.haskey('error') then begin
    message, s['error'], /inf

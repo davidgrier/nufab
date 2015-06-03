@@ -36,8 +36,9 @@
 ; 03/23/2011 DGG use _ref_extra in Get/SetProperty and Init
 ; 09/16/2013 DGG record timestamp for each acquired frame.
 ; 01/01/2014 DGG Overhauled for new fab implementation.
+; 05/29/2015 DGG formatting and debugging code.
 ;
-; Copyright (c) 2011-2014 David G. Grier
+; Copyright (c) 2011-2015 David G. Grier
 ;-
 
 ;;;;;
@@ -55,14 +56,10 @@
 ;
 pro fabcamera_V4L2::Read
 
-COMPILE_OPT IDL2, HIDDEN
-
-ok = call_external(self.dlm, 'idlv4l2_readframe', /cdecl, self.debug, $
-                   self.fd, *self.data)
-;                   self.fd, *(self.buffer))
-;if ok then $
-;   self.setproperty, data = *self.buffer
-
+  COMPILE_OPT IDL2, HIDDEN
+  
+  ok = call_external(self.dlm, 'idlv4l2_readframe', /cdecl, self.debug, $
+                     self.fd, *self.data)
 end
 
 ;;;;;
@@ -84,10 +81,10 @@ end
 pro fabcamera_V4L2::GetProperty, device_name = device_name, $
                                  _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.fabcamera::GetProperty, _extra = re
-device_name = self.device_name
+  self.fabcamera::GetProperty, _extra = re
+  device_name = self.device_name
 end
 
 ;;;;;
@@ -98,16 +95,16 @@ end
 ;
 pro fabcamera_V4L2::CleanupV4L2
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if self.capturing then $
-   ok = call_external(self.dlm, 'idlv4l2_stopcapture', /cdecl, self.debug, $
-                      self.fd)
-if self.initialized then $
-   ok = call_external(self.dlm, 'idlv4l2_uninit', /cdecl, self.debug, $
-                      self.fd)
-ok = call_external(self.dlm, 'idlv4l2_close', /cdecl, self.debug, $
-                   self.fd)
+  if self.capturing then $
+     ok = call_external(self.dlm, 'idlv4l2_stopcapture', /cdecl, self.debug, $
+                        self.fd)
+  if self.initialized then $
+     ok = call_external(self.dlm, 'idlv4l2_uninit', /cdecl, self.debug, $
+                        self.fd)
+  ok = call_external(self.dlm, 'idlv4l2_close', /cdecl, self.debug, $
+                     self.fd)
 end
 
 ;;;;;
@@ -118,11 +115,10 @@ end
 ;
 pro fabcamera_V4L2::Cleanup
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.CleanupV4L2
-self.fabcamera::Cleanup
-;ptr_free, self.buffer
+  self.CleanupV4L2
+  self.fabcamera::Cleanup
 end
 
 ;;;;;
@@ -136,67 +132,68 @@ end
 function fabcamera_V4L2::Init, device_name = device_name, $
                                _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-catch, error
-if (error ne 0L) then begin
-   catch, /cancel
-   return, 0
-endif
+  catch, error
+  if (error ne 0L) then begin
+     catch, /cancel
+     return, 0
+  endif
 
-;;; look for shared object library in IDL search path
-dlm = 'idlv4l2.so'
-self.dlm = file_search(fab_path(), dlm, /test_executable)
-if ~self.dlm then begin
-   message, 'could not find '+dlm, /inf
-   return, 0B
-endif
+  ;;; look for shared object library in IDL search path
+  dlm = 'idlv4l2.so'
+  self.dlm = file_search(fab_path(), dlm, /test_executable)
+  if ~self.dlm then begin
+     message, 'could not find '+dlm, /inf
+     return, 0B
+  endif
 
-if (self.fabcamera::Init(_extra = re) ne 1) then $
-   return, 0B
+  if (self.fabcamera::Init(_extra = re) ne 1) then $
+     return, 0B
 
-self.device_name = (isa(device_name, 'string')) ? device_name : '/dev/video0'
+  self.device_name = (isa(device_name, 'string')) ? device_name : '/dev/video0'
 
-fd = 0L
-ok = call_external(self.dlm, 'idlv4l2_open', /cdecl, self.debug, $
-                   self.device_name, fd)
-if ~ok then $
-   return, 0B
-self.fd = fd
+  fd = 0L
+  ok = call_external(self.dlm, 'idlv4l2_open', /cdecl, self.debug, $
+                     self.device_name, fd)
 
-w = 0L
-h = 0L
-self.initialized = call_external(self.dlm, 'idlv4l2_init', /cdecl, self.debug, $
-                                 self.fd, w, h)
-if ~self.initialized then begin
-   self.CleanupV4L2
-   return, 0B
-endif
+  if ~ok then $
+     return, 0B
+  self.fd = fd
 
-self.capturing = call_external(self.dlm, 'idlv4l2_startcapture', /cdecl, self.debug, $
-                               self.fd)
-if ~self.capturing then begin
-   self.CleanupV4L2
-   return, 0B
-endif
+  w = 0L
+  h = 0L
+  self.initialized = call_external(self.dlm, 'idlv4l2_init', $
+                                   /cdecl, self.debug, $
+                                   self.fd, w, h)
+  if ~self.initialized then begin
+     self.CleanupV4L2
+     return, 0B
+  endif
 
-a = bytarr(w, h, /nozero)
-ok = call_external(self.dlm, 'idlv4l2_readframe', /cdecl, self.debug, $
-                   self.fd, a)
-if ~ok then begin
-   self.CleanupV4L2
-   return, 0B
-endif
+  self.capturing = call_external(self.dlm, 'idlv4l2_startcapture', $
+                                 /cdecl, self.debug, $
+                                 self.fd)
+  if ~self.capturing then begin
+     self.CleanupV4L2
+     return, 0B
+  endif
 
-self.data = ptr_new(a, /no_copy)
-;self.setproperty, data = a
-;self.buffer = ptr_new(a, /no_copy)
-self.stream = ptr_new(stream)
+  a = bytarr(w, h, /nozero)
+  ok = call_external(self.dlm, 'idlv4l2_readframe', /cdecl, self.debug, $
+                     self.fd, a)
+  if ~ok then begin
+     self.CleanupV4L2
+     return, 0B
+  endif
 
-self.name = 'fabcamera_V4L2 '
-self.description = 'V4L2 Camera '
+  self.data = ptr_new(a, /no_copy)
+  self.stream = ptr_new(stream)
 
-return, 1B
+  self.name = 'fabcamera_V4L2 '
+  self.description = 'V4L2 Camera '
+
+  return, 1B
 end
 
 ;;;;;
@@ -207,16 +204,16 @@ end
 ;
 pro fabcamera_V4L2__define
 
-COMPILE_OPT IDL2
+  COMPILE_OPT IDL2
 
-struct = {fabcamera_V4L2,     $
-          inherits fabcamera, $
-          dlm: '',            $ ; shared object library
-          device_name: '',    $ ; device file
-          fd: 0L,             $ ; file descriptor for video device
-          initialized: 0,     $
-          capturing: 0,       $
-;          buffer: ptr_new(),  $
-          stream: ptr_new()   $
-         }
+  struct = {fabcamera_V4L2,     $
+            inherits fabcamera, $
+            dlm: '',            $ ; shared object library
+            device_name: '',    $ ; device file
+            fd: 0L,             $ ; file descriptor for video device
+            initialized: 0,     $
+            capturing: 0,       $
+            debug: 0L,          $
+            stream: ptr_new()   $
+           }
 end
