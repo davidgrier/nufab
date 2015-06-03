@@ -18,7 +18,7 @@
 ; 04/06/2014 DGG Implemented HFLIP property.
 ; 03/16/2015 DGG Update for DLM interface
 ;
-; Copyright (c) 2013-2014 David G. Grier
+; Copyright (c) 2013-2015 David G. Grier
 ;-
 ;;;;;
 ;
