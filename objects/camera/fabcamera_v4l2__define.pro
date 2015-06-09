@@ -43,27 +43,6 @@
 
 ;;;;;
 ;
-; fabcamera_V4L2::Read()
-;
-; inherited from fabcamera::Read()
-;
-
-;;;;;
-;
-; fabcamera_V4L2::Read
-;
-; Transfers a picture to the image
-;
-pro fabcamera_V4L2::Read
-
-  COMPILE_OPT IDL2, HIDDEN
-  
-  ok = call_external(self.dlm, 'idlv4l2_readframe', /cdecl, self.debug, $
-                     self.fd, *self.data)
-end
-
-;;;;;
-;
 ; fabcamera_V4L2::SetProperty
 ;
 ; Set the camera properties
@@ -78,33 +57,12 @@ end
 ; Get the properties of the camera or of the
 ; underlying IDLgrImage object.
 ;
-pro fabcamera_V4L2::GetProperty, device_name = device_name, $
-                                 _ref_extra = re
+pro fabcamera_V4L2::GetProperty, _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
+  self.idlv4l2::GetProperty, _extra = re
   self.fabcamera::GetProperty, _extra = re
-  device_name = self.device_name
-end
-
-;;;;;
-;
-; fabcamera_V4L2::CleanupV4L2
-;
-; Stop capturing and uninitialize V4L2
-;
-pro fabcamera_V4L2::CleanupV4L2
-
-  COMPILE_OPT IDL2, HIDDEN
-
-  if self.capturing then $
-     ok = call_external(self.dlm, 'idlv4l2_stopcapture', /cdecl, self.debug, $
-                        self.fd)
-  if self.initialized then $
-     ok = call_external(self.dlm, 'idlv4l2_uninit', /cdecl, self.debug, $
-                        self.fd)
-  ok = call_external(self.dlm, 'idlv4l2_close', /cdecl, self.debug, $
-                     self.fd)
 end
 
 ;;;;;
@@ -117,7 +75,7 @@ pro fabcamera_V4L2::Cleanup
 
   COMPILE_OPT IDL2, HIDDEN
 
-  self.CleanupV4L2
+  self.idlv4l2::Cleanup
   self.fabcamera::Cleanup
 end
 
@@ -129,8 +87,7 @@ end
 ; Open the video stream
 ; Load an image into the IDLgrImage object
 ;
-function fabcamera_V4L2::Init, device_name = device_name, $
-                               _ref_extra = re
+function fabcamera_V4L2::Init, _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
@@ -140,56 +97,15 @@ function fabcamera_V4L2::Init, device_name = device_name, $
      return, 0
   endif
 
-  ;;; look for shared object library in IDL search path
-  dlm = 'idlv4l2.so'
-  self.dlm = file_search(fab_path(), dlm, /test_executable)
-  if ~self.dlm then begin
-     message, 'could not find '+dlm, /inf
-     return, 0B
-  endif
-
   if (self.fabcamera::Init(_extra = re) ne 1) then $
      return, 0B
 
-  self.device_name = (isa(device_name, 'string')) ? device_name : '/dev/video0'
-
-  fd = 0L
-  ok = call_external(self.dlm, 'idlv4l2_open', /cdecl, self.debug, $
-                     self.device_name, fd)
-
-  if ~ok then $
+  if (self.idlv4l2::Init(_extra = re) ne 1) then $
      return, 0B
-  self.fd = fd
 
-  w = 0L
-  h = 0L
-  self.initialized = call_external(self.dlm, 'idlv4l2_init', $
-                                   /cdecl, self.debug, $
-                                   self.fd, w, h)
-  if ~self.initialized then begin
-     self.CleanupV4L2
-     return, 0B
-  endif
-
-  self.capturing = call_external(self.dlm, 'idlv4l2_startcapture', $
-                                 /cdecl, self.debug, $
-                                 self.fd)
-  if ~self.capturing then begin
-     self.CleanupV4L2
-     return, 0B
-  endif
-
-  a = bytarr(w, h, /nozero)
-  ok = call_external(self.dlm, 'idlv4l2_readframe', /cdecl, self.debug, $
-                     self.fd, a)
-  if ~ok then begin
-     self.CleanupV4L2
-     return, 0B
-  endif
-
-  self.data = ptr_new(a, /no_copy)
-  self.stream = ptr_new(stream)
-
+  ptr_free, self.data
+  self.data = self._data
+  
   self.name = 'fabcamera_V4L2 '
   self.description = 'V4L2 Camera '
 
@@ -208,12 +124,6 @@ pro fabcamera_V4L2__define
 
   struct = {fabcamera_V4L2,     $
             inherits fabcamera, $
-            dlm: '',            $ ; shared object library
-            device_name: '',    $ ; device file
-            fd: 0L,             $ ; file descriptor for video device
-            initialized: 0,     $
-            capturing: 0,       $
-            debug: 0L,          $
-            stream: ptr_new()   $
+            inherits idlv4l2    $
            }
 end

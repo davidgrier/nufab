@@ -13,10 +13,6 @@
 ;        [ G ] byte-valued array of image data
 ;    DIMENSIONS
 ;        [IG ] [w,h,[3]] dimensions of images
-;    ORDER
-;        [IGS] flag: if set, flip image vertically
-;    HFLIP
-;        [IGS] flag: if set, flip image horizontally
 ;    MPP
 ;        [IGS] Magnification [micrometers/pixel]
 ;
@@ -35,6 +31,7 @@
 ; 03/16/2015 DGG remove references to properties that are not provided
 ;    by this base class.
 ; 03/30/2015 DGG clean up fab_object.
+; 06/08/2015 DGG Subclasses are responsible for HFLIP and ORDER
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
@@ -61,34 +58,18 @@ pro fabcamera::read
 
   dimensions = size(*self.data, /dimensions)
   *self.data = byte(255*randomu(seed, dimensions))
-  if self.hflip then $
-     *self.data = reverse(*self.data, 1, /overwrite)
-  if self.order then $
-     *self.data = reverse(*self.data, 2, /overwrite)
 end
 
 ;;;;;
 ;
 ; fabcamera::SetProperty
 ;
-pro fabcamera::SetProperty, dimensions = dimensions, $
-                            order = order, $
-                            hflip = hflip, $
-                            mpp = mpp, $
+pro fabcamera::SetProperty, mpp = mpp, $
                             _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
   self.fab_object::SetProperty, _extra = re
-
-  if isa(dimensions, /number, /array) then $
-     message, 'DIMENSIONS can only be set at initialization', /inf
-
-  if isa(order, /scalar, /number) then $
-     self.order = keyword_set(order)
-
-  if isa(hflip, /scalar, /number) then $
-     self.hflip = keyword_set(hflip)
 
   if isa(mpp, /scalar, /number) then $
      self.mpp = mpp
@@ -100,8 +81,6 @@ end
 ;
 pro fabcamera::GetProperty, data = data, $
                             dimensions = dimensions, $
-                            order = order, $
-                            hflip = hflip, $
                             mpp = mpp, $
                             _ref_extra = re
 
@@ -123,9 +102,6 @@ pro fabcamera::GetProperty, data = data, $
 
   if arg_present(order) then $
      order = self.order
-
-  if arg_present(hflip) then $
-     hflip = self.hflip
 end
                             
 ;;;;;
@@ -147,8 +123,6 @@ end
 ; Should be overriden by specific camera implementation
 ;
 function fabcamera::Init, dimensions = dimensions, $
-                          order = order, $
-                          hflip = hflip, $
                           mpp = mpp, $
                           _ref_extra = re
 
@@ -166,20 +140,14 @@ function fabcamera::Init, dimensions = dimensions, $
   if isa(mpp, /scalar, /number) then $
      self.mpp = float(mpp)
   
-  if isa(order, /scalar, /number) then $
-     self.order = (order ne 0)
-
-  if isa(hflip, /scalar, /number) then $
-     self.hflip = (hflip ne 0)
-
   self.data = ptr_new(make_array(dimensions, /byte), /no_copy)
 
   self.name = 'fabcamera '
   self.description = 'Generic Camera '
   self.setpropertyattribute, 'name', sensitive = 0
   self.setpropertyattribute, 'description', sensitive = 0
-  self.registerproperty, 'order', enum = ['Normal', 'Flipped']
-  self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
+;  self.registerproperty, 'order', enum = ['Normal', 'Flipped']
+;  self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
   self.registerproperty, 'mpp', /float, hide = 1
   
   return, 1B
@@ -196,8 +164,6 @@ pro fabcamera__define
   struct = {fabcamera, $
             inherits fab_object, $
             data: ptr_new(), $
-            order: 0L, $
-            hflip: 0L, $
             mpp: 0. $
            }
 end
