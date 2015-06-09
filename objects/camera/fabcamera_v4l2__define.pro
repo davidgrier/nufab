@@ -110,7 +110,8 @@ end
 ; Open the video stream
 ; Load an image into the IDLgrImage object
 ;
-function fabcamera_V4L2::Init, _ref_extra = re
+function fabcamera_V4L2::Init, order = order, $
+                               _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
@@ -125,6 +126,8 @@ function fabcamera_V4L2::Init, _ref_extra = re
 
   if (self.idlv4l2::Init(_extra = re) ne 1) then $
      return, 0B
+
+  self.idlv4l2::SetProperty, vflip = order
 
   ptr_free, self.data
   self.data = (self.doconvert) ? self._rgb : self._data
