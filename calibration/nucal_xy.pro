@@ -17,8 +17,9 @@
 ; 01/14/2014 DGG Scale SLM pixels rather than trap positions.
 ; 04/08/2014 DGG Assume setup is handled already.
 ; 04/21/2014 DGG Seek traps in normalized image
+; 06/08/2015 DGG Use camera consistently.
 ;
-; Copyright (c) 2011-2014 David G. Grier
+; Copyright (c) 2011-2015 David G. Grier
 ;-
 ;;;;;
 ;
@@ -29,21 +30,21 @@
 ;
 function nucal_xy_find, s
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-a = float(nufab_snap(s, delay = 0.2)) ; acquire image
-a /= s['xy_bg']
+  a = float(nufab_snap(s, delay = 0.2)) ; acquire image
+  a /= s['xy_bg']
+  
+  ; candidate features are (at least 5 times) brighter 
+  ; than the background
+  q = fastfeature(a, 5, pickn = 1, count = count)
 
-; candidate features are (at least 5 times) brighter 
-; than the background
-q = fastfeature(a, 5, pickn = 1, count = count)
+  if count lt 1 then begin
+     s['error'] = 'NUCAL_XY_FIND: found no features'
+     return, [0, 0]
+  endif
 
-if count lt 1 then begin
-   s['error'] = 'NUCAL_XY_FIND: found no features'
-   return, [0, 0]
-endif
-
-return, q[0:1]
+  return, q[0:1]
 end
 
 ;;;;;;
@@ -55,88 +56,87 @@ end
 ;
 pro nucal_xy, event
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if isa(event, 'hash') then $
-   s = event $
-else $
-   widget_control, event.top, get_uvalue = s
+  if isa(event, 'hash') then $
+     s = event $
+  else $
+     widget_control, event.top, get_uvalue = s
 
 ;if ~nucal_setup(s) then $
 ;   return
 
-if s.haskey('error') then $
-   return
+  if s.haskey('error') then $
+     return
 
-cgh = s['cgh']
-;;; Save present calibrations in case this process fails
-oq = cgh.q
-oaspect_ratio = cgh.aspect_ratio
-oangle = cgh.angle
+  cgh = s['cgh']
+  ;;; Save present calibrations in case this process fails
+  oq = cgh.q
+  oaspect_ratio = cgh.aspect_ratio
+  oangle = cgh.angle
 
-;;; Clear the screen
-s['trappingpattern'].clear
+  ;;; Clear the screen
+  s['trappingpattern'].clear
 
-;;; acquire background image
-s['xy_bg'] = float(nufab_snap(s, delay = 0.2)) > 1
+  ;;; acquire background image
+  s['xy_bg'] = float(nufab_snap(s, delay = 0.2)) > 1
 
-;;; Place a trap at calibration points, and compare
-;;; measured positions with specified positions
-rc = cgh.rc
-trap = fabtrapgroup(fabtweezer(rc = rc), rs = rc, state = 0)
-s['trappingpattern'].add, trap
+  ;;; Place a trap at calibration points, and compare
+  ;;; measured positions with specified positions
+  rc = cgh.rc
+  trap = fabtrapgroup(fabtweezer(rc = rc), rs = rc, state = 0)
+  s['trappingpattern'].add, trap
 
-;;; coordinates of calibration points
-npts = 5
-dim = s['camera'].dimensions
-x = rc[0] + [-2:2] * dim[0]/(2.*npts)
-y = rc[1] + [-2:2] * dim[1]/(2.*npts)
+  ;;; coordinates of calibration points
+  npts = 5
+  dim = s['camera'].dimensions
+  x = rc[0] + [-2:2] * dim[0]/(2.*npts)
+  y = rc[1] + [-2:2] * dim[1]/(2.*npts)
 
-;;; calibrate along x:
-px = findgen(2, npts)
-for n = 0, npts-1 do begin
-   trap.moveto, [x[n], y[0], 0.], /override
-   px[*, n] = nucal_xy_find(s)
-endfor
-f1 = poly_fit(x, px[0, *], 1)
-f2 = poly_fit(x, px[1, *], 1)
+  ;;; calibrate along x:
+  px = findgen(2, npts)
+  for n = 0, npts-1 do begin
+     trap.moveto, [x[n], y[0], 0.], /override
+     px[*, n] = nucal_xy_find(s)
+  endfor
+  f1 = poly_fit(x, px[0, *], 1)
+  f2 = poly_fit(x, px[1, *], 1)
 
-;;; calibrate along y:
-py = 0.*px
-for n = 0, npts-1 do begin
-   trap.moveto, [x[0], y[n], 0.], /override
-   py[*, n] = nucal_xy_find(s)
-endfor
-f3 = poly_fit(y, py[0, *], 1)
-f4 = poly_fit(y, py[1, *], 1)
+  ;;; calibrate along y:
+  py = 0.*px
+  for n = 0, npts-1 do begin
+     trap.moveto, [x[0], y[n], 0.], /override
+     py[*, n] = nucal_xy_find(s)
+  endfor
+  f3 = poly_fit(y, py[0, *], 1)
+  f4 = poly_fit(y, py[1, *], 1)
+  
+  if s.haskey('error') then begin
+     message, s['error'], /inf
+     s.remove, 'error'
+     return
+  endif
 
-if s.haskey('error') then begin
-   message, s['error'], /inf
-   s.remove, 'error'
-   return
-endif
+  ;;; adjust geometry
+  q = sqrt(f1[1]^2 + f2[1]^2)
+  cgh.q /= q
+  cgh.aspect_ratio /= sqrt(f3[1]^2 + f4[1]^2)/q
+  cgh.angle -= 90./!pi * (atan(f2[1], f1[1]) - atan(f3[1], f4[1]))
 
-;;; adjust geometry
-q = sqrt(f1[1]^2 + f2[1]^2)
-cgh.q /= q
-cgh.aspect_ratio /= sqrt(f3[1]^2 + f4[1]^2)/q
-cgh.angle -= 90./!pi * (atan(f2[1], f1[1]) - atan(f3[1], f4[1]))
+  ;;; test for correctness
+  rc = [100, 100, 0]
+  trap.moveto, rc, /override
+  r = nucal_xy_find(s)
+  if sqrt(total((r - rc)^2)) gt 0.01*min(dim) then begin
+     s['error'] = 'NUCAL_XY: Calibration out of tolerance'
+     cgh.q = oq
+     cgh.aspect_ratio = oaspect_ratio
+     cgh.angle = oangle
+  endif
 
-;;; test for correctness
-;rc = [100, 100, 0]
-;trap.moveto, rc, /override
-;r = nucal_xy_find(s)
-;if sqrt(total((r - rc)^2)) gt 0.01*min(dim) then begin
-;   s['error'] = 'NUCAL_XY: Calibration out of tolerance'
-;   cgh.q = oq
-;   cgh.aspect_ratio = oaspect_ratio
-;   cgh.angle = oangle
-;endif
+  trap.state = 1.
+  s.remove, 'xy_bg'
 
-trap.state = 1.
-s.remove, 'xy_bg'
-
-if s.haskey('propertysheet') then $
-   widget_control, s['propertysheet'], /refresh_property
-
+  if s.haskey('propertysheet') then $
+     widget_control, s['propertysheet'], /refresh_property
 end
