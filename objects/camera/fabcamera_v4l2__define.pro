@@ -48,6 +48,7 @@
 ; Set the camera properties
 ;
 pro fabcamera_V4L2::SetProperty, order = order, $
+                                 dimensions = dimension, $
                                  _extra = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -55,8 +56,13 @@ pro fabcamera_V4L2::SetProperty, order = order, $
   if isa(order, /number, /scalar) then $
      self.idlv4l2::SetProperty, vflip = order
 
+  if isa(dimensions, /number) then $
+     self.idlv4l2::SetProperty, dimensions = dimensions
+
   self.idlv4l2::SetProperty, _extra = re
   self.fabcamera::SetProperty, _extra = re
+
+  self.data = (self.doconvert) ? self._rgb : self._data
 end
 
 ;;;;;
@@ -66,9 +72,17 @@ end
 ; Get the properties of the camera or of the
 ; underlying IDLgrImage object.
 ;
-pro fabcamera_V4L2::GetProperty, _ref_extra = re
+pro fabcamera_V4L2::GetProperty, order = order, $
+                                 dimensions = dimensions, $
+                                 _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
+
+  if arg_present(order) then $
+     self.idlv4l2::GetProperty, vflip = order
+
+  if arg_present(dimensions) then $
+     self.idlv4l2::GetProperty, dimensions = dimensions
 
   self.idlv4l2::GetProperty, _extra = re
   self.fabcamera::GetProperty, _extra = re
@@ -113,7 +127,7 @@ function fabcamera_V4L2::Init, _ref_extra = re
      return, 0B
 
   ptr_free, self.data
-  self.data = self._data
+  self.data = (self.doconvert) ? self._rgb : self._data
   
   self.name = 'fabcamera_V4L2 '
   self.description = 'V4L2 Camera '
