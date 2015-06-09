@@ -93,22 +93,22 @@ x = rc[0] + [-2:2] * dim[0]/(2.*npts)
 y = rc[1] + [-2:2] * dim[1]/(2.*npts)
 
 ;;; calibrate along x:
-p = findgen(2, npts)
+px = findgen(2, npts)
 for n = 0, npts-1 do begin
    trap.moveto, [x[n], y[0], 0.], /override
-   p[*, n] = nucal_xy_find(s)
+   px[*, n] = nucal_xy_find(s)
 endfor
-f1 = poly_fit(x, p[0, *], 1)
-f2 = poly_fit(x, p[1, *], 1)
+f1 = poly_fit(x, px[0, *], 1)
+f2 = poly_fit(x, px[1, *], 1)
 
 ;;; calibrate along y:
-p *= 0.
+py = 0.*px
 for n = 0, npts-1 do begin
    trap.moveto, [x[0], y[n], 0.], /override
-   p[*, n] = nucal_xy_find(s)
+   py[*, n] = nucal_xy_find(s)
 endfor
-f3 = poly_fit(y, p[0, *], 1)
-f4 = poly_fit(y, p[1, *], 1)
+f3 = poly_fit(y, py[0, *], 1)
+f4 = poly_fit(y, py[1, *], 1)
 
 if s.haskey('error') then begin
    message, s['error'], /inf

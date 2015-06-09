@@ -54,7 +54,7 @@ if ~isa(s, 'hash') then $
 if ~s.haskey('camera') then $
    return, 0
 
-a = s['camera'].data
+a = s['camera'].read()
 
 if isa(delay, /number, /scalar) then begin
    nframes = long(delay*s['video'].framerate)

@@ -61,8 +61,6 @@ pro fabcamera_V4L2::SetProperty, order = order, $
 
   self.idlv4l2::SetProperty, _extra = re
   self.fabcamera::SetProperty, _extra = re
-
-  self.data = (self.doconvert) ? self._rgb : self._data
 end
 
 ;;;;;
@@ -111,27 +109,23 @@ end
 ; Load an image into the IDLgrImage object
 ;
 function fabcamera_V4L2::Init, order = order, $
+                               dimensions = dimensions, $
                                _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
-  catch, error
-  if (error ne 0L) then begin
-     catch, /cancel
-     return, 0
-  endif
+  ;catch, error
+  ;if (error ne 0L) then begin
+  ;   catch, /cancel
+  ;   return, 0
+  ;endif
+
+  if (self.idlv4l2::Init(_extra = re, vflip = order) ne 1) then $
+     return, 0B
 
   if (self.fabcamera::Init(_extra = re) ne 1) then $
      return, 0B
 
-  if (self.idlv4l2::Init(_extra = re) ne 1) then $
-     return, 0B
-
-  self.idlv4l2::SetProperty, vflip = order
-
-  ptr_free, self.data
-  self.data = (self.doconvert) ? self._rgb : self._data
-  
   self.name = 'fabcamera_V4L2 '
   self.description = 'V4L2 Camera '
   self.registerproperty, 'greyscale', /boolean, sensitive = 0

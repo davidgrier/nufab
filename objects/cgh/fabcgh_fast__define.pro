@@ -88,7 +88,7 @@ pro fabCGH_fast::Precompute
   
   ci = complex(0., 1.)
   kx = self.q * (findgen((self.slm.dimensions)[0]) - self.kc[0])
-  ky = -self.q * self.aspect_ratio * (findgen((self.slm.dimensions)[1]) - self.kc[1])
+  ky = -self.q * self.aspect_ratio * (findgen((self.slm.dimensions)[1]) + self.kc[1])
   *self.ikxsq = ci*kx^2
   *self.ikysq = ci*ky^2
   *self.ikx = ci*kx

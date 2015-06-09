@@ -146,8 +146,6 @@ function fabcamera::Init, dimensions = dimensions, $
   self.description = 'Generic Camera '
   self.setpropertyattribute, 'name', sensitive = 0
   self.setpropertyattribute, 'description', sensitive = 0
-;  self.registerproperty, 'order', enum = ['Normal', 'Flipped']
-;  self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
   self.registerproperty, 'mpp', /float, hide = 1
   
   return, 1B
