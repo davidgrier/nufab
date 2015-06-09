@@ -12,7 +12,7 @@
 ; PROPERTIES:
 ;    CAMERA: index of the V4L2 camera to open
 ;    DIMENSIONS: [w,h] dimensions of image (pixels)
-;    GRAYSCALE: if set, images should be cast to grayscale.
+;    GREYSCALE: if set, images should be cast to grayscale.
 ;
 ; METHODS:
 ;    fabcamera_V4L2::GetProperty
@@ -131,7 +131,7 @@ function fabcamera_V4L2::Init, _ref_extra = re
   
   self.name = 'fabcamera_V4L2 '
   self.description = 'V4L2 Camera '
-  self.registerproperty, 'greyscale', /boolean
+  self.registerproperty, 'greyscale', /boolean, sensitive = 0
   self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
   self.registerproperty, 'order', enum = ['Normal', 'Flipped']
 
