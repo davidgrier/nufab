@@ -47,8 +47,17 @@
 ;
 ; Set the camera properties
 ;
-; FIXME: This should be implemented properly
-;
+pro fabcamera_V4L2::SetProperty, order = order, $
+                                 _extra = re
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if isa(order, /number, /scalar) then $
+     self.idlv4l2::SetProperty, vflip = order
+
+  self.idlv4l2::SetProperty, _extra = re
+  self.fabcamera::SetProperty, _extra = re
+end
 
 ;;;;;
 ;
@@ -108,6 +117,9 @@ function fabcamera_V4L2::Init, _ref_extra = re
   
   self.name = 'fabcamera_V4L2 '
   self.description = 'V4L2 Camera '
+  self.registerproperty, 'greyscale', /boolean
+  self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
+  self.registerproperty, 'order', enum = ['Normal', 'Flipped']
 
   return, 1B
 end
@@ -122,8 +134,8 @@ pro fabcamera_V4L2__define
 
   COMPILE_OPT IDL2
 
-  struct = {fabcamera_V4L2,     $
-            inherits fabcamera, $
-            inherits idlv4l2    $
+  struct = {fabcamera_V4L2,    $
+            inherits idlv4l2,  $
+            inherits fabcamera $
            }
 end
