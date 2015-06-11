@@ -12,6 +12,7 @@
 ; PROPERTIES:
 ;    CAMERA: index of the V4L2 camera to open
 ;    DIMENSIONS: [w,h] dimensions of image (pixels)
+;    GAIN: camera gain
 ;    GREYSCALE: if set, images should be cast to grayscale.
 ;
 ; METHODS:
@@ -49,6 +50,7 @@
 ;
 pro fabcamera_V4L2::SetProperty, order = order, $
                                  dimensions = dimension, $
+                                 gain = gain, $
                                  _extra = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -58,6 +60,9 @@ pro fabcamera_V4L2::SetProperty, order = order, $
 
   if isa(dimensions, /number) then $
      self.idlv4l2::SetProperty, dimensions = dimensions
+
+  if isa(gain, /number, /scalar) then $
+     self.idlv4l2::SetProperty, contrast = gain
 
   self.idlv4l2::SetProperty, _extra = re
   self.fabcamera::SetProperty, _extra = re
@@ -72,6 +77,7 @@ end
 ;
 pro fabcamera_V4L2::GetProperty, order = order, $
                                  dimensions = dimensions, $
+                                 gain = gain, $
                                  _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -81,6 +87,9 @@ pro fabcamera_V4L2::GetProperty, order = order, $
 
   if arg_present(dimensions) then $
      self.idlv4l2::GetProperty, dimensions = dimensions
+
+  if arg_present(gain) then $
+     self.idlv4l2::GetProperty, contrast = gain
 
   self.idlv4l2::GetProperty, _extra = re
   self.fabcamera::GetProperty, _extra = re
@@ -131,6 +140,15 @@ function fabcamera_V4L2::Init, order = order, $
   self.registerproperty, 'greyscale', /boolean, sensitive = 0
   self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
   self.registerproperty, 'order', enum = ['Normal', 'Flipped']
+
+  controls = self.listcontrols()
+  foreach id, controls, control do begin
+     props = self.querycontrol(id)
+     self.registerproperty, control, /integer, $
+        valid_range = [props.minimum, props.maximum, props.step], $
+        hide = props.flags.disabled, $
+        sensitive = ~props.flags.inactive
+  endforeach
 
   return, 1B
 end
