@@ -55,9 +55,9 @@
 ;
 ; fabCGH_fast::Compute
 ;
-; Compute hologram for the SLM device using fastphase algorithm
-;
-pro fabCGH_fast::Compute
+  ; Compute hologram for the SLM device using fastphase algorithm
+  ;
+  pro fabCGH_fast::Compute
 
   COMPILE_OPT IDL2, HIDDEN
 
@@ -68,6 +68,7 @@ pro fabCGH_fast::Compute
      *self.psi *= 0.
 
   foreach trap, self.traps do begin
+     help, trap
      pr = self.mat # (trap.rc - self.rc)
      ex = exp(*self.ikx * pr[0] + *self.ikxsq * pr[2])
      ey = exp(*self.iky * pr[1] + *self.ikysq * pr[2])
@@ -75,6 +76,8 @@ pro fabCGH_fast::Compute
   endforeach
 
   ;; phase of the field in the plane of the projecting device
+  help, *self.psi
+  
   *self.data = byte(round((127.5/!pi) * (atan(*self.psi, /phase) + !pi)))
 end
 
@@ -192,7 +195,7 @@ function fabCGH_fast::Init, background = background, $
         message, 'background must have the same dimensions as SLM', /info
         return, 0B
      endif
-     self.background = ptr_new(exp(complex(0, 1) * background))
+     self.background = ptr_new(float(background))
   endif
 
   self.name = 'fabCGH_fast '
