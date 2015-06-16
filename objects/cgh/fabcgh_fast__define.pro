@@ -62,22 +62,15 @@
   COMPILE_OPT IDL2, HIDDEN
 
   ;; field in the plane of the projecting device
-  if ptr_valid(self.background) then $
-     *self.psi = *self.background $
-  else $
-     *self.psi *= 0.
-
+  *self.psi = *self.background
   foreach trap, self.traps do begin
-     help, trap
      pr = self.mat # (trap.rc - self.rc)
      ex = exp(*self.ikx * pr[0] + *self.ikxsq * pr[2])
      ey = exp(*self.iky * pr[1] + *self.ikysq * pr[2])
      *self.psi += trap.alpha * (ex # ey)
   endforeach
 
-  ;; phase of the field in the plane of the projecting device
-  help, *self.psi
-  
+  ;; phase of the field in the plane of the projecting device  
   *self.data = byte(round((127.5/!pi) * (atan(*self.psi, /phase) + !pi)))
 end
 
@@ -156,23 +149,7 @@ end
 ;
 ; Set properties for CGH object
 ;
-pro fabCGH_fast::SetProperty, background = background, $
-                              _ref_extra = re
-
-  COMPILE_OPT IDL2, HIDDEN
-
-  self.fabCGH::SetProperty, _extra = re
-  
-  if isa(background, /number, /array) then begin
-     if ~isa(self.slm, 'fabSLM') then begin
-        message, 'must specify SLM before assigning a background', /info
-        self.background = ptr_new()
-     endif
-     if ~array_equal(size(background, /dimensions), slm.dimensions) then $
-        self.background = ptr_new()
-     self.background = ptr_new(background)
-  endif
-end
+; inherited from fabCGH
 
 ;;;;;
 ;

@@ -140,8 +140,8 @@ pro fabCGH::Deallocate
 
   COMPILE_OPT IDL2, HIDDEN
 
-  if ptr_valid(self.data) then ptr_free, self.data
-  if ptr_valid(self.background) then ptr_free, self.background
+  ptr_free, self.data
+  ptr_free, self.background
 end
 
 ;;;;;
@@ -155,8 +155,11 @@ function fabCGH::Allocate
   if ~isa(self.slm, 'fabSLM') then $
      return, 0B
 
-  data = bytarr(self.slm.dimensions)
+  dimensions = self.slm.dimensions
+  data = bytarr(dimensions)
   self.data = ptr_new(data, /no_copy)
+  background = complexarr(dimensions)
+  self.background = ptr_new(background, /no_copy)
   
   return, 1B
 end
@@ -338,8 +341,6 @@ pro fabCGH::SetProperty, slm          = slm,          $
   if doprecompute then self.precompute
   self.project
 end
-
-
 
 ;;;;;
 ;
