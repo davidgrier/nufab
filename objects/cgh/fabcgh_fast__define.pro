@@ -170,7 +170,7 @@ pro fabCGH_fast::SetProperty, background = background, $
      endif
      if ~array_equal(size(background, /dimensions), slm.dimensions) then $
         self.background = ptr_new()
-     self.background = ptr_new(exp(complex(0, 1) * background))
+     self.background = ptr_new(background)
   endif
 end
 
@@ -195,7 +195,7 @@ function fabCGH_fast::Init, background = background, $
         message, 'background must have the same dimensions as SLM', /info
         return, 0B
      endif
-     self.background = ptr_new(float(background))
+     self.background = ptr_new(background)
   endif
 
   self.name = 'fabCGH_fast '

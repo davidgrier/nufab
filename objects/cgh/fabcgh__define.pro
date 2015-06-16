@@ -19,7 +19,7 @@
 ; [ G ] DATA: byte-valued hologram, computed from data in TRAPS according
 ;        to SLM specifications.
 ;
-; [IGS] BACKGROUND: floating-point phase of the background field.
+; [IGS] BACKGROUND: complex-valued background field.
 ;        Default: 0.
 ;
 ; [ GS] RC: [rx, ry, rz] coordinates of the center of the projected
