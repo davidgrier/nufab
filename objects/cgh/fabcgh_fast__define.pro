@@ -67,7 +67,7 @@
      pr = self.mat # (trap.rc - self.rc)
      ex = exp(*self.ikx * pr[0] + *self.ikxsq * pr[2])
      ey = exp(*self.iky * pr[1] + *self.ikysq * pr[2])
-     *self.psi += trap.alpha * (ex # ey)
+     *self.psi += trap.alpha * (ex # ey) * self.window(pr)
   endforeach
 
   ;; phase of the field in the plane of the projecting device  

@@ -106,6 +106,22 @@ end
 
 ;;;;;
 ;
+; fabCGH::Window
+;
+; Traps near the Nyquist boundary are suppressed.
+; Compensate by pre-emphasis
+function fabCGH::Window, p
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  d = self.slm.dimensions
+  kr = !pi*abs(p/d) > 1e-5
+  fac = product(kr/sin(kr))
+  return, float(fac^2 < 100.)
+end
+
+;;;;;
+;
 ; fabCGH::Compute
 ;
 ; Compute hologram for the SLM device

@@ -71,7 +71,8 @@ pro fabCGH_cuda::Compute
      cudacgh_initialize, self.cgh
 
   foreach trap, self.traps do begin
-     p = [self.mat # (trap.rc - self.rc), trap.amplitude, trap.phase]
+     pr = self.mat # (trap.rc - self.rc)
+     p = [pr, trap.amplitude*self.window(pr), trap.phase]
      cudacgh_addtrap, self.cgh, self.cal, p
   endforeach
 
