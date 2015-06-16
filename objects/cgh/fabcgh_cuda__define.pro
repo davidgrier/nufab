@@ -129,12 +129,8 @@ end
 ;
 ; fabCGH_cuda::GetProperty
 ;
-pro fabCGH_cuda::GetProperty, _ref_extra = re
-
-  COMPILE_OPT IDL2, HIDDEN
-
-  self.fabCGH::GetProperty, _extra = re
-end
+; inherited from fabCGH
+;
 
 ;;;;;
 ;
