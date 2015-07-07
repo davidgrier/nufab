@@ -71,7 +71,7 @@ pro fabCGH_cuda::Compute
      cudacgh_initialize, self.cgh
 
   foreach trap, self.traps do begin
-     pr = self.mat # (trap.rc - self.rc)
+     pr = self.rotatescale(trap.rc)
      p = [pr, trap.amplitude * self.window(pr), trap.phase]
      cudacgh_addtrap, self.cgh, self.cal, p
   endforeach

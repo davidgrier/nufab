@@ -47,8 +47,8 @@ DONE   d) Integration with nuFab
    d) collapsible pane for main window
 
 7. OpenCV/v4l2
-   a) Handle properties properly
-   b) Gain/brightness.  Exposure?
+DONE   a) Handle properties properly
+DONE   b) Gain/brightness.  Exposure?
 
 8. Calibration
    a) Check for success -- does the trap go where I want?
@@ -85,3 +85,7 @@ DONE 11. Running median for holographic mode
    b) How to attach different CGH pipelines?  To each trap?
 
 DONE 15. The BNS SLM requires gamma = 0.5
+
+16. CGH Refinement
+
+17. Go get'em

@@ -76,6 +76,7 @@
 ; 10/26/2013 DGG Project background by default.
 ; 02/10/2015 DGG Updated TRAPS definition.
 ; 03/22/2015 DGG Removed extraneous definitions and functions
+; 07/07/2015 DGG Added RotateScale()
 ;
 ; Copyright (c) 2011-2015 David G. Grier
 ;-
@@ -118,6 +119,20 @@ function fabCGH::Window, p
   kr = !pi*abs(p/d) > 1e-5
   fac = product(kr/sin(kr))
   return, float(fac^2 < 100.)
+end
+
+;;;;;
+;
+; fabCGH::RotateScale()
+;
+; Rotate and scale trap coordinates using
+; calibration factors.
+;
+function fabCGH::RotateScale, p
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  return, self.mat # (p - self.rc)
 end
 
 ;;;;;
