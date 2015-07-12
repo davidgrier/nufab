@@ -147,7 +147,7 @@ if ngroups le 0 then $
 if arg_present(count) then begin
    count = 0
    foreach group, groups do $
-      count += group, count
+      count += group.count
 endif
 
 if arg_present(traps) then begin

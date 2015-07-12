@@ -106,8 +106,10 @@ pro fabcamera_opencv__define
 
   COMPILE_OPT IDL2, HIDDEN
   
-  struct = {fabcamera_opencv,   $
-            inherits fabcamera, $
-            inherits dgghwvideo $
+  struct = {fabcamera_opencv,    $
+            inherits fabcamera,  $
+            inherits dgghwvideo, $
+            order: 0L,           $
+            hflip: 0L            $
            }
 end
