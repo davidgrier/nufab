@@ -21,7 +21,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 01/29/2014 Written by David G. Grier, New York University
-; 03/30/2015 DGG figure video timer during motion events to prevent
+; 03/30/2015 DGG fire video timer during motion events to prevent
 ;    event pile-up.
 ;
 ; Copyright (c) 2014-2015 David G. Grier
