@@ -37,6 +37,7 @@
 ; 12/20/2013 DGG overhauled for new fab version.
 ; 04/06/2014 DGG try to set TLB_FRAME_ATTR properties.
 ; 04/24/2014 DGG Introduced GAMMA property.
+; 07/11/2015 DGG Update monitor selection logic.
 ;
 ; Copyright (c) 2011-2015, David G. Grier
 ;-
@@ -98,23 +99,32 @@ function fabslm_monitor::FindDevice, primary = primary
   monitors = IDLsysMonitorInfo()
   nmonitors = monitors.getnumberofmonitors()
 
-  if (success = (nmonitors gt 0)) then begin
-     names = monitors.getmonitornames()
-     if keyword_set(primary) then $ ; fake SLM on primary
-        slm = monitors.getprimarymonitorindex() $
-     else begin
-        slm = strlen(self.device_name gt 0) ? $
-              where(self.device_name eq names, success) : $ ; specific device
-              (monitors.getprimarymonitorindex() + 1) mod 2 ; secondary monitor
-        rect = monitors.getrectangles()
-        self.dimensions = rect[[2, 3], slm] - rect[[0, 1], slm]
-     endelse
-     self.device_name = names[slm]
+  if nmonitors le 0 then begin
+     obj_destroy, monitors
+     return, 0B
   endif
+  
+  names = monitors.getmonitornames()
+
+  if strlen(self.device_name gt 0) then begin ; specific device
+     slm = where(self.device_name eq names, success)
+     if ~success then begin
+        obj_destroy, monitors
+        return, 0B
+     endif
+  endif else if (keyword_set(primary) || (nmonitors eq 1)) then $
+     slm = monitors.getprimarymonitorindex() $
+  else $
+     slm = (monitors.getprimarymonitorindex() + 1) mod 2
+    
+  rect = monitors.getrectangles()
+  self.dimensions = (nmonitors eq 1) ? $
+                    rect[[2, 3]] - rect[[0, 1]] : $
+                    rect[[2, 3], slm] - rect[[0, 1], slm]
+  self.device_name = names[slm]
 
   obj_destroy, monitors
-
-  return, success
+  return, 1B
 end
 
 ;;;;;
