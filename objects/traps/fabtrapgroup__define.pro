@@ -43,34 +43,30 @@
 ;    fabTrapGroup inherits the properties and methods of
 ;    IDLgrModel, with some additions and modifications.
 ;
-;    TRAPS: The optical traps contained in the group, all of which
-;        must inherit the fabTrap class.  Traps are added with the
-;        fabTrapGroup::Add method and removed with the 
-;        fabTrapGroup::Remove method.
-;        [IG ]
+; [IG ] TRAPS: The optical traps contained in the group, all of which
+;       must inherit the fabTrap class.  Traps are added with the
+;       fabTrapGroup::Add method and removed with the 
+;       fabTrapGroup::Remove method.
 ;
-;    DATA: [5, ntraps] array of data describing the traps in the
-;        group.  Abstracted from the fabTrap objects contained in
-;        the group, as needed.
-;        DATA[0:2, *]: [x,y,z] coordinates of the traps
-;        DATA[3,   *]: alpha -- relative amplitude of the traps
-;        DATA[4,   *]: phi   -- relative phase of the traps
-;        [ GS]
+; [ G ] COUNT: The number of traps in the group.
 ;
-;    RS: [xs, ys, zs] coordinate of the group's current
-;        selection point
-;        [IGS]
+; [ GS] DATA: [5, ntraps] array of data describing the traps in the
+;       group.  Abstracted from the fabTrap objects contained in
+;       the group, as needed.
+;       DATA[0:2, *]: [x,y,z] coordinates of the traps
+;       DATA[3,   *]: alpha -- relative amplitude of the traps
+;       DATA[4,   *]: phi   -- relative phase of the traps
 ;
-;    RC: [xc, yc, zc] coordinate ot the group's geometric center.
-;        This is computed with the SetCenter method.
-;        [ G ]
+; [IGS] RS: [xs, ys, zs] coordinate of the group's current
+;       selection point
 ;
-;    COLOR: [3,5] byte array of the RGB colors that will color the
+; [ G ] RC: [xc, yc, zc] coordinate ot the group's geometric center.
+;       This is computed with the SetCenter method.
+;
+; [IG ] COLOR: [3,5] byte array of the RGB colors that will color the
 ;        group's traps in each state.
-;        [IG ]
 ;
-;    STATE: the group's current state
-;        [IGS]
+; [IGS] STATE: the group's current state
 ;
 ; METHODS:
 ;    fabTrapGroup::GetProperty
@@ -273,6 +269,7 @@ end
 ; Get the properties of a group of traps
 ;
 pro fabTrapGroup::GetProperty, traps = traps, $
+                               count = count, $
                                rs = rs, $
                                rc = rc, $
                                state = state, $
@@ -283,8 +280,8 @@ pro fabTrapGroup::GetProperty, traps = traps, $
 
   self->IDLgrModel::GetProperty, _extra = re
 
-  if arg_present(traps) then $
-     traps = self.get(/all, isa = 'fabtrap')
+  if arg_present(traps) || arg_present(count) then $
+     traps = self.get(/all, isa = 'fabtrap', count = count)
 
   rs = self.rs
 

@@ -12,20 +12,21 @@
 ;    IDLgrModel
 ;
 ; PROPERTIES:
-;    GROUPS: fabTrapGroup objects contained within the pattern.
-;        Groups are added with the fabTrappingPattern::Add method.
-;        Groups are automatically removed when they are destroyed.
-;        [IGS]
+; [IGS] GROUPS: fabTrapGroup objects contained within the pattern.
+;       Groups are added with the fabTrappingPattern::Add method.
+;       Groups are automatically removed when they are destroyed.
 ;
-;    TRAPS: fabTrap objects contained within the pattern.
-;        Traps are added with the fabTrappingPattern::Add method
-;        by which they are bundled into groups of type fabTrapGroup.
-;        [IGS]
+; [IGS] TRAPS: fabTrap objects contained within the pattern.
+;       Traps are added with the fabTrappingPattern::Add method
+;       by which they are bundled into groups of type fabTrapGroup.
 ;
-;    CGH: Object that computes the hologram associated with the
-;        groups of traps in the pattern.  This computational pipeline
-;        must inherit the class fabCGH.
-;        [IGS]
+; [IGS] CGH: Object that computes the hologram associated with the
+;       groups of traps in the pattern.  This computational pipeline
+;       must inherit the class fabCGH.
+;
+; [ G ] NGROUPS: Number of groups in the trapping pattern.
+;
+; [ G ] COUNT: Number of traps in the trapping pattern.
 ;
 ; METHODS:
 ;    fabTrappingPattern::GetProperty
@@ -129,6 +130,8 @@ end
 ; fabTrappingPattern::GetProperty
 ;
 pro fabTrappingPattern::GetProperty, groups = groups, $
+                                     ngroups = ngroups, $
+                                     count = count, $
                                      traps  = traps,  $
                                      data   = data,   $
                                      _ref_extra = re
@@ -140,6 +143,12 @@ self.IDLgrModel::GetProperty, _extra = re
 groups = self.get(/all, isa = 'fabtrapgroup', count = ngroups)
 if ngroups le 0 then $
    groups = []
+
+if arg_present(count) then begin
+   count = 0
+   foreach group, groups do $
+      count += group, count
+endif
 
 if arg_present(traps) then begin
    traps = list()
