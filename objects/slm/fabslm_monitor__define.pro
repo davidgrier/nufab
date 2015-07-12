@@ -11,28 +11,21 @@
 ;    fabslm
 ;
 ; PROPERTIES:
-;    DATA: Byte-valued hologram
-;        [ GS]
+; [ GS] DATA: Byte-valued hologram
 ;
-;    DEVICE_NAME: Name of the X Window display
-;        [IG ]
+; [IG ] DEVICE_NAME: Name of the X Window display
 ;
-;    DIMENSIONS: Dimensions of the SLM.
-;        Determined automatically for a physical SLM attached to
-;        a secondary display.  If no SLM is detected, or if
-;        DIMENSIONS are specified, a secondary window is opened
-;        on the current display to simulate an SLM.
-;        [IG ]
+; [IG ] DIMENSIONS: Dimensions of the SLM.
+;       Determined automatically for a physical SLM attached to
+;       a secondary display.  If no SLM is detected, or if
+;       DIMENSIONS are specified, a secondary window is opened
+;       on the current display to simulate an SLM.
 ;
-;    GAMMA: Gamma factor for presenting hologram data on SLM display
-;        [IGS]
+; [IGS] GAMMA: Gamma factor for presenting hologram data on SLM display
 ;
 ; METHODS:
 ;    SetProperty
 ;    GetProperty
-;
-; NOTES:
-;    Implement hardware controls (gamma, e.g.)
 ;
 ; MODIFICATION HISTORY:
 ; 01/26/2011 Written by David G. Grier, New York University
@@ -45,7 +38,7 @@
 ; 04/06/2014 DGG try to set TLB_FRAME_ATTR properties.
 ; 04/24/2014 DGG Introduced GAMMA property.
 ;
-; Copyright (c) 2011-2014, David G. Grier
+; Copyright (c) 2011-2015, David G. Grier
 ;-
 
 ;;;;;
@@ -57,15 +50,15 @@
 pro fabslm_monitor::SetProperty, data = data, $
                                  gamma = gamma
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if isa(data, /number, /array) then $
-   self.hologram.setproperty, data = data
+  if isa(data, /number, /array) then $
+     self.hologram.setproperty, data = data
 
-if isa(gamma, /number, /scalar) then $
-   self.palette.setproperty, gamma = gamma
+  if isa(gamma, /number, /scalar) then $
+     self.palette.setproperty, gamma = gamma
 
-self.slm.draw
+  self.slm.draw
 end
 
 ;;;;;
@@ -79,20 +72,19 @@ pro fabslm_monitor::GetProperty, device_name = device_name, $
                                  data = data, $
                                  gamma = gamma
                         
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
     
-if arg_present(device_name) then $
-   device_name = self.device_name
+  if arg_present(device_name) then $
+     device_name = self.device_name
 
-if arg_present(dimensions) then $
-   dimensions = self.dimensions
+  if arg_present(dimensions) then $
+     dimensions = self.dimensions
 
-if arg_present(data) then $
-   data = self.hologram.data
+  if arg_present(data) then $
+     data = self.hologram.data
 
-if arg_present(gamma) then $
-   self.palette.getproperty, gamma = gamma
-
+  if arg_present(gamma) then $
+     self.palette.getproperty, gamma = gamma
 end
 
 ;;;;;
@@ -101,28 +93,28 @@ end
 ;
 function fabslm_monitor::FindDevice, primary = primary
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-monitors = IDLsysMonitorInfo()
-nmonitors = monitors.getnumberofmonitors()
+  monitors = IDLsysMonitorInfo()
+  nmonitors = monitors.getnumberofmonitors()
 
-if (success = (nmonitors gt 0)) then begin
-   names = monitors.getmonitornames()
-   if keyword_set(primary) then $                         ; fake SLM on primary
-      slm = monitors.getprimarymonitorindex() $
-   else begin
-      slm = strlen(self.device_name gt 0) ? $
-            where(self.device_name eq names, success) : $ ; specific device
-            (monitors.getprimarymonitorindex() + 1) mod 2 ; secondary monitor
-      rect = monitors.getrectangles()
-      self.dimensions = rect[[2, 3], slm] - rect[[0, 1], slm]
-   endelse
-   self.device_name = names[slm]
-endif
+  if (success = (nmonitors gt 0)) then begin
+     names = monitors.getmonitornames()
+     if keyword_set(primary) then $ ; fake SLM on primary
+        slm = monitors.getprimarymonitorindex() $
+     else begin
+        slm = strlen(self.device_name gt 0) ? $
+              where(self.device_name eq names, success) : $ ; specific device
+              (monitors.getprimarymonitorindex() + 1) mod 2 ; secondary monitor
+        rect = monitors.getrectangles()
+        self.dimensions = rect[[2, 3], slm] - rect[[0, 1], slm]
+     endelse
+     self.device_name = names[slm]
+  endif
 
-obj_destroy, monitors
+  obj_destroy, monitors
 
-return, success
+  return, success
 end
 
 ;;;;;
@@ -135,52 +127,52 @@ function fabslm_monitor::Init, device_name = device_name, $
                                _ref_extra = re
 
 
-COMPILE_OPT IDL2, HIDDEN
-
-if ~self.fabslm::init(_extra = re) then $
-   return, 0B
+  COMPILE_OPT IDL2, HIDDEN
+  
+  if ~self.fabslm::init(_extra = re) then $
+     return, 0B
 
 ;;; Display for SLM
-self.device_name =  isa(device_name, 'string') ? device_name : ''
+  self.device_name =  isa(device_name, 'string') ? device_name : ''
 
-if ~self.finddevice(primary = primary) then $
-   return, 0B
+  if ~self.finddevice(primary = primary) then $
+     return, 0B
 
 ;;; Widget hierarchy
-self.wtlb = (keyword_set(primary)) ? $
-            widget_base(title = 'SLM', resource_name = 'SLM', $
-	                tlb_frame_attr=31) : $
-            widget_base(title = 'SLM', resource_name = 'SLM', $
-                        display_name = self.device_name, $
-                        tlb_frame_attr=31)
+  self.wtlb = (keyword_set(primary)) ? $
+              widget_base(title = 'SLM', resource_name = 'SLM', $
+                          tlb_frame_attr=31) : $
+              widget_base(title = 'SLM', resource_name = 'SLM', $
+                          display_name = self.device_name, $
+                          tlb_frame_attr=31)
 
-wslm = widget_draw(self.wtlb, $
-                   xsize = self.dimensions[0], $
-                   ysize = self.dimensions[1], $
-                   graphics_level = 2)
-
-widget_control, self.wtlb, /realize
-
+  wslm = widget_draw(self.wtlb, $
+                     xsize = self.dimensions[0], $
+                     ysize = self.dimensions[1], $
+                     graphics_level = 2)
+  
+  widget_control, self.wtlb, /realize
+  
 ;;; Graphics hierarchy
-widget_control, wslm, get_value = slm
-self.slm = slm
+  widget_control, wslm, get_value = slm
+  self.slm = slm
 
-ramp = bindgen(256)
-mygamma = isa(gamma, /number, /scalar) ? (float(gamma) > 0.) < 10. : 1.
-self.palette = IDLgrPalette(ramp, ramp, ramp, gamma = mygamma)
-data = bytarr(self.dimensions)
-self.hologram = IDLgrImage(data, palette = self.palette)
-
-model = IDLgrModel()
-model.add, self.hologram
-
-view = IDLgrView(viewplane_rect = [0., 0, self.dimensions])
-view.add, model
+  ramp = bindgen(256)
+  mygamma = isa(gamma, /number, /scalar) ? (float(gamma) > 0.) < 10. : 1.
+  self.palette = IDLgrPalette(ramp, ramp, ramp, gamma = mygamma)
+  data = bytarr(self.dimensions)
+  self.hologram = IDLgrImage(data, palette = self.palette)
+  
+  model = IDLgrModel()
+  model.add, self.hologram
+  
+  view = IDLgrView(viewplane_rect = [0., 0, self.dimensions])
+  view.add, model
 
 ;;; Embed graphics hierarchy in widget hierarchy
-self.slm.setproperty, graphics_tree = view
-
-return, 1B
+  self.slm.setproperty, graphics_tree = view
+  
+  return, 1B
 end
 
 ;;;;;
@@ -189,10 +181,9 @@ end
 ;
 pro fabslm_monitor::Cleanup
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-widget_control, self.wtlb, /destroy
-
+  widget_control, self.wtlb, /destroy
 end
 
 ;;;;;
@@ -201,14 +192,14 @@ end
 ;
 pro fabslm_monitor__define
 
-COMPILE_OPT IDL2, HIDDEN
-
-struct = {fabslm_monitor, $
-          inherits fabslm,       $
-          device_name: '',           $ ; name of SLM device
-          wtlb:        0L,           $ ; top-level base
-          slm:         obj_new(),    $ ; IDLgrWindow for drawing
-          hologram:    obj_new(),    $ ; IDLgrImage for data
-          palette:     obj_new()     $ ; lookup table for displaying holograms on SLM
-         }
+  COMPILE_OPT IDL2, HIDDEN
+  
+  struct = {fabslm_monitor,         $
+            inherits fabslm,        $
+            device_name: '',        $ ; name of SLM device
+            wtlb:        0L,        $ ; top-level base
+            slm:         obj_new(), $ ; IDLgrWindow for drawing
+            hologram:    obj_new(), $ ; IDLgrImage for data
+            palette:     obj_new()  $ ; lookup table
+           }
 end
