@@ -106,21 +106,20 @@ function fabslm_monitor::FindDevice, primary = primary
   
   names = monitors.getmonitornames()
 
-  if strlen(self.device_name gt 0) then begin ; specific device
-     slm = where(self.device_name eq names, success)
-     if ~success then begin
-        obj_destroy, monitors
-        return, 0B
-     endif
-  endif else if (keyword_set(primary) || (nmonitors eq 1)) then $
+  if (keyword_set(primary) || (nmonitors eq 1)) then $
      slm = monitors.getprimarymonitorindex() $
-  else $
-     slm = (monitors.getprimarymonitorindex() + 1) mod 2
-    
-  rect = monitors.getrectangles()
-  self.dimensions = (nmonitors eq 1) ? $
-                    rect[[2, 3]] - rect[[0, 1]] : $
-                    rect[[2, 3], slm] - rect[[0, 1], slm]
+  else begin
+     if strlen(self.device_name gt 0) then begin ; specific device
+        slm = where(self.device_name eq names, success)
+        if ~success then begin
+           obj_destroy, monitors
+           return, 0B
+        endif
+     endif else $               ; SLM on secondary monitor
+        slm = (monitors.getprimarymonitorindex() + 1) mod 2
+     rect = monitors.getrectangles()
+     self.dimensions = rect[[2, 3], slm] - rect[[0, 1], slm]
+  endelse
   self.device_name = names[slm]
 
   obj_destroy, monitors
@@ -151,10 +150,10 @@ function fabslm_monitor::Init, device_name = device_name, $
 ;;; Widget hierarchy
   self.wtlb = (keyword_set(primary)) ? $
               widget_base(title = 'SLM', resource_name = 'SLM', $
-                          tlb_frame_attr=31) : $
+                          tlb_frame_attr = 31) : $
               widget_base(title = 'SLM', resource_name = 'SLM', $
                           display_name = self.device_name, $
-                          tlb_frame_attr=31)
+                          tlb_frame_attr = 31)
 
   wslm = widget_draw(self.wtlb, $
                      xsize = self.dimensions[0], $
