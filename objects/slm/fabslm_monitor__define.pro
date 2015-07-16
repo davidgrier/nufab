@@ -157,8 +157,9 @@ function fabslm_monitor::Init, device_name = device_name, $
                           display_name = self.device_name, $
                           tlb_frame_attr=31)
 
-  if isa(dimensions, /number, /array) then begin
-     if total(dimensions gt 0) && total(dimensions le self.dimensions) then $
+  if isa(dimensions, /number, /array) && $
+     total(dimensions gt 0) && $
+     total(dimensions le self.dimensions) then $
         self.dimensions = long(dimensions)
      
   wslm = widget_draw(self.wtlb, $
