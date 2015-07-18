@@ -180,7 +180,7 @@ end
 ;
 ; fabCGH::Show()
 ;
-; Compute projected intensity
+; Compute projected hologram
 ;
 function fabCGH::Show, slm = showslm, $
                        field = showfield
