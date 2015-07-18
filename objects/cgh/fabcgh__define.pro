@@ -349,7 +349,7 @@ pro fabCGH::SetProperty, slm          = slm,          $
      self.mat[0:1, 0:1] = [[cos(theta), sin(theta)], [-sin(theta), cos(theta)]]
   endif
 
-  if (isa(kc, /number) and n_elements(kc) eq 2) then begin
+  if (isa(kc, /number) && n_elements(kc) eq 2) then begin
      self.kc = float(kc)
      doprecompute = 1
   endif
@@ -364,7 +364,7 @@ pro fabCGH::SetProperty, slm          = slm,          $
      doprecompute = 1
   endif
 
-  if isa(roi, /number) and n_elements(roi) eq 4 then begin
+  if isa(roi, /number) && n_elements(roi) eq 4 then begin
      self.roi = long(roi)
      doprecompute = 1
   endif

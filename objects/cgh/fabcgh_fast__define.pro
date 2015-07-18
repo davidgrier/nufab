@@ -51,13 +51,41 @@
 ;
 ; Copyright (c) 2011-2015 David G. Grier, David B. Ruffner and Ellery Russel
 ;-
+
+;;;;;
+;
+; fabCGH_fast::Quantize()
+;
+; Quantize provided field into phase hologram
+;
+function fabCGH_fast::Quantize, field
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  return, byte(round((127.5/!pi) * (atan(field, /phase) + !pi)))
+end
+
+;;;;;
+;
+; fabCGH_fast::Quantize
+;
+; Quantize computed field into phase hologram
+; and update local data
+;
+pro fabCGH_fast::Quantize
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  *self.data = self.quantize(*self.psi)
+end
+
 ;;;;;
 ;
 ; fabCGH_fast::Compute
 ;
-  ; Compute hologram for the SLM device using fastphase algorithm
-  ;
-  pro fabCGH_fast::Compute
+; Compute hologram for the SLM device using fastphase algorithm
+;
+pro fabCGH_fast::Compute
 
   COMPILE_OPT IDL2, HIDDEN
 
@@ -70,8 +98,8 @@
      *self.psi += trap.alpha * (ex # ey) * self.window(pr)
   endforeach
 
-  ;; phase of the field in the plane of the projecting device  
-  *self.data = byte(round((127.5/!pi) * (atan(*self.psi, /phase) + !pi)))
+  ;; phase of the field in the plane of the projecting device
+  self.quantize
 end
 
 ;;;;;
