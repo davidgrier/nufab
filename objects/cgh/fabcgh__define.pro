@@ -40,7 +40,18 @@
 ;
 ;    fabCGH::Compute
 ;        Use traps to compute hologram according to SLM
-;        specifications, then transfer the hologram to the SLM.
+;        specifications.
+;
+;    fabCGH::Project
+;        Compute hologram and transfer to SLM
+;
+;    fabCGH::Show()
+;        Returns computed projection of hologram into the focal plane.
+;        KEYWORDS:
+;            SLM: If set, use data currently on SLM.
+;                Default: Use data currently on CGH.
+;            FIELD: If set, return complex-valued field.
+;                Default: Return real-valued intensity.
 ;
 ;    fabCGH::Allocate
 ;        Allocate computational resources based on SLM
@@ -75,11 +86,13 @@
 ; 10/03/2013 DGG Support for different BACKGROUND types.
 ; 10/26/2013 DGG Project background by default.
 ; 02/10/2015 DGG Updated TRAPS definition.
-; 03/22/2015 DGG Removed extraneous definitions and functions
-; 07/07/2015 DGG Added RotateScale()
+; 03/22/2015 DGG Removed extraneous definitions and functions.
+; 07/07/2015 DGG Added RotateScale() internal method.
+; 07/18/2015 DGG Added Show() method
 ;
 ; Copyright (c) 2011-2015 David G. Grier
 ;-
+
 ;;;;;
 ;
 ; fabCGH::Reset
@@ -161,6 +174,35 @@ pro fabCGH::Precompute
 
   COMPILE_OPT IDL2, HIDDEN
 
+end
+
+;;;;;
+;
+; fabCGH::Show()
+;
+; Compute projected intensity
+;
+function fabCGH::Show, slm = showslm, $
+                       field = showfield
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  roi = self.roi
+  nx = roi[2] - roi[0] + 1
+  ny = roi[3] - roi[1] + 1
+  d = shift(dist(nx, ny), nx/2, ny/2)
+  mask = where(d ge (nx < ny)/2.)
+  
+  phi = keyword_set(showslm) ? $
+        (*self.slm.data)[roi[0]:roi[2], roi[1]:roi[3]] : $
+        (*self.data)[roi[0]:roi[2], roi[1]:roi[3]]
+
+  psi = exp(complex(0, phi) * !pi/128.)
+  psi[mask] = 0.
+  field = fft(psi, /center)
+  intensity = real_part(field*conj(field))
+
+  return, keyword_set(showfield) ? field : intensity
 end
 
 ;;;;;
