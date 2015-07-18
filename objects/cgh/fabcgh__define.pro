@@ -22,16 +22,22 @@
 ; [IGS] BACKGROUND: complex-valued background field.
 ;        Default: 0.
 ;
-; [ GS] RC: [rx, ry, rz] coordinates of the center of the projected
+; [IGS] RC: [rx, ry, rz] coordinates of the center of the projected
 ;        coordinate system.
 ;        Default: [0, 0, 0]
 ;
-; [ GS] MAT: Affine transformation matrix that maps requested trap
+; [IGS] MAT: Affine transformation matrix that maps requested trap
 ;        coordinates onto the projected coordinate system.
 ;        Default: 3 x 3 identity matrix.
 ;
-; [ GS] KC: [xi, eta] coordinates of optical axis on SLM.
+; [IGS] ROI: [X0, Y0, X1, Y1] Region of interest on face of SLM.
+;
+; [IGS] KC: [xi, eta] coordinates of optical axis on SLM.
 ;        Default: Center of SLM.
+;
+; [IGS] Q: conversion to inverse pixels in SLM plane.
+;
+; [IGS] ASPECT_RATIO: qy/qx.
 ;
 ; METHODS:
 ;    fabCGH::GetProperty
