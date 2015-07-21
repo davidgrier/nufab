@@ -200,8 +200,8 @@ function fabCGH::Show, ideal = ideal, $
   d = shift(dist(nx, ny), nx/2, ny/2)
   mask = where(d ge (nx < ny)/2.)
 
-  if keyword_set(ideal) then 
-     psi = *self.field[roi[0]:roi[2], roi[1]:roi[3]] $
+  if keyword_set(ideal) then $ 
+     psi = (*self.field)[roi[0]:roi[2], roi[1]:roi[3]] $
   else begin
      phi = keyword_set(showslm) ? $
            (*self.slm.data)[roi[0]:roi[2], roi[1]:roi[3]] : $

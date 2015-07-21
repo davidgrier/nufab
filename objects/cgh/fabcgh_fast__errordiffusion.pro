@@ -29,7 +29,7 @@ pro fabCGH_fast::errordiffusion
 
   COMPILE_OPT IDL2, HIDDEN
 
-  psi = *self.psi               ; complex field in hologram plane
+  psi = *self.field             ; complex field in hologram plane
   psi /= mean(abs(psi))         ; normalized for error diffusion
 
   dim = self.slm.dimensions
