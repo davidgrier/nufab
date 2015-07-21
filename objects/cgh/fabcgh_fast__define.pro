@@ -62,7 +62,7 @@ function fabCGH_fast::Quantize, field
 
   COMPILE_OPT IDL2, HIDDEN
 
-  return, byte(round((127.5/!pi) * (atan(field, /phase) + !pi)))
+  return, byte(round((128/!pi) * (atan(field, /phase) + !pi)))
 end
 
 ;;;;;

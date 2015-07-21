@@ -312,7 +312,7 @@ pro fabCGH::GetProperty, slm          = slm,          $
   if arg_present(q) then q = self.q
   if arg_present(aspect_ratio) then aspect_ratio = self.aspect_ratio
   if arg_present(aspect_z) then aspect_z = self.mat[2, 2]
-  if arg_present(angle) then angle = 180./!pi * atan(self.mat[1], self.mat[0])
+  if arg_present(angle) then angle = !radeg * atan(self.mat[1], self.mat[0])
   if arg_present(kc) then kc = self.kc
   if arg_present(xi) then xi = self.kc[0]
   if arg_present(eta) then eta = self.kc[1]
@@ -393,7 +393,7 @@ pro fabCGH::SetProperty, slm          = slm,          $
      self.mat[2, 2] = float(aspect_z)
 
   if isa(angle, /number, /scalar) then begin
-     theta = angle * !pi/180.
+     theta = angle * !dtor
      self.mat[0:1, 0:1] = [[cos(theta), sin(theta)], [-sin(theta), cos(theta)]]
   endif
 
@@ -498,7 +498,7 @@ function fabCGH::Init, slm          = slm,   $
   self.mat = identity(3)
   
   if isa(angle, /number, /scalar) then begin
-     theta = angle * !pi/180.
+     theta = angle * !dtor
      self.mat[0:1, 0:1] = [[cos(theta), sin(theta)], [-sin(theta), cos(theta)]]
   endif
 
