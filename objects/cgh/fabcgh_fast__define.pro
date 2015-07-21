@@ -16,8 +16,10 @@
 ;
 ; [IGS] TRAPS: list of fabTrap objects describing the traps
 ;
-; [ G ] DATA: byte-value hologram, computed from TRAPS according
+; [ G ] DATA: byte-valued hologram, computed from TRAPS according
 ;        to SLM specifications.
+;
+; [ G ] FIELD: complex-valued field in the hologram plane.
 ;
 ; [ GS] RC: [rx, ry, rz] coordinates of the center of the projected
 ;        coordinate system.
@@ -48,6 +50,7 @@
 ;    traps.
 ; 10/26/2013 DGG Can rely on background being present.
 ; 04/05/2014 DGG traps now provide complex amplitudes
+; 07/21/2015 DGG added FIELD keyword.
 ;
 ; Copyright (c) 2011-2015 David G. Grier, David B. Ruffner and Ellery Russel
 ;-
@@ -169,7 +172,16 @@ end
 ;
 ; Get properties for CGH object
 ;
-; inherited from fabCGH
+pro fabCGH_fast::GetProperty, field = field, $
+                              _ref_extra = re
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if arg_present(field) then $
+     field = *self.psi
+
+  self.fabCGH::GetProperty, _extra = re
+end
 
 ;;;;;
 ;
