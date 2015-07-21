@@ -188,7 +188,8 @@ end
 ;
 ; Compute projected hologram
 ;
-function fabCGH::Show, slm = showslm, $
+function fabCGH::Show, ideal = ideal, $
+                       slm = showslm, $
                        field = showfield
 
   COMPILE_OPT IDL2, HIDDEN
@@ -198,12 +199,17 @@ function fabCGH::Show, slm = showslm, $
   ny = roi[3] - roi[1] + 1
   d = shift(dist(nx, ny), nx/2, ny/2)
   mask = where(d ge (nx < ny)/2.)
-  
-  phi = keyword_set(showslm) ? $
-        (*self.slm.data)[roi[0]:roi[2], roi[1]:roi[3]] : $
-        (*self.data)[roi[0]:roi[2], roi[1]:roi[3]]
 
-  psi = exp(complex(0, phi) * !pi/128.)
+  if keyword_set(ideal) then 
+     psi = *self.field[roi[0]:roi[2], roi[1]:roi[3]] $
+  else begin
+     phi = keyword_set(showslm) ? $
+           (*self.slm.data)[roi[0]:roi[2], roi[1]:roi[3]] : $
+           (*self.data)[roi[0]:roi[2], roi[1]:roi[3]]
+
+     psi = exp(complex(0, phi) * !pi/128.)
+  endelse
+  
   psi[mask] = 0.
   field = fft(psi, /center)
   intensity = real_part(field*conj(field))

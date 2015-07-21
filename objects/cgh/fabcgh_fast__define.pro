@@ -79,7 +79,7 @@ pro fabCGH_fast::Quantize
 
   COMPILE_OPT IDL2, HIDDEN
 
-  *self.data = self.quantize(*self.psi)
+  *self.data = self.quantize(*self.field)
 end
 
 ;;;;;
@@ -93,12 +93,12 @@ pro fabCGH_fast::Compute
   COMPILE_OPT IDL2, HIDDEN
 
   ;; field in the plane of the projecting device
-  *self.psi = *self.background
+  *self.field = *self.background
   foreach trap, self.traps do begin
      pr = self.rotatescale(trap.rc)
      ex = exp(*self.ikx * pr[0] + *self.ikxsq * pr[2])
      ey = exp(*self.iky * pr[1] + *self.ikysq * pr[2])
-     *self.psi += trap.alpha * (ex # ey) * self.window(pr)
+     *self.field += trap.alpha * (ex # ey) * self.window(pr)
   endforeach
 
   ;; phase of the field in the plane of the projecting device
@@ -134,7 +134,7 @@ pro fabCGH_fast::Deallocate
 
   self->fabCGH::Deallocate
 
-  ptr_free, self.psi, $
+  ptr_free, self.field, $
             self.ikx, self.iky, $
             self.ikxsq, self.ikysq
 end
@@ -156,7 +156,7 @@ function fabCGH_fast::Allocate
   ;; allocate resources for CGH algorithm
   ; field in SLM plane
   dimensions = self.slm.dimensions
-  self.psi = ptr_new(complexarr(dimensions), /no_copy)
+  self.field = ptr_new(complexarr(dimensions), /no_copy)
   ; coordinates in SLM plane scaled as wavevectors
   self.ikx = ptr_new(complexarr(dimensions[0]), /no_copy)
   self.iky = ptr_new(complexarr(dimensions[1]), /no_copy)
@@ -178,7 +178,7 @@ pro fabCGH_fast::GetProperty, field = field, $
   COMPILE_OPT IDL2, HIDDEN
 
   if arg_present(field) then $
-     field = *self.psi
+     field = *self.field
 
   self.fabCGH::GetProperty, _extra = re
 end
@@ -238,7 +238,7 @@ pro fabCGH_fast__define
 
   struct = {fabCGH_fast, $
             inherits fabCGH,     $
-            psi:      ptr_new(), $ ; computed field
+            field:    ptr_new(), $ ; computed field
             ikx:      ptr_new(), $
             iky:      ptr_new(), $
             ikxsq:    ptr_new(), $
