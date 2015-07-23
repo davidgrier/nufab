@@ -195,25 +195,12 @@ end
 ;
 ; fabCGH_fast::Init
 ;
-function fabCGH_fast::Init, background = background, $
-                            _ref_extra = re
+function fabCGH_fast::Init, _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
   if ~self.fabCGH::Init(_extra = re) then $
      return, 0B
-
-  if isa(background, /number, /array) then begin
-     if ~isa(self.slm, 'fabSLM') then begin
-        message, 'must specify SLM before assigning a background', /info
-        return, 0B
-     endif
-     if ~array_equal(size(background, /dimensions), slm.dimensions) then begin
-        message, 'background must have the same dimensions as SLM', /info
-        return, 0B
-     endif
-     self.background = ptr_new(background)
-  endif
 
   self.name = 'fabCGH_fast '
   self.description = 'CPU CGH Pipeline '
