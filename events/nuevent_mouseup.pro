@@ -22,15 +22,17 @@
 ;-
 pro nuevent_mouseup, event
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-widget_control, event.top, get_uvalue = s
+  widget_control, event.top, get_uvalue = s
 
-if s.haskey('action') then begin
-   if s['action'] eq 4 then $
-      nuevent_grouproi, s $
-   else $
-      nuevent_clearselection, s
-   widget_control, event.id, draw_motion_events = 0 ; stop watching mouse motions
-endif
+  if s.haskey('action') then begin
+     if s['action'] eq 4 then $
+        nuevent_grouproi, s $
+     else $
+        nuevent_clearselection, s
+     widget_control, event.id, draw_motion_events = 0 ; stop watching mouse motions
+  endif
+
+  s['cgh'].refine
 end

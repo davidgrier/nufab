@@ -75,11 +75,27 @@ end
 ; Quantize computed field into phase hologram
 ; and update local data
 ;
-pro fabCGH_fast::Quantize
+pro fabCGH_fast::Quantize, field
 
   COMPILE_OPT IDL2, HIDDEN
 
-  *self.data = self.quantize(*self.field)
+  *self.data = (n_params() eq 1) ? $
+               self.quantize(field) : $
+               self.quantize(*self.field)
+end
+
+;;;;;
+;
+; fabCGH_fast::Refine
+;
+pro fabCGH_fast::Refine
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if self.traps.count() le 2 then return
+  self.interrupt = 0
+  self.errordiffusion
+  self.project
 end
 
 ;;;;;
@@ -92,6 +108,8 @@ pro fabCGH_fast::Compute
 
   COMPILE_OPT IDL2, HIDDEN
 
+  ;; stop ongoing hologram refinement
+  self.interrupt = 1
   ;; field in the plane of the projecting device
   *self.field = *self.background
   foreach trap, self.traps do begin
@@ -229,6 +247,7 @@ pro fabCGH_fast__define
             ikx:      ptr_new(), $
             iky:      ptr_new(), $
             ikxsq:    ptr_new(), $
-            ikysq:    ptr_new()  $
+            ikysq:    ptr_new(), $
+            interrupt: 0L        $
          }
 end

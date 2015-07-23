@@ -34,6 +34,7 @@ pro fabCGH_fast::errordiffusion
 
   dim = self.slm.dimensions
   for j = 0, dim[1]-3, 2 do begin
+     if self.interrupt then return
      j1 = j+1
      j2 = j+2
      for i = 1, dim[0]-2 do begin ; diffuse right
@@ -46,6 +47,7 @@ pro fabCGH_fast::errordiffusion
         psi[i  , j1] += 5.*err
         psi[i+1, j1] += err
      endfor
+     if self.interrupt then return
      for i = dim[0]-2, 1, -1 do begin ; diffuse left
         h = psi[i, j1]                ; ideal complex hologram at this pixel
         hp = h/abs(h)                 ; normalized hologram
@@ -58,5 +60,5 @@ pro fabCGH_fast::errordiffusion
      endfor
   endfor
 
-  self.slm.data = self.quantize(psi)
+  self.quantize, psi
 end

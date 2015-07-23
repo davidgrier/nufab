@@ -156,6 +156,18 @@ end
 
 ;;;;;
 ;
+; fabCGH::Refine
+;
+; Refine computed hologram
+;
+pro fabCGH::Refine
+
+  COMPILE_OPT IDL2, HIDDEN
+
+end
+
+;;;;;
+;
 ; fabCGH::Compute
 ;
 ; Compute hologram for the SLM device
@@ -166,7 +178,7 @@ pro fabCGH::Compute
   COMPILE_OPT IDL2, HIDDEN
 
   if ptr_valid(self.background) then $
-     self.data = ptr_new(bytscl(*self.background))
+     *self.data = bytscl(atan(*self.background, /phase))
 end
 
 ;;;;;
@@ -371,7 +383,7 @@ pro fabCGH::SetProperty, slm          = slm,          $
      endif
      if ~array_equal(size(background, /dimensions), slm.dimensions) then $
         self.background = ptr_new()
-     self.background = ptr_new(float(background))
+     self.background = ptr_new(complex(background))
   endif
 
   if isa(rc, /number) then begin
@@ -530,7 +542,7 @@ function fabCGH::Init, slm          = slm,   $
         message, 'background must have the same dimensions as SLM', /info
         return, 0B
      endif
-     self.background = ptr_new(float(background))
+     self.background = ptr_new(complex(background))
   endif
   
   if isa(traps, 'list') && isa(traps[0], 'fabTrap') then begin
@@ -568,7 +580,7 @@ pro fabCGH__define
             inherits fab_object,        $ 
             slm:          obj_new(),    $ ; target SLM
             data:         ptr_new(),    $ ; byte-valued hologram
-            background:   ptr_new(),    $ ; float-valued background phase
+            background:   ptr_new(),    $ ; complex-valued background phase
             traps:        obj_new(),    $ ; list of trap objects
             rc:           fltarr(3),    $ ; center of trap coordinate system
             mat:          fltarr(3, 3), $ ; transformation matrix
