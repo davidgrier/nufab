@@ -109,6 +109,7 @@ pro fabCGH::Reset
 
   self.setdefaults
   self.precompute
+  self.compute
   self.project
 end
 
@@ -120,7 +121,6 @@ pro fabCGH::Project
 
   COMPILE_OPT IDL2, HIDDEN
 
-  self.compute
   self.slm.data = *self.data
 end
 
@@ -424,6 +424,7 @@ pro fabCGH::SetProperty, slm          = slm,          $
   endif
 
   if doprecompute then self.precompute
+  self.compute
   self.project
 end
 
@@ -533,12 +534,13 @@ function fabCGH::Init, slm          = slm,   $
   endif
   
   if isa(traps, 'list') && isa(traps[0], 'fabTrap') then begin
-        self.traps = traps
-        self.project
+     self.traps = traps
+     self.compute
+     self.project
   endif else $
      self.traps = list()
 
-return, 1B
+  return, 1B
 end
 
 ;;;;;
