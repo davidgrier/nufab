@@ -74,6 +74,7 @@ for n = 0, npts-1 do $                ; add each pixel to group
    group.add, fabTweezer(rc = p[*,n]) ; ... each at its own position
 s['trappingpattern'].add, group       ; add the group to the pattern
 s['trappingpattern'].project          ; project the pattern
+s['cgh'].refine
    
 ;;; If we wanted to, we could move the group around with
 ;;; commands of the form
