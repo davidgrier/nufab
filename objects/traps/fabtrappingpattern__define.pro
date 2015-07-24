@@ -68,7 +68,6 @@
 ;
 ; Copyright (c) 2011-2014 David G. Grier
 ;-
-
 ;;;;;
 ;
 ; fabTrappingPattern::Project
@@ -77,11 +76,10 @@
 ;
 pro fabTrappingPattern::Project
 
-COMPILE_OPT IDL2, HIDDEN
-
-self.getproperty, traps = traps
-self.cgh.traps = traps
-
+  COMPILE_OPT IDL2, HIDDEN
+  
+  self.getproperty, traps = traps
+  self.cgh.traps = traps
 end
 
 ;;;;;
@@ -92,17 +90,16 @@ end
 ;
 pro fabTrappingPattern::Clear
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-groups = self.get(/all)
-foreach group, groups do begin
-   if isa(group, 'fabtrapgroup') then begin
-      obj_destroy, group
-   endif
-endforeach
+  groups = self.get(/all)
+  foreach group, groups do begin
+     if isa(group, 'fabtrapgroup') then begin
+        obj_destroy, group
+     endif
+  endforeach
 
-self.project
-
+  self.project
 end
 
 ;;;;;
@@ -111,18 +108,18 @@ end
 ;
 pro fabTrappingPattern::Randomize, seed
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if n_params() lt 1 then $
-   seed = systime(1)
-groups = self.get(/all)
-foreach group, groups do begin
-   if isa(group, 'fabtrapgroup') then begin
-      group.randomize, seed
-   endif
-endforeach
+  if n_params() lt 1 then $
+     seed = systime(1)
+  groups = self.get(/all)
+  foreach group, groups do begin
+     if isa(group, 'fabtrapgroup') then begin
+        group.randomize, seed
+     endif
+  endforeach
 
-self.project
+  self.project
 end
 
 ;;;;;
@@ -136,32 +133,31 @@ pro fabTrappingPattern::GetProperty, groups = groups, $
                                      data   = data,   $
                                      _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.IDLgrModel::GetProperty, _extra = re
+  self.IDLgrModel::GetProperty, _extra = re
 
-groups = self.get(/all, isa = 'fabtrapgroup', count = ngroups)
-if ngroups le 0 then $
-   groups = []
+  groups = self.get(/all, isa = 'fabtrapgroup', count = ngroups)
+  if ngroups le 0 then $
+     groups = []
 
-if arg_present(count) then begin
-   count = 0
-   foreach group, groups do $
-      count += group.count
-endif
+  if arg_present(count) then begin
+     count = 0
+     foreach group, groups do $
+        count += group.count
+  endif
 
-if arg_present(traps) then begin
-   traps = list()
-   foreach group, groups do $
-      traps.add, group.traps, /extract
-endif
-
-if arg_present(data) then begin
-   data = []
-   foreach group, groups do $
-      data = [[data], [group.data]]
-endif
-
+  if arg_present(traps) then begin
+     traps = list()
+     foreach group, groups do $
+        traps.add, group.traps, /extract
+  endif
+  
+  if arg_present(data) then begin
+     data = []
+     foreach group, groups do $
+        data = [[data], [group.data]]
+  endif
 end
 
 ;;;;;
@@ -174,34 +170,33 @@ pro fabTrappingPattern::SetProperty, cgh    = cgh,    $
                                      data   = data,   $
                                      _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.IDLgrModel::SetProperty, _extra = re
+  self.IDLgrModel::SetProperty, _extra = re
 
-if isa(cgh, 'fabcgh') then $
-   self.cgh = cgh
+  if isa(cgh, 'fabcgh') then $
+     self.cgh = cgh
 
-if isa(traps, 'objref') then begin
-   self.clear
-   self.add, traps
-endif
+  if isa(traps, 'objref') then begin
+     self.clear
+     self.add, traps
+  endif
 
-if isa(groups, 'objref') then begin
-   if ~isa(traps) then self.clear
-   self.add, groups
-endif
+  if isa(groups, 'objref') then begin
+     if ~isa(traps) then self.clear
+     self.add, groups
+  endif
 
-if n_elements(data) ge 5 then begin
-   self.clear
-   group = fabtrapgroup()
-   ntraps = n_elements(data[0,*])
-   for n = 0, ntraps-1 do $
-      group.add, fabtweezer(rc = data[0:2, n], $
-                            amplitude = data[3, n], $
-                            phase = data[4, n])
-   self.add, group
-endif
-
+  if n_elements(data) ge 5 then begin
+     self.clear
+     group = fabtrapgroup()
+     ntraps = n_elements(data[0,*])
+     for n = 0, ntraps-1 do $
+        group.add, fabtweezer(rc = data[0:2, n], $
+                              amplitude = data[3, n], $
+                              phase = data[4, n])
+     self.add, group
+  endif
 end
                                         
 ;;;;;
@@ -213,18 +208,17 @@ end
 pro fabTrappingPattern::Add, this, $
                              noproject = noproject
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if isa(this) then begin
-   if isa(this[0], 'fabtrapgroup') then $
-      self.IDLgrModel::Add, this $
-   else if isa(this[0], 'fabtrap') then $
-      self.IDLgrModel::Add, fabtrapgroup(this)
-endif
+  if isa(this) then begin
+     if isa(this[0], 'fabtrapgroup') then $
+        self.IDLgrModel::Add, this $
+     else if isa(this[0], 'fabtrap') then $
+        self.IDLgrModel::Add, fabtrapgroup(this)
+  endif
 
-if ~keyword_set(noproject) then $
-   self.project
-
+  if ~keyword_set(noproject) then $
+     self.project
 end
 
 ;;;;;
@@ -244,21 +238,21 @@ function fabTrappingPattern::Init, traps = traps, $
                                    cgh = cgh, $
                                    _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if (self.IDLgrModel::Init(_extra = re) ne 1) then $
-   return, 0
+  if (self.IDLgrModel::Init(_extra = re) ne 1) then $
+     return, 0
 
-if isa(cgh, 'fabcgh') then $
-   self.cgh = cgh
+  if isa(cgh, 'fabcgh') then $
+     self.cgh = cgh
 
-if isa(traps, 'objref') then $
-   self.add, traps
+  if isa(traps, 'objref') then $
+     self.add, traps
 
-if isa(groups, 'objref') then $
-   self.add, groups
+  if isa(groups, 'objref') then $
+     self.add, groups
 
-return, 1
+  return, 1
 end
 
 ;;;;;
@@ -267,11 +261,11 @@ end
 ;
 pro fabTrappingPattern__define
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-struct = {fabTrappingPattern, $
-          inherits IDLgrModel, $ ; graphical representation of traps
-          inherits IDL_Object, $ ; for implicit get/set
-          cgh:  obj_new() $      ; pipeline for calculating hologram
-         }
+  struct = {fabTrappingPattern, $
+            inherits IDLgrModel, $ ; graphical representation of traps
+            inherits IDL_Object, $ ; for implicit get/set
+            cgh:  obj_new() $      ; pipeline for calculating hologram
+           }
 end
