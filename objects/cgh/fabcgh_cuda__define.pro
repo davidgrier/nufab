@@ -132,6 +132,18 @@ end
 ;
 ; inherited from fabCGH
 ;
+pro fabCGH_cuda::GetProperty, field = field, $
+                              _ref_extra =  re
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if arg_present(field) then begin
+     field = cudacgh_getfield(self.cgh)
+     field = complex(field[*, *, 0], field[*, *, 1])
+  endif
+
+  self.fabCGH::GetProperty, _extra = re
+end
 
 ;;;;;
 ;
