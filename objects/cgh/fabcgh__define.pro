@@ -39,6 +39,9 @@
 ;
 ; [IGS] ASPECT_RATIO: qy/qx.
 ;
+; [IGS] WINDOWON: Flag.  If set, compensate trap amplitudes for
+;       Nyquist windowing.
+;
 ; METHODS:
 ;    fabCGH::GetProperty
 ;
@@ -95,6 +98,7 @@
 ; 03/22/2015 DGG Removed extraneous definitions and functions.
 ; 07/07/2015 DGG Added RotateScale() internal method.
 ; 07/18/2015 DGG Added Show() method
+; 07/25/2015 DGG Added WINDOWON proeprty.
 ;
 ; Copyright (c) 2011-2015 David G. Grier
 ;-
@@ -134,10 +138,13 @@ function fabCGH::Window, p
 
   COMPILE_OPT IDL2, HIDDEN
 
-  d = self.slm.dimensions
-  kr = !pi*abs(p/d) > 1e-5
-  fac = product(kr/sin(kr))
-  return, float(fac^2 < 100.)
+  if self.windowon then begin
+     d = self.slm.dimensions
+     kr = !pi*abs(p/d) > 1e-5
+     fac = product(kr/sin(kr))
+     return, float(fac^2 < 100.)
+  endif
+  return, 1
 end
 
 ;;;;;
@@ -305,6 +312,7 @@ pro fabCGH::GetProperty, slm          = slm,          $
                          eta          = eta,          $
                          mat          = mat,          $
                          roi          = roi,          $
+                         windowon     = windowon,     $
                          _ref_extra   = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -337,6 +345,7 @@ pro fabCGH::GetProperty, slm          = slm,          $
   if arg_present(mat) then mat = self.mat
 
   if arg_present(roi) then roi = self.roi
+  if arg_present(windowon) then windowon = self.windowon
 end
 
 ;;;;;
@@ -360,6 +369,7 @@ pro fabCGH::SetProperty, slm          = slm,          $
                          xi           = xi,           $
                          eta          = eta,          $
                          roi          = roi,          $
+                         windowon     = windowon,     $
                          _ref_extra   = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -435,6 +445,9 @@ pro fabCGH::SetProperty, slm          = slm,          $
      doprecompute = 1
   endif
 
+  if isa(windowon, /scalar, /number) then $
+     self.windowon = keyword_set(windowon)
+
   if doprecompute then self.precompute
   self.compute
   self.project
@@ -476,6 +489,7 @@ function fabCGH::Init, slm          = slm,   $
                        angle        = angle,        $
                        kc           = kc,    $
                        roi          = roi,   $
+                       windowon     = windowon, $
                        _ref_extra   = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -497,6 +511,7 @@ function fabCGH::Init, slm          = slm,   $
   self.registerproperty, 'angle', /float
   self.registerproperty, 'xi', /float
   self.registerproperty, 'eta', /float
+  self.registerproperty, 'windowon', /boolean
 
   if isa(rc, /number) then begin
      case n_elements(rc) of
@@ -529,6 +544,8 @@ function fabCGH::Init, slm          = slm,   $
 
   if isa(roi, /number) && n_elements(roi) eq 4 then $
      self.roi = long(roi)
+
+  self.windowon = isa(windowon, /number, /scalar) ? keyword_set(windowon) : 1
 
   if isa(self.slm, 'fabSLM') then $
      self.precompute
@@ -587,6 +604,7 @@ pro fabCGH__define
             roi:          lonarr(4),    $ ; active region of SLM
             kc:           fltarr(2),    $ ; center of hologram on SLM
             q:            0.,           $ ; conversion to inverse pixels in SLM plane
-            aspect_ratio: 0.            $ ; qy/qx
+            aspect_ratio: 0.,           $ ; qy/qx
+            windowon:     0L            $ ; flag: turn on windowing
            }
 end
