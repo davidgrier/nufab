@@ -52,9 +52,9 @@ function nuconf_cgh, configuration
      if execute('a = '+configuration['cgh_roi'], 1, 1) then $
         roi = a
 
-  if configuration.haskey('cgh_windowon') then $
-     windowon = keyword_set(configuration['cgh_windowon'])
-
+  windowon = (configuration.haskey('cgh_windowon')) ? $
+             keyword_set(configuration['cgh_windowon']) : 1
+  
   cgh = obj_new(cgh_object, slm = slm, rc = rc, kc = kc, $
                 q = q, aspect_ratio = aspect_ratio, angle = angle, $
                 aspect_z = aspect_z, roi = roi, windowon = windowon)
