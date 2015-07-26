@@ -34,7 +34,7 @@ pro nuevent_motion, event
   xy = [event.x, event.y]
 
   if float(!version.release) ge 8.4 then $
-     void = timer.fire(s['video'].timer)
+     s['video'].update
 
   case s['action'] of
      2: s['selected'].moveto, xy ; translating

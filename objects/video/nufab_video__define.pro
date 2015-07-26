@@ -140,6 +140,19 @@ end
 
 ;;;;;
 ;
+; nufab_video::Update
+;
+; Refresh the video display
+;
+pro nufab_video::Update
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  void = timer.fire(self.timer)
+end
+
+;;;;;
+;
 ; nufab_video::SetProperty
 ;
 pro nufab_video::SetProperty, camera     = camera,     $
