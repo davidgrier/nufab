@@ -50,8 +50,8 @@ function nuconf
   components.add, nuconf_imagelaser(configuration)
   components.add, nuconf_stage(configuration)
   components.add, nuconf_video(configuration)
-  components.add, nuconf_trappingpattern(configuration)
   components.add, nuconf_cgh(configuration)
+  components.add, nuconf_trappingpattern(configuration)
 
   ;;; Incorporate configuration information into nufab state
   state = hash()

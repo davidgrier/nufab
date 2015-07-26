@@ -33,6 +33,7 @@ pro fabCGH_fast::errordiffusion
   psi /= mean(abs(psi))         ; normalized for error diffusion
 
   dim = self.slm.dimensions
+  t0 = systime(1)
   for j = 0, dim[1]-3, 2 do begin
      if self.interrupt then return
      j1 = j+1
@@ -58,6 +59,10 @@ pro fabCGH_fast::errordiffusion
         psi[i  , j2] += 5.*err
         psi[i-1, j2] += err
      endfor
+     if ((t1 = systime(1)) - t0) ge 0.1 then begin
+        t0 = t1
+        self.handlecallbacks
+     endif
   endfor
 
   self.quantize, psi
