@@ -137,10 +137,8 @@ pro fabCGH_cuda::GetProperty, field = field, $
 
   COMPILE_OPT IDL2, HIDDEN
 
-  if arg_present(field) then begin
+  if arg_present(field) then $
      field = cudacgh_getfield(self.cgh)
-     field = complex(field[*, *, 0], field[*, *, 1])
-  endif
 
   self.fabCGH::GetProperty, _extra = re
 end
