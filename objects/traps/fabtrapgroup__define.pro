@@ -107,6 +107,10 @@
 ;        RC to XY.
 ;        Set OVERRIDE to rotate an "immutable" group.
 ;
+;    fabTrapGroup::ScaleBy, factor, /override
+;        Scale the positions of a trapping pattern about its center.
+;        Set OVERRIDE to scale an "immutable" group.
+;
 ; MODIFICATION HISTORY:
 ; 01/20/2011 Written by David G. Grier, New York University
 ; 01/29/2011 DGG Added IsMoveable() method.  Implemented 3D rotations
@@ -116,9 +120,10 @@
 ; 03/23/2011 DGG use _ref_extra in Init
 ; 06/11/2012 DGG don't clobber self.rs[2] when setting rs[0:1]
 ; 12/22/2013 DGG Overhaul for new fab implementation.
-; 01/22/2014 DGG Added RANDOMIZE method
+; 01/22/2014 DGG Added RANDOMIZE method.
 ; 05/15/2015 DGG turn off math errors during rotations to quell
 ;     harmless floating point underflow errors.
+; 07/25/2015 DGG Added ScaleBy method.
 ;
 ; Copyright (c) 2011-2015 David G. Grier
 ;-
@@ -130,6 +135,7 @@
 pro fabTrapGroup::Project
 
   COMPILE_OPT IDL2, HIDDEN
+  
   if isa(self.parent, 'fabtrappingpattern') then $
      self.parent.project
 end
@@ -174,16 +180,42 @@ pro fabTrapGroup::SetCenter
 
   COMPILE_OPT IDL2, HIDDEN
 
-  traps = self.get(/all, isa = 'fabtrap')
+  traps = self.get(/all, isa = 'fabtrap', count = n)
   self.rc *= 0.
-  foreach trap, traps, n do $
-     self.rc += trap.rc
-  self.rc /= float(n)
+  if n gt 0 then begin
+     foreach trap, traps do $
+        self.rc += trap.rc
+     self.rc /= float(n)
+  endif
 end
 
 ;;;;;
 ;
-; fabTrapGroup::RotateTo
+; fabTrapGroup::ScaleBy, factor
+;
+; Scale separation between traps by specified factor
+;
+pro fabTrapGroup::ScaleBy, factor, $
+                           override = override
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if ~self.ismoveable(override = override) then $
+     return
+
+  rc = self.rc
+  traps = self.get(/all, isa = 'fabtrap')
+  foreach trap, traps do begin
+     rn = factor * (trap.rc - rc) + rc
+     trap.rc = rn
+  endforeach
+
+  self.project
+end
+
+;;;;;
+;
+; fabTrapGroup::RotateTo, xy
 ;
 ; Rotate the group about its center
 ;
@@ -283,12 +315,9 @@ pro fabTrapGroup::GetProperty, traps = traps, $
   if arg_present(traps) || arg_present(count) then $
      traps = self.get(/all, isa = 'fabtrap', count = count)
 
-  rs = self.rs
+  if arg_present(rs) then rs = self.rs
 
-  if arg_present(rc) then begin
-     self.setcenter
-     rc = self.rc
-  endif
+  if arg_present(rc) then rc = self.rc
 
   if arg_present(state) then $
      state = self.state
@@ -369,6 +398,8 @@ pro fabTrapGroup::Add, this
         self.IDLgrModel::Add, trap
      endforeach
   endif
+
+  self.setcenter
 end
 
 ;;;;;
