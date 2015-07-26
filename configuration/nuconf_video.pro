@@ -17,33 +17,35 @@
 ;-
 function nuconf_video, configuration
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if configuration.haskey('camera') then $
-   camera = configuration['camera']
+  if configuration.haskey('camera') then $
+     camera = configuration['camera']
 
-if configuration.haskey('video_order') then $
-   order = long(configuration['video_order'])
+  if configuration.haskey('video_order') then $
+     order = long(configuration['video_order'])
 
-if configuration.haskey('video_framerate') then $
-   if execute('a = '+configuration['video_framerate'], 1, 1) then $
-      framerate = a
+  if configuration.haskey('video_frame_rate') then $
+     if execute('a = '+configuration['video_frame_rate'], 1, 1) then $
+        frame_rate = a
 
-if configuration.haskey('video_nthreads') then $
-   if execute('a = '+configuration['video_nthreads'], 1, 1) then $
-      nthreads = a
+;if configuration.haskey('video_nthreads') then $
+;   if execute('a = '+configuration['video_nthreads'], 1, 1) then $
+;      nthreads = a
 
-if configuration.haskey('video_directory') then $
-   if execute('a = '+configuration['video_directory'], 1, 1) then $
-      directory = a
+;if configuration.haskey('video_directory') then $
+;   if execute('a = '+configuration['video_directory'], 1, 1) then $
+;      directory = a
 
-video = fabvideo(camera = camera, order = order, $
-                 framerate = framerate, $
-                 nthreads = nthreads, directory = directory)
+;video = fabvideo(camera = camera, order = order, $
+;                 framerate = framerate, $
+;                 nthreads = nthreads, directory = directory)
+  video = nufab_video(camera = camera, order = order, $
+                      frame_rate = frame_rate)
 
-if ~isa(video, 'fabvideo') then $
-   configuration['error'] = 'could not initialize video system'
+  if ~isa(video, 'nufab_video') then $
+     configuration['error'] = 'could not initialize video system'
 
-configuration['video'] = video
-return, 'video'
+  configuration['video'] = video
+  return, 'video'
 end
