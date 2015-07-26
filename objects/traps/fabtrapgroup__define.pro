@@ -182,11 +182,10 @@ pro fabTrapGroup::SetCenter
 
   traps = self.get(/all, isa = 'fabtrap', count = n)
   self.rc *= 0.
-  if n gt 0 then begin
-     foreach trap, traps do $
-        self.rc += trap.rc
+  foreach trap, traps do $
+     self.rc += trap.rc
+  if n gt 1 then $
      self.rc /= float(n)
-  endif
 end
 
 ;;;;;
