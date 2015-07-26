@@ -66,7 +66,8 @@ pro fabCGH_cuda::Compute
   endif
 
   if ptr_valid(self.background) then $
-     cudacgh_initialize, self.cgh, *self.background $
+     cudacgh_initialize, self.cgh, $
+                         real_part(*self.background), imaginary(*self.background) $
   else $
      cudacgh_initialize, self.cgh
 
