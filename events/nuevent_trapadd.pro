@@ -16,28 +16,27 @@
 ;-
 pro nuevent_trapadd, event
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-widget_control, event.top, get_uvalue = s
+  widget_control, event.top, get_uvalue = s
 
-;;; Create a new trap where the user clicked
-trap = fabtweezer(rc = [event.x, event.y], phase = nufab_phase(s))
-group = fabtrapgroup(trap, state = 1)
-s['trappingpattern'].add, group
-nufab_annoy
+  ;;; Create a new trap where the user clicked
+  trap = fabtweezer(rc = [event.x, event.y], phase = nufab_phase(s))
+  group = fabtrapgroup(trap, state = 1)
+  s['trappingpattern'].add, group
+;  nufab_annoy
 
-;;; Right button adds the new trap to the currently selected group
-if event.press eq 4 then begin
-   if s.haskey('selected') then begin ; Add to existing group
-      s['selected'].add, group
-   endif else begin                   ; ... or create new active group
-      group.state = 4
-      s['selected'] = group
-      s['action'] = 4
-   endelse
-endif else $ ; ... otherwise there is no selection
-   nuevent_clearselection, s
+  ;;; Right button adds the new trap to the currently selected group
+  if event.press eq 4 then begin
+     if s.haskey('selected') then begin ; Add to existing group
+        s['selected'].add, group
+     endif else begin           ; ... or create new active group
+        group.state = 4
+        s['selected'] = group
+        s['action'] = 4
+     endelse
+  endif else $                  ; ... otherwise there is no selection
+     nuevent_clearselection, s
 
-fab_properties, s, /reload
-
+;  fab_properties, s, /reload
 end

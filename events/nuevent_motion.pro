@@ -28,19 +28,19 @@
 ;-
 pro nuevent_motion, event
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-widget_control, event.top, get_uvalue = s
-xy = [event.x, event.y]
+  widget_control, event.top, get_uvalue = s
+  xy = [event.x, event.y]
 
-if float(!version.release) ge 8.4 then $
-   void = timer.fire(s['video'].timer)
+  if float(!version.release) ge 8.4 then $
+     void = timer.fire(s['video'].timer)
 
-case s['action'] of
-   2: s['selected'].moveto, xy   ; translating
-   3: s['selected'].rotateto, xy ; rotating
-   4: if s.haskey('roi') then $  ; creating ROI (grouping)
-      s['roi'].r1 = xy
-   else:
-endcase
+  case s['action'] of
+     2: s['selected'].moveto, xy ; translating
+     3: s['selected'].rotateto, xy ; rotating
+     4: if s.haskey('roi') then $  ; creating ROI (grouping)
+        s['roi'].r1 = xy
+     else:
+  endcase
 end

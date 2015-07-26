@@ -13,23 +13,22 @@
 ;-
 function nufab_screen_event, event
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-case event.type of
-   0: begin                           ; mouse down event
-      case event.modifiers of
-         0: nuevent_trapselect, event ; no modifier
-         1: nuevent_trapadd, event    ; shift-click
-         2: nuevent_trapremove, event ; control-click
-      endcase
-   end
-   1: nuevent_mouseup, event          ; mouse up event
-   2: nuevent_motion, event           ; mouse drag event
-   6: return, nuevent_keyboard(event) ; keyboard event
-   7: nuevent_wheel, event            ; mouse wheel
-   else: return, event                ; pass unrecognized events back
-endcase
+  case event.type of
+     0: begin                   ; mouse down event
+        case event.modifiers of
+           0: nuevent_trapselect, event ; no modifier
+           1: nuevent_trapadd, event    ; shift-click
+           2: nuevent_trapremove, event ; control-click
+        endcase
+     end
+     1: nuevent_mouseup, event        ; mouse up event
+     2: nuevent_motion, event         ; mouse drag event
+     6: return, nuevent_keyboard(event) ; keyboard event
+     7: nuevent_wheel, event            ; mouse wheel
+     else: return, event                ; pass unrecognized events back
+  endcase
 
-return, 0
-
+  return, 0
 end

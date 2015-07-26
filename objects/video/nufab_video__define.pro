@@ -184,6 +184,7 @@ pro nufab_video::GetProperty, data       = data,       $
                               playing    = playing,    $
                               width      = width,      $
                               height     = height,     $
+                              timer      = timer,      $
                               _ref_extra = re
   
   COMPILE_OPT IDL2, HIDDEN
@@ -202,6 +203,7 @@ pro nufab_video::GetProperty, data       = data,       $
   if arg_present(playing)    then playing    = self.playing
   if arg_present(width)      then width      = (self.camera.dimensions)[0]
   if arg_present(height)     then height     = (self.camera.dimensions)[1]
+  if arg_present(timer)      then timer      = self.timer
 end
 
 ;;;;;
