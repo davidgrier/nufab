@@ -62,6 +62,9 @@ function nuconf_cgh, configuration
   if ~isa(cgh, 'fabcgh') then $
      configuration['error'] = 'could not initialize CGH'
 
+  if configuration.haskey('video') then $
+     cgh.registercallback, configuration['video']
+
   configuration['cgh'] = cgh
   return, 'cgh'
 end

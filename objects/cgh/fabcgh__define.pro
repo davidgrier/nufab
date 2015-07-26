@@ -105,6 +105,30 @@
 
 ;;;;;
 ;
+; fabCGH::RegisterCallback
+;
+pro fabCGH::RegisterCallback, object
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if obj_valid(object) then $
+     self.callbacks.add, object
+end
+
+;;;;;
+;
+; fabCGH::HandleCallbacks
+;
+pro fabCGH::HandleCallbacks
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  foreach object, self.callbacks do $
+     call_method, 'update', object
+end
+
+;;;;;
+;
 ; fabCGH::Reset
 ;
 pro fabCGH::Reset
@@ -569,6 +593,8 @@ function fabCGH::Init, slm          = slm,   $
   endif else $
      self.traps = list()
 
+  self.callbacks = list()
+
   return, 1B
 end
 
@@ -605,6 +631,7 @@ pro fabCGH__define
             kc:           fltarr(2),    $ ; center of hologram on SLM
             q:            0.,           $ ; conversion to inverse pixels in SLM plane
             aspect_ratio: 0.,           $ ; qy/qx
-            windowon:     0L            $ ; flag: turn on windowing
+            windowon:     0L,           $ ; flag: turn on windowing
+            callbacks:    obj_new()     $ ; hash for callback processes
            }
 end
