@@ -34,6 +34,8 @@ function nucal_xy_find, s
 
   a = float(nufab_snap(s, delay = 0.2)) ; acquire image
   a /= s['xy_bg']
+
+  tvscl, a
   
   ; candidate features are (at least 5 times) brighter 
   ; than the background
