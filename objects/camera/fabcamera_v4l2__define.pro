@@ -135,6 +135,8 @@ function fabcamera_V4L2::Init, order = order, $
   if (self.fabcamera::Init(_extra = re) ne 1) then $
      return, 0B
 
+  self.data = self._data
+
   self.name = 'fabcamera_V4L2 '
   self.description = 'V4L2 Camera '
   self.registerproperty, 'greyscale', /boolean, sensitive = 0
