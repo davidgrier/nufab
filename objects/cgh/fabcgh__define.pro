@@ -398,8 +398,6 @@ pro fabCGH::SetProperty, slm          = slm,          $
 
   COMPILE_OPT IDL2, HIDDEN
 
-  self.IDLitComponent::SetProperty, _extra = re
-
   doprecompute = 0
   if isa(slm, 'fabSLM') then $
      doprecompute = self.RegisterSLM(slm)
@@ -471,6 +469,8 @@ pro fabCGH::SetProperty, slm          = slm,          $
 
   if isa(windowon, /scalar, /number) then $
      self.windowon = keyword_set(windowon)
+
+  self.fab_object::SetProperty, _extra = re
 
   if doprecompute then self.precompute
   self.compute

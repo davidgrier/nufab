@@ -69,10 +69,10 @@ pro fabcamera::SetProperty, mpp = mpp, $
 
   COMPILE_OPT IDL2, HIDDEN
 
-  self.fab_object::SetProperty, _extra = re
-
   if isa(mpp, /scalar, /number) then $
      self.mpp = mpp
+
+  self.fab_object::SetProperty, _extra = re
 end
 
 ;;;;;

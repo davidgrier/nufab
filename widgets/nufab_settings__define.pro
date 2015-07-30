@@ -7,6 +7,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 02/13/2015 Written by David G. Grier, New York University
+; 07/30/2015 DGG register self as listener to component object.
 ;
 ; Copyright (c) 2015 David G. Grier
 ;-
@@ -28,6 +29,18 @@ end
 
 ;;;;;
 ;
+; nufab_setings::Refresh
+;
+pro nufab_settings::Refresh
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if self.wid gt 0 then $
+     widget_control, self.wid, /refresh_property
+end
+
+;;;;;
+;
 ; nufab_settings::Create
 ;
 pro nufab_settings::Create, wtop
@@ -37,7 +50,7 @@ pro nufab_settings::Create, wtop
   wid = widget_base(wtop, /COLUMN, /GRID_LAYOUT, $
                     TITLE = self.title, $
                     RESOURCE_NAME = 'NufabProperty')
-  void = widget_propertysheet(wid, value = self.object, /frame)
+  self.wid = widget_propertysheet(wid, value = self.object, /frame)
   self.widget_id = wid
 end
 
@@ -53,6 +66,7 @@ function nufab_settings::Init, wtop, object, title
   COMPILE_OPT IDL2, HIDDEN
 
   self.object = object
+  self.object.listener = self
   self.title = title
   return, self.nufab_widget::Init(wtop)
 end
@@ -67,6 +81,7 @@ pro nufab_settings__define
 
   struct = {nufab_settings, $
             inherits nufab_widget, $
+            wid: 0L, $
             title: '', $
             object: obj_new() $
            }

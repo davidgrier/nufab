@@ -157,8 +157,9 @@ pro nufab_widget__define
   COMPILE_OPT IDL2, HIDDEN
 
   struct = {nufab_widget, $
-            inherits IDL_Object, $
-            widget_id: 0L, $
-            name: '' $
+;            inherits IDL_Object, $
+            inherits fab_object, $
+            widget_id: 0L $
+;            name: '' $
            }
 end

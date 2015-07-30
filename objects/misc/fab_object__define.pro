@@ -19,21 +19,24 @@
 ;            * array of 1's and 0's if the input is an array of names.
 ;             
 ;    fab_object::GetProperty
-
-;    See documentation oof IDLitComponent and WIDGET_PROPERTYSHEET
-;    to expose properties for property sheets.
+;    fab_object::SetProperty
 ;
 ; PROPERTIES:
-;    ALL [ G ]: ordered hash of all properties and their values
+; [ G ] ALL: ordered hash of all properties and their values
 ;
-;    ADJUSTABLE [ G ]: ordered hash of all adjustable properties, and
-;        their current values
+; [ G ] ADJUSTABLE: ordered hash of all adjustable properties, and
+;       their current values
+;
+; [I S] LISTENER: Reference to an object that performs a task
+;       any time the object's properties are updated with
+;       SetProperty.  Listener object must have REFRESH method.
 ;
 ; MODIFICATION HISTORY:
 ; 12/15/2013 Written by David G. Grier, New York University
 ; 03/29/2014 DGG Added documentation.
 ; 02/15/2015 DGG Added HasProperty method.
 ; 03/30/2015 DGG Clean up IDLitComponent.
+; 07/30/2015 DGG Implemented LISTENER capability.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
@@ -49,6 +52,24 @@ function fab_object::HasProperty, property
      return, self.queryproperty(property)
 
   return, 0
+end
+
+;;;;;
+;
+; fab_object::SetProperty
+;
+pro fab_object::SetProperty, listener = listener, $
+                             _ref_extra = re
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if obj_valid(listener) then $
+     self.listener = listener
+
+  self.IDLitComponent::SetProperty, _extra = re
+
+  if obj_valid(self.listener) then $
+     self.listener.refresh
 end
 
 ;;;;;
@@ -107,12 +128,16 @@ end
 ;
 ; fab_object::Init()
 ;
-function fab_object::Init, _ref_extra = re
+function fab_object::Init, listener = listener, $
+                           _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
   if ~self.IDLitComponent::Init(_extra = re) then $
      return, 0B
+
+  if obj_valid(listener) then $
+     self.listener = listener
 
   self.name = 'fab_object '
   self.description = 'Object '
@@ -130,6 +155,7 @@ pro fab_object__define
   
   struct = {fab_object, $
             inherits IDLitComponent, $
-            inherits IDL_Object $
+            inherits IDL_Object, $
+            listener: obj_new() $
            }
 end
