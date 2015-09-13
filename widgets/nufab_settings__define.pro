@@ -35,8 +35,8 @@ pro nufab_settings::Refresh
 
   COMPILE_OPT IDL2, HIDDEN
 
-  if self.wid gt 0 then $
-     widget_control, self.wid, /refresh_property
+  if self.wproperty gt 0 then $
+     widget_control, self.wproperty, /refresh_property
 end
 
 ;;;;;
@@ -50,7 +50,7 @@ pro nufab_settings::Create, wtop
   wid = widget_base(wtop, /COLUMN, /GRID_LAYOUT, $
                     TITLE = self.title, $
                     RESOURCE_NAME = 'NufabProperty')
-  self.wid = widget_propertysheet(wid, value = self.object, /frame)
+  self.wproperty = widget_propertysheet(wid, value = self.object, /frame)
   self.widget_id = wid
 end
 
@@ -81,7 +81,7 @@ pro nufab_settings__define
 
   struct = {nufab_settings, $
             inherits nufab_widget, $
-            wid: 0L, $
+            wproperty: 0L, $
             title: '', $
             object: obj_new() $
            }
