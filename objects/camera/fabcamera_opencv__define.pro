@@ -10,7 +10,7 @@
 ;    DGGhwVideo
 ;
 ; PROPERTIES
-;    [IGS] GRAYSCALE: boolean flag to provide grayscale images
+; [IGS] GRAYSCALE: boolean flag to provide grayscale images
 ;
 ; MODIFICATION HISTORY
 ; 12/26/2013 Written by David G. Grier, New York University
@@ -31,7 +31,6 @@ pro fabcamera_opencv::Read
   self.data = ptr_new(self.dgghwvideo::read(), /no_copy)
   if self.hflip then $
      *self.data = reverse(temporary(*self.data), 2 - self.grayscale, /overwrite)
-  
   if self.order then $
      *self.data = reverse(temporary(*self.data), 3 - self.grayscale, /overwrite)
 end
@@ -40,10 +39,16 @@ end
 ;
 ; fabcamera_opencv::SetProperty
 ;
-pro fabcamera_opencv::SetProperty, _ref_extra = ex
+pro fabcamera_opencv::SetProperty, order = order, $
+                                   hflip = hflip, $
+                                   _ref_extra = ex
 
   COMPILE_OPT IDL2, HIDDEN
 
+  if isa(order, /number, /scalar) then $
+     self.order = keyword_set(order)
+  if isa(hflip, /number, /scalar) then $
+     self.hflip = keyword_set(hflip)
   self.dgghwvideo::SetProperty, _extra = ex
   self.fabcamera::SetProperty, _extra = ex
 end
@@ -52,10 +57,16 @@ end
 ;
 ; fabcamera_opencv::GetProperty
 ;
-pro fabcamera_opencv::GetProperty, _ref_extra = ex
+pro fabcamera_opencv::GetProperty, order = order, $
+                                   hflip = hflip, $
+                                   _ref_extra = ex
 
   COMPILE_OPT IDL2, HIDDEN
 
+  if arg_present(order) then $
+     order = self.order
+  if arg_present(hflip) then $
+     hflip = self.hflip
   self.dgghwvideo::GetProperty, _extra = ex
   self.fabcamera::GetProperty, _extra = ex
 end
@@ -82,6 +93,8 @@ function fabcamera_opencv::Init, dimensions = _dimensions, $
   self.name = 'fabcamera_opencv '
   self.description = 'OpenCV Camera '
   self.registerproperty, 'grayscale', /boolean
+  self.registerproperty, 'order', /boolean
+  self.registerproperty, 'hflip', /boolean
   
   return, 1B
 end
