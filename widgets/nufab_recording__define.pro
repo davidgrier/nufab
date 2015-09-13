@@ -383,10 +383,10 @@ function nufab_recording::Init, wtop, configuration, title
   COMPILE_OPT IDL2, HIDDEN
 
   self.directory = isa(configuration['directory'], 'string') ? $
-                   configuration.directory : $
+                   configuration['directory'] : $
                    '~/data'
   self.filename = isa(configuration['filename'], 'string') ? $
-                  configuration.filename : $
+                  configuration['filename'] : $
                   'nufab.h5'
   self.title = title
   return, self.nufab_widget::Init(wtop) 
