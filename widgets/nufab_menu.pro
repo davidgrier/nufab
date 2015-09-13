@@ -14,7 +14,7 @@
 ; MODIFICATION HISTORY:
 ; 12/22/2013 Written by David G. Grier, New York University
 ;
-; Copyright (c) 2013-2014 David G. Grier
+; Copyright (c) 2013-2015 David G. Grier
 ;-
 
 pro nufab_menu, bar
@@ -39,9 +39,9 @@ void = widget_button(video_menu, value = 'Properties...', $
                      event_pro = 'fab_properties', uvalue = 'VIDEO')
 void = widget_button(video_menu, value = 'Camera...', $
                      event_pro = 'fab_properties', uvalue = 'CAMERA')
-void = widget_button(video_menu, value = 'Take Snapshot...', uvalue = 'SNAPSHOT')
-void = widget_button(video_menu, value = 'Recording Directory...', uvalue = 'RECDIR')
-void = widget_button(video_menu, value = 'Record', uvalue = 'RECORD')
+;void = widget_button(video_menu, value = 'Take Snapshot...', uvalue = 'SNAPSHOT')
+;void = widget_button(video_menu, value = 'Recording Directory...', uvalue = 'RECDIR')
+;void = widget_button(video_menu, value = 'Record', uvalue = 'RECORD')
 
 ;;;
 ;;; TRAPS
