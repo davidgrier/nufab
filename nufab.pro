@@ -110,6 +110,7 @@ pro nufab, state = state
   ;; 2. control panels
   wcontrol = widget_base(wtop, /column)
   wtabs = widget_tab(wcontrol)
+  wrecording = nufab_recording(wtabs, state['recording'], 'Recording')
   wcamera = nufab_settings(wtabs, state['camera'], 'Camera')
   wcgh = nufab_settings(wtabs, state['cgh'], 'CGH')
 

@@ -15,6 +15,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 12/25/2013 Written by David G. Grier, New York University
+; 09/13/2015 DGG incorporate nuconf_recording.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
@@ -50,6 +51,7 @@ function nuconf
   components.add, nuconf_imagelaser(configuration)
   components.add, nuconf_stage(configuration)
   components.add, nuconf_video(configuration)
+  components.add, nuconf_recording(configuration)
   components.add, nuconf_cgh(configuration)
   components.add, nuconf_trappingpattern(configuration)
 
