@@ -382,7 +382,6 @@ function nufab_recording::Init, wtop, configuration, title
 
   COMPILE_OPT IDL2, HIDDEN
 
-  help, configuration
   self.directory = isa(configuration.directory, 'string') ? $
                    configuration.directory : $
                    '~/data'
