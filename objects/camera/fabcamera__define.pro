@@ -9,12 +9,9 @@
 ;    fab_object
 ;
 ; PROPERTIES
-;    DATA
-;        [ G ] byte-valued array of image data
-;    DIMENSIONS
-;        [IG ] [w,h,[3]] dimensions of images
-;    MPP
-;        [IGS] Magnification [micrometers/pixel]
+; [ G ] DATA: byte-valued array of image data
+; [IG ] DIMENSIONS: [w,h,[3]] dimensions of images
+; [IGS] MPP: Magnification [micrometers/pixel]
 ;
 ; METHODS
 ;    READ()

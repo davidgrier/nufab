@@ -13,6 +13,7 @@
 ;
 ; MODIFICATION HISTORY:
 ; 12/22/2013 Written by David G. Grier, New York University
+; 09/14/2015 DGG Reorganization for tab-based layout.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
@@ -31,17 +32,16 @@ void = widget_button(file_menu, value = 'Save Configuration...', $
 void = widget_button(file_menu, value = 'Quit', uvalue = 'QUIT')
 
 ;;;
-;;; VIDEO
+;;; PROPERTIES
 ;;;
-video_menu = widget_button(bar, value = 'Video', /menu, $
+prop_menu = widget_button(bar, value = 'Properties', /menu, $
                            event_pro = 'fab_menu_event')
-void = widget_button(video_menu, value = 'Properties...', $
+void = widget_button(prop_menu, value = 'Video...', $
                      event_pro = 'fab_properties', uvalue = 'VIDEO')
-void = widget_button(video_menu, value = 'Camera...', $
-                     event_pro = 'fab_properties', uvalue = 'CAMERA')
-;void = widget_button(video_menu, value = 'Take Snapshot...', uvalue = 'SNAPSHOT')
-;void = widget_button(video_menu, value = 'Recording Directory...', uvalue = 'RECDIR')
-;void = widget_button(video_menu, value = 'Record', uvalue = 'RECORD')
+void = widget_button(prop_menu, value = 'Imaging Laser...', $
+                     event_pro = 'fab_properties', uvalue = 'IMAGELASER')
+void = widget_button(prop_menu, value = 'Trapping Laser...', $
+                     event_pro = 'fab_properties', uvalue = 'TRAPLASER')
 
 ;;;
 ;;; TRAPS
@@ -51,15 +51,6 @@ traps_menu = widget_button(bar, value = 'Traps', /menu, $
 void = widget_button(traps_menu, value = 'Properties...', $
                      event_pro = 'fab_properties', uvalue = 'TRAPS')
 void = widget_button(traps_menu, value = 'Clear', uvalue = 'CLEAR')
-
-;;;
-;;; LASERS
-;;;
-laser_menu = widget_button(bar, value = 'Lasers', /menu)
-void = widget_button(laser_menu, value = 'Imaging...', $
-                     event_pro = 'fab_properties', uvalue = 'IMAGELASER')
-void = widget_button(laser_menu, value = 'Trapping...', $
-                     event_pro = 'fab_properties', uvalue = 'TRAPLASER')
 
 ;;;
 ;;; STAGE

@@ -11,12 +11,15 @@
 ;
 ; PROPERTIES
 ; [IGS] GRAYSCALE: boolean flag to provide grayscale images
+; [IGS] ORDER: boolean flag to flip images vertically
+; [IGS] HFLIP: boolean flag to flip images horizontally
 ;
 ; MODIFICATION HISTORY
 ; 12/26/2013 Written by David G. Grier, New York University
 ; 03/04/2014 DGG Implemented ORDER property.
 ; 04/06/2014 DGG Implemented HFLIP property.
 ; 03/16/2015 DGG Update for DLM interface
+; 09/15/2015 DGG documentation.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
