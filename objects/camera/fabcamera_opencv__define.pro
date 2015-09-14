@@ -96,8 +96,8 @@ function fabcamera_opencv::Init, dimensions = _dimensions, $
   self.name = 'fabcamera_opencv '
   self.description = 'OpenCV Camera '
   self.registerproperty, 'grayscale', /boolean
-  self.registerproperty, 'order', /boolean
-  self.registerproperty, 'hflip', /boolean
+  self.registerproperty, 'order', enum = ['Normal', 'Flipped']
+  self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
   
   return, 1B
 end
