@@ -31,7 +31,7 @@ pro fabcamera_opencv::Read
 
   COMPILE_OPT IDL2, HIDDEN
 
-  self.data = ptr_new(self.dgghwvideo::read(), /no_copy)
+  self.data = ptr_new(self.dgghwvideo::read()) ; , /no_copy) ; XXX experimental!!!
   if self.hflip then $
      *self.data = reverse(temporary(*self.data), 2 - self.grayscale, /overwrite)
   if self.order then $
