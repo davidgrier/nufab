@@ -133,7 +133,12 @@ pro nufab_video::handleTimerEvent, id, userdata
 
   COMPILE_OPT IDL2, HIDDEN
 
-  if id ne self.timer then print, 'inconsistent!'
+  if id ne self.timer then begin
+     message, 'Timer ID inconsistent!', /inf
+     message, timer.cancel(/all) ? $
+              "Outstanding timers cancelled" : $
+              "Could not cancel timers!", /inf
+  endif
   
   self.timer = timer.set(self.time, self)
   
