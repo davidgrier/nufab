@@ -154,7 +154,9 @@ pro nufab_video::Update
 
   COMPILE_OPT IDL2, HIDDEN
 
+  print, 'firing', self.timer
   void = timer.fire(self.timer)
+  print, 'fired', self.timer
 end
 
 ;;;;;
