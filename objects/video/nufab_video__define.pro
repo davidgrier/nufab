@@ -133,6 +133,8 @@ pro nufab_video::handleTimerEvent, id, userdata
 
   COMPILE_OPT IDL2, HIDDEN
 
+  if id ne self.timer then print, 'inconsistent!'
+  
   self.timer = timer.set(self.time, self)
   
   self.camera.read              ; update camera.data for filter
