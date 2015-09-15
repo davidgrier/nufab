@@ -132,13 +132,7 @@ end
 pro nufab_video::handleTimerEvent, id, debug
 
   COMPILE_OPT IDL2, HIDDEN
-
-  if id ne self.timer then begin
-     message, 'Timer ID inconsistent!', /inf
-     message, timer.cancel(/all) ? $
-              "Outstanding timers cancelled" : $
-              "Could not cancel timers!", /inf
-  endif
+  if debug then print, 'callback completed'
 
   self.timer = timer.set(self.time, self)
 
@@ -159,7 +153,9 @@ pro nufab_video::Update
 
   COMPILE_OPT IDL2, HIDDEN
 
-  void = timer.fire(self.timer)
+;  void = timer.fire(self.timer) ; causes lock-ups under linux
+  void = timer.cancel(/all)
+  self.handletimerevent,0,0
 end
 
 ;;;;;
