@@ -129,7 +129,7 @@ end
 ;
 ; nufab_video::handleTimerEvent
 ;
-pro nufab_video::handleTimerEvent, id, userdata
+pro nufab_video::handleTimerEvent, id, debug
 
   COMPILE_OPT IDL2, HIDDEN
 
@@ -139,13 +139,13 @@ pro nufab_video::handleTimerEvent, id, userdata
               "Outstanding timers cancelled" : $
               "Could not cancel timers!", /inf
   endif
-  
+
   self.timer = timer.set(self.time, self)
-  
+
   self.camera.read              ; update camera.data for filter
   self.IDLgrImage::SetProperty, data = self.filter.data
   self.screen.draw
-
+  
   self.handleCallbacks
 end
 
@@ -159,9 +159,7 @@ pro nufab_video::Update
 
   COMPILE_OPT IDL2, HIDDEN
 
-  print, 'firing', self.timer
   void = timer.fire(self.timer)
-  print, 'fired', self.timer
 end
 
 ;;;;;
