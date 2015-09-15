@@ -17,41 +17,45 @@
 ;    IDL_Object
 ;
 ; PROPERTIES:
-;    camera     [RG ]: nufab_camera object that provides images
-;    width      [ G ]: width of camera image
-;    height     [ G ]: height of camera image
-;    screen     [RG ]: IDLgrWindow on which the image is drawn
-;    frame_rate [IGS]: number of frames per second
-;    playing    [ GS]: If set, update video screen at frame_rate
+; [RG ] camera: nufab_camera object that provides images
+; [ G ] width: width of camera image
+; [ G ] height: height of camera image
+; [RG ] screen: IDLgrWindow on which the image is drawn
+; [IGS] frame_rate: number of frames per second
+; [ GS] playing: If set, update video screen at frame_rate
 ;
 ; METHODS:
-;    GetProperty
-;    SetProperty
+; GetProperty
+; SetProperty
 ;
-;    RegisterCallback, name, object
-;        Register a callback method that will be called each time
-;        an image is acquired.
-;        INPUTS:
-;            NAME: A string containing the name by which the callback
-;                will be referred.
-;            OBJECT: Object reference to the object that will handle
-;                the callback.  The object must implement the
-;                OBJECT::CALLBACK, obj
-;                method, taking the nufab_video object as its
-;                argument.
+; Update
+;    Fire the timer, thereby triggering image acquisition from
+;    the camera and an update of the screen object.
 ;
-;    UnregisterCallback, name
-;        Remove the named callback from the list of callbacks.
+; RegisterCallback, name, object
+;    Register a callback method that will be called each time
+;    an image is acquired.
+;    INPUTS:
+;        NAME: A string containing the name by which the callback
+;            will be referred.
+;        OBJECT: Object reference to the object that will handle
+;            the callback.  The object must implement the
+;            OBJECT::CALLBACK, obj
+;            method, taking the nufab_video object as its
+;            argument.
 ;
-;    RegisterFilter, object
-;        Register a filter that will process each video image
-;        INPUTS:
-;            OBJECT: Object reference to the filter of type
+; UnregisterCallback, name
+;    Remove the named callback from the list of callbacks.
+;
+; RegisterFilter, object
+;    Register a filter that will process each video image
+;    INPUTS:
+;        OBJECT: Object reference to the filter of type
 ;            nufab_filter.
 ;
-;    UnregisterFilter
-;        Unregisters the present filter, allowing raw video to
-;        be displayed on the screen.
+; UnregisterFilter
+;    Unregisters the present filter, allowing raw video to
+;    be displayed on the screen.
 ;
 ; MODIFICATION HISTORY:
 ; 02/12/2015 Written by David G. Grier, New York University
