@@ -12,40 +12,28 @@
 ; CATEGORY:
 ;    Holographic optical trapping, object graphics
 ;
-; SUPERCLASSES:
+; INHERITS:
 ;    IDLgrPolyline
 ;    IDL_Object
 ;
 ; PROPERTIES:
-;    RC: Three-dimensional position [pixels]
-;        [IGS]
-;
-;    ALPHA: Complex amplitude: amplitude * exp(i phase)
-;        [ G ]
-;
-;    AMPLITUDE: Relative amplitude.  Default: 1
-;        [IGS]
-;
-;    PHASE: Phase [radians].  Default: Random value in [0, 2pi].
-;        [IGS]
-;
-;    DATA: Trap characteristics: [xc, yc, zc, alpha, phase]
-;        [ G ]
-;
-;    STRUCTURE: Structuring field
-;        [IGS]
+; [IGS] RC: Three-dimensional position [pixels]
+; [ G ] ALPHA: Complex amplitude: amplitude * exp(i phase)
+; [IGS] AMPLITUDE: Relative amplitude.  Default: 1
+; [IGS] PHASE: Phase [radians].  Default: Random value in [0, 2pi].
+; [ G ] DATA: Trap characteristics: [xc, yc, zc, alpha, phase]
+; [IGS] STRUCTURE: Structuring field
 ;
 ; METHODS:
-;    fabTrap::GetProperty
+; GetProperty
+; SetProperty
 ;
-;    fabTrap::SetProperty
-;
-;    fabTrap::MoveBy, dr, /override
-;        Displace trap in two or three dimensions
-;        DR: displacement vector [pixels]
-;        OVERRIDE: If set, project the trap.  Default behavior
-;            is to displace the graphic, but to leave projection
-;            to the parent fabTrapGroup.
+; MoveBy, dr, /override
+;    Displace trap in two or three dimensions
+;    DR: displacement vector [pixels]
+;    OVERRIDE: If set, project the trap.  Default behavior
+;        is to displace the graphic, but to leave projection
+;        to the parent fabTrapGroup.
 ;
 ; NOTES: 
 ;    Add palette for color table.
@@ -84,14 +72,13 @@
 ;
 pro fabTrap::DrawGraphic
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-graphic = *self.graphic
-graphic[0, *] += self.rc[0]
-graphic[1, *] += self.rc[1]
-
-self.IDLgrPolyline::SetProperty, data = graphic
-
+  graphic = *self.graphic
+  graphic[0, *] += self.rc[0]
+  graphic[1, *] += self.rc[1]
+  
+  self.IDLgrPolyline::SetProperty, data = graphic
 end
 
 ;;;;
@@ -100,8 +87,10 @@ end
 ;
 pro fabTrap::Project
 
-if isa(self.parent, 'fabtrapgroup') then $
-   self.parent.project
+  COMPILE_OPT IDL2, HIDDEN
+
+  if isa(self.parent, 'fabtrapgroup') then $
+     self.parent.project
 end
 
 ;;;;
@@ -113,19 +102,15 @@ end
 pro fabTrap::MoveBy, dr, $
                      override = override
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-case n_elements(dr) of
-   3: self.rc += dr
-   2: self.rc[0:1] += dr
-else:
-endcase
+  case n_elements(dr) of
+     3: self.rc += dr
+     2: self.rc[0:1] += dr
+     else:
+  endcase
 
-;if keyword_set(override) then $
-;   self.project
-
-self.drawgraphic
-
+  self.drawgraphic
 end
 
 ;;;;
@@ -136,14 +121,14 @@ end
 ;
 function fabTrap::Select, state = state ; 2: select, or 3: grouping
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if ~isa(self.parent, 'fabtrapgroup') then $
-   return, !NULL
+  if ~isa(self.parent, 'fabtrapgroup') then $
+     return, !NULL
 
-self.parent.setproperty, state = state, rc = self.rc
+  self.parent.setproperty, state = state, rc = self.rc
 
-return, ptr_new(self.parent)
+  return, ptr_new(self.parent)
 end
 
 ;;;;
@@ -155,14 +140,13 @@ end
 ;
 function fabTrap::_overloadForeach, value, key
 
-COMPILE_OPT IDL2
+  COMPILE_OPT IDL2, HIDDEN
 
-if n_elements(key) gt 0 then return, 0
+  if n_elements(key) gt 0 then return, 0
 
-value = self
-key = 0
-
-return, 1
+  value = self
+  key = 0
+  return, 1
 end
 
 ;;;;
@@ -178,53 +162,41 @@ pro fabTrap::SetProperty, rc         = rc,        $ ; position
                           structure  = structure, $ ; structure
                           _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
   
-self.IDLgrPolyline::SetProperty, _extra = re
+  self.IDLgrPolyline::SetProperty, _extra = re
 
-;doproject = 0
-if isa(rc, /number, /array) then begin
-   case n_elements(rc) of
-      3: self.rc = rc
-      2: self.rc[0:1] = rc
-   else:
-   endcase
-;   doproject = 1
-endif
+  if isa(rc, /number, /array) then begin
+     case n_elements(rc) of
+        3: self.rc = rc
+        2: self.rc[0:1] = rc
+        else:
+     endcase
+  endif
 
-if isa(xc, /number, /scalar) then begin
-   self.rc[0] = xc
-;   doproject = 1
-endif
+  if isa(xc, /number, /scalar) then $
+     self.rc[0] = xc
 
-if isa(yc, /number, /scalar) then begin
-   self.rc[1] = yc
-;   doproject = 1
-endif
+  if isa(yc, /number, /scalar) then $
+     self.rc[1] = yc
 
-if isa(zc, /number, /scalar) then begin
-   self.rc[2] = zc
-;   doproject = 1
-endif
+  if isa(zc, /number, /scalar) then $
+     self.rc[2] = zc
 
-if isa(amplitude, /number, /scalar) then begin
-   self.amplitude = amplitude
-   self.alpha = self.amplitude * exp(complex(0., self.phase))
-;   doproject = 1
-endif
+  if isa(amplitude, /number, /scalar) then begin
+     self.amplitude = amplitude
+     self.alpha = self.amplitude * exp(complex(0., self.phase))
+  endif
 
-if isa(phase, /number, /scalar) then begin
-   self.phase = phase
-   self.alpha = self.amplitude * exp(complex(0., self.phase))
-;   doproject = 1
-endif
+  if isa(phase, /number, /scalar) then begin
+     self.phase = phase
+     self.alpha = self.amplitude * exp(complex(0., self.phase))
+  endif
 
-if isa(structure, 'pointer') then $
-   self.structure = structure
+  if isa(structure, 'pointer') then $
+     self.structure = structure
 
-;if doproject then self.project
-self.drawgraphic
-
+  self.drawgraphic
 end
 
 ;;;;
@@ -243,30 +215,29 @@ pro fabTrap::GetProperty, rc         = rc,        $
                           data       = data,      $
                           _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self->IDLgrPolyline::GetProperty, _extra = re
+  self->IDLgrPolyline::GetProperty, _extra = re
 
-rc = self.rc
-xc = rc[0]
-yc = rc[1]
-zc = rc[2]
+  rc = self.rc
+  xc = rc[0]
+  yc = rc[1]
+  zc = rc[2]
+  
+  if arg_present(alpha) then $
+     alpha = self.alpha
+  
+  if arg_present(amplitude) then $
+     amplitude = self.amplitude
 
-if arg_present(alpha) then $
-   alpha = self.alpha
+  if arg_present(phase) then $
+     phase = self.phase
 
-if arg_present(amplitude) then $
-   amplitude = self.amplitude
+  if arg_present(structure) then $
+     structure = self.structure
 
-if arg_present(phase) then $
-   phase = self.phase
-
-if arg_present(structure) then $
-   structure = self.structure
-
-if arg_present(data) then $
-   data = [self.rc, self.amplitude, self.phase]
-
+  if arg_present(data) then $
+     data = [self.rc, self.amplitude, self.phase]
 end
 
 ;;;;;
@@ -279,45 +250,45 @@ function fabTrap::Init, rc         = rc,        $
                         structure  = structure, $
                         _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if (self.IDLgrPolyline::Init(_extra = re) ne 1) then $
-   return, 0B
+  if (self.IDLgrPolyline::Init(_extra = re) ne 1) then $
+     return, 0B
+  
+  if ~isa(self.graphic) then $
+     self.graphic = ptr_new(fltarr(3))
 
-if ~isa(self.graphic) then $
-   self.graphic = ptr_new(fltarr(3))
+  case n_elements(rc) of
+     3: self.rc = rc
+     2: self.rc = [rc, 0.]
+     else:
+  endcase
 
-case n_elements(rc) of
-   3: self.rc = rc
-   2: self.rc = [rc, 0.]
-else:
-endcase
+  self.amplitude = isa(amplitude, /number, /scalar) ? float(amplitude) : 1.
 
-self.amplitude = isa(amplitude, /number, /scalar) ? float(amplitude) : 1.
+  self.phase = isa(phase, /number, /scalar) ? float(phase) : $
+               2. * !pi * randomu(seed)
 
-self.phase = isa(phase, /number, /scalar) ? float(phase) : $
-             2. * !pi * randomu(seed)
+  self.alpha = self.amplitude * exp(complex(0., self.phase))
 
-self.alpha = self.amplitude * exp(complex(0., self.phase))
+  if isa(structure, 'pointer') then $
+     self.structure = structure
 
-if isa(structure, 'pointer') then $
-   self.structure = structure
+  self.drawgraphic
 
-self.drawgraphic
+  self.name = 'fabTrap '
+  self.description = 'Optical Trap '
+  self.registerproperty, 'name', /string, /hide
+  self.registerproperty, 'description', /string
+  self.registerproperty, 'xc', /float, description = 'x'
+  self.registerproperty, 'yc', /float, description = 'y'
+  self.registerproperty, 'zc', /float, description = 'z'
+  self.registerproperty, 'amplitude', /float, description = 'amplitude', $
+     valid_range = [0., 100., 0.01]
+  self.registerproperty, 'phase', /float, description = 'phase', $
+     valid_range = [0., 2.*!pi, 0.01]
 
-self.name = 'fabTrap '
-self.description = 'Optical Trap '
-self.registerproperty, 'name', /string, /hide
-self.registerproperty, 'description', /string
-self.registerproperty, 'xc', /float, description = 'Trap position: x'
-self.registerproperty, 'yc', /float, description = 'Trap position: y'
-self.registerproperty, 'zc', /float, description = 'Trap position: z'
-self.registerproperty, 'amplitude', /float, description = 'Relative amplitude', $
-   valid_range = [0., 100., 0.01]
-self.registerproperty, 'phase', /float, description = 'Relative phase', $
-   valid_range = [0., 2.*!pi, 0.01]
-
-return, 1B
+  return, 1B
 end
 
 ;;;;
