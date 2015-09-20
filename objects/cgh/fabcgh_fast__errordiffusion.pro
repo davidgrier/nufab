@@ -25,10 +25,12 @@
 ;
 ; Copyright (c) 2015 David G. Grier
 ;-
-pro fabCGH_fast::errordiffusion
+pro fabCGH_fast::errordiffusion, interval
 
   COMPILE_OPT IDL2, HIDDEN
 
+  interval = 0.03
+  
   psi = *self.field             ; complex field in hologram plane
   psi /= mean(abs(psi))         ; normalized for error diffusion
 
@@ -59,7 +61,7 @@ pro fabCGH_fast::errordiffusion
         psi[i  , j2] += 5.*err
         psi[i-1, j2] += err
      endfor
-     if ((t1 = systime(1)) - t0) ge 0.1 then begin
+     if ((t1 = systime(1)) - t0) ge interval then begin
         t0 = t1
         self.handlecallbacks
      endif
