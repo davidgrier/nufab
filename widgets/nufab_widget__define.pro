@@ -5,19 +5,19 @@
 ; PURPOSE:
 ;    Base class for object widgets.
 ;
-; SUPERCLASS:
-;    IDL_Object
+; INHERITS:
+;    fab_object
 ;
 ; PROPERTIES:
-;    [R  ] WTOP:      Widget ID of the top-level widget
-;    [  S] TITLE:     Title of widget
-;    [ GS] OFFSET:    [x,y] offset of widget's top-level base [pixels]
-;    [ G ] SIZE:      [nx,ny] size of widget [pixels]
-;    [ G ] SCR_SIZE:  [nx,ny] size of widget on screen [pixels]
-;    [ G ] DRAW_SIZE: [nx,ny] size of widget's drawing area [pixels]
-;    [ G ] MARGIN:    [nx,ny] margin around draw area [pixels]
-;    [ G ] PAD:       [nx,ny] padding around widget [pixels]
-;    [ G ] SPACE
+; [R  ] WTOP:      Widget ID of the top-level widget
+; [  S] TITLE:     Title of widget
+; [ GS] OFFSET:    [x,y] offset of widget's top-level base [pixels]
+; [ G ] SIZE:      [nx,ny] size of widget [pixels]
+; [ G ] SCR_SIZE:  [nx,ny] size of widget on screen [pixels]
+; [ G ] DRAW_SIZE: [nx,ny] size of widget's drawing area [pixels]
+; [ G ] MARGIN:    [nx,ny] margin around draw area [pixels]
+; [ G ] PAD:       [nx,ny] padding around widget [pixels]
+; [ G ] SPACE
 ;
 ; METHODS:
 ;    GetProperty/SetProperty

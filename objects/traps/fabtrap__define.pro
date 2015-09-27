@@ -297,14 +297,14 @@ end
 ;
 pro fabTrap::Cleanup
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-self.IDLgrPolyline::Cleanup
+  self.IDLgrPolyline::Cleanup
 
-if isa(self.parent, 'fabtrapgroup') then $
-   self.parent.remove, self
+  if isa(self.parent, 'fabtrapgroup') then $
+     self.parent.remove, self
 
-ptr_free, self.structure
+  ptr_free, self.structure
 end
 
 ;;;;
@@ -315,16 +315,16 @@ end
 ;
 pro fabTrap__define
 
-COMPILE_OPT IDL2, HIDDEN
-
-struct = {fabTrap, $
-          inherits IDLgrPolyline, $
-          inherits IDL_Object,    $
-          graphic:   ptr_new(),   $ ; coordinates of graphical representation
-          rc:        fltarr(3),   $ ; 3D position [pixels]
-          alpha:     complex(0),  $ ; complex amplitude
-          amplitude: 0.,          $ ; relative amplitude
-          phase:     0.,          $ ; relative phase
-          structure: ptr_new()    $ ; structuring field
-         }
+  COMPILE_OPT IDL2, HIDDEN
+  
+  struct = {fabTrap, $
+            inherits IDLgrPolyline, $
+            inherits IDL_Object,    $
+            graphic:   ptr_new(),   $ ; coordinates of graphical representation
+            rc:        fltarr(3),   $ ; 3D position [pixels]
+            alpha:     complex(0),  $ ; complex amplitude
+            amplitude: 0.,          $ ; relative amplitude
+            phase:     0.,          $ ; relative phase
+            structure: ptr_new()    $ ; structuring field
+           }
 end
