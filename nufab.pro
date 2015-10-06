@@ -113,6 +113,8 @@ pro nufab, state = state
   wrecording = nufab_recording(wtabs, state['recording'], 'Recording')
   wcamera = nufab_settings(wtabs, state['camera'], 'Camera')
   wcgh = nufab_settings(wtabs, state['cgh'], 'CGH')
+  wtraps = nufab_trapsettings(wtabs, state['trappingpattern'], 'Traps')
+  state['wtraps'] = wtraps
 
   ;; 3. global information
   ;;    wavelength, mpp (laser status?)

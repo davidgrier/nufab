@@ -38,5 +38,6 @@ pro nuevent_trapadd, event
   endif else $                  ; ... otherwise there is no selection
      nuevent_clearselection, s
 
+  s['wtraps'].reload
 ;  fab_properties, s, /reload
 end
