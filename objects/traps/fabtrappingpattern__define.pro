@@ -266,6 +266,6 @@ pro fabTrappingPattern__define
   struct = {fabTrappingPattern, $
             inherits IDLgrModel, $ ; graphical representation of traps
             inherits IDL_Object, $ ; for implicit get/set
-            cgh:  obj_new() $      ; pipeline for calculating hologram
+            cgh: obj_new() $       ; pipeline for calculating hologram
            }
 end
