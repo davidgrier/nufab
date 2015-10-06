@@ -24,6 +24,7 @@ pro nufab_trapsettings::handleEvent, event
      value = widget_info(event.id, COMPONENT = event.component, $
                          PROPERTY_VALUE = event.identifier)
      event.component -> SetPropertyByIdentifier, event.identifier, value
+     self.object.project
   endif
 end
 
