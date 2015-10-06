@@ -14,14 +14,7 @@
 ;    fabTrap
 ;
 ; PROPERTIES:
-;    RC    [IGS] three-element vector [xc, yc, zc] specifying the trap's
-;        position [pixels].
-;
-;    AMPLITUDE [IGS] relative amplitude.
-;        Default: 1
-;
-;    PHASE [IGS] relative phase [radians].
-;        Default: random number in [0, 2pi].
+;    All properties are inherited from fabTrap
 ;
 ; METHODS:
 ;    All user-accessible methods for fabTweezer are provided
@@ -37,7 +30,7 @@
 ; 12/22/2013 DGG Overhauled for new fab implementation.
 ; 04/05/2014 DGG Revised amplitude and phase definitions.
 ;
-; Copyright (c) 2010-2014 David G. Grier
+; Copyright (c) 2010-2015 David G. Grier
 ;-
 
 ;;;;;
@@ -49,15 +42,15 @@
 ;
 pro fabTweezer::DrawGraphic
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-graphic = *self.graphic
-radius = (5. + self.rc[2] * 0.02) > 0.1 < 20
-graphic[0:1, *] *= radius
-graphic[0, *] += self.rc[0]
-graphic[1, *] += self.rc[1]
+  graphic = *self.graphic
+  radius = (5. + self.rc[2] * 0.02) > 0.1 < 20
+  graphic[0:1, *] *= radius
+  graphic[0, *] += self.rc[0]
+  graphic[1, *] += self.rc[1]
 
-self.IDLgrPolyline::SetProperty, data = graphic
+  self.IDLgrPolyline::SetProperty, data = graphic
 end
 
 ;;;;;
@@ -66,23 +59,23 @@ end
 ;
 function fabTweezer::Init, _ref_extra = re
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-if (self.fabTrap::Init(_extra = re) ne 1) then $
-   return, 0
+  if (self.fabTrap::Init(_extra = re) ne 1) then $
+     return, 0
 
-; override graphic
-npts = 10
-theta = 2.*!pi/(npts - 1.) * findgen(1, npts)
-r = findgen(3, npts)
-r[0, *] = sin(theta)
-r[1, *] = cos(theta)
-r[2, *] = 1.
-self.graphic = ptr_new(r, /no_copy)
+  ;; override graphic
+  npts = 10
+  theta = 2.*!pi/(npts - 1.) * findgen(1, npts)
+  r = findgen(3, npts)
+  r[0, *] = sin(theta)
+  r[1, *] = cos(theta)
+  r[2, *] = 1.
+  self.graphic = ptr_new(r, /no_copy)
 
-self.name = 'fabTweezer '
-self.description = 'Optical Tweezer '
-return, 1
+  self.name = 'fabTweezer '
+  self.description = 'Optical Tweezer '
+  return, 1
 end
 
 ;;;;;
@@ -93,9 +86,9 @@ end
 ;
 pro fabTweezer__define
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-struct = {fabTweezer, $
-          inherits fabTrap $
-         }
+  struct = {fabTweezer, $
+            inherits fabTrap $
+           }
 end

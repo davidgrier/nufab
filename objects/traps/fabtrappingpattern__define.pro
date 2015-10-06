@@ -66,7 +66,7 @@
 ; 01/22/2014 DGG Added RANDOMIZE method.
 ; 04/05/2014 DGG Revised amplitude definition.
 ;
-; Copyright (c) 2011-2014 David G. Grier
+; Copyright (c) 2011-2015 David G. Grier
 ;-
 ;;;;;
 ;
