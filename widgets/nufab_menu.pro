@@ -48,8 +48,6 @@ void = widget_button(prop_menu, value = 'Trapping Laser...', $
 ;;;
 traps_menu = widget_button(bar, value = 'Traps', /menu, $
                           event_pro = 'fab_menu_event')
-void = widget_button(traps_menu, value = 'Properties...', $
-                     event_pro = 'fab_properties', uvalue = 'TRAPS')
 void = widget_button(traps_menu, value = 'Clear', uvalue = 'CLEAR')
 
 ;;;
