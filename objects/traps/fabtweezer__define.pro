@@ -73,8 +73,7 @@ function fabTweezer::Init, _ref_extra = re
   r[2, *] = 1.
   self.graphic = ptr_new(r, /no_copy)
 
-  self.name = 'fabTweezer '
-  self.description = 'Optical Tweezer '
+  self.name = 'trap'
   return, 1
 end
 
