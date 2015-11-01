@@ -111,6 +111,7 @@ pro nufab, state = state
   wcontrol = widget_base(wtop, /column)
   wtabs = widget_tab(wcontrol)
   wrecording = nufab_recording(wtabs, state['recording'], 'Recording')
+  whistogram = nufab_histogram(wtabs, state['camera'], 'Histogram')
   wcamera = nufab_settings(wtabs, state['camera'], 'Camera')
   wcgh = nufab_settings(wtabs, state['cgh'], 'CGH')
   wtraps = nufab_trapsettings(wtabs, state['trappingpattern'], 'Traps')

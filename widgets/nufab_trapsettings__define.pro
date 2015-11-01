@@ -70,8 +70,8 @@ pro nufab_trapsettings::Create, wtop
   traps = self.object.traps
   if traps.count() lt 1 then traps = obj_new()
   self.wproperty = widget_propertysheet(wid, value = traps, $
-                                        scr_xsize = geometry.scr_xsize, $
-                                        scr_ysize = geometry.scr_ysize)
+                                        scr_xsize = geometry.xsize, $
+                                        scr_ysize = geometry.ysize)
   self.widget_id = wid
 end
 
