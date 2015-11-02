@@ -16,7 +16,7 @@
 ; MODIFICATION HISTORY
 ; 11/01/2015 Written by David G. Grier, New York University
 ;
-; Copyrigh(c) 2015 David G. Grier
+; Copyright (c) 2015 David G. Grier
 ;-
 
 ;+
@@ -30,13 +30,13 @@ pro nufab_histogram::handleEvent, event
   if widget_info(self.widget_id, /visible) then begin
      data = self.cam.data
      if self.cam.grayscale then begin
-        (self.pl)[0].setdata, histogram(data, min = 0, max = 255)
+        (self.pl)[0].setdata, histogram(data, min = 0, max = 255)/1000.
         for c = 1, 2 do $
            (self.pl)[c].setdata, [0, 0]
      endif else begin
         for c = 0, 2 do $
            (self.pl)[c].setdata, $
-           histogram(data[c, *, *], min = 0, max = 255)
+           histogram(data[c, *, *], min = 0, max = 255)/1000.
      endelse                
   endif
 end
@@ -52,8 +52,8 @@ pro nufab_histogram::Create, wtop
   wid = widget_base(wtop, TITLE = self.title, $
                     RESOURCE_NAME = 'nufab')
   wdraw = widget_window(wid, $
-                        xsize = geometry.scr_xsize, $
-                        ysize = geometry.scr_ysize)
+                        xsize = geometry.xsize, $
+                        ysize = geometry.ysize)
   widget_control, wid, /realize
   widget_control, wdraw, get_value = wdrawid
   xrange = [0, 255] ; XXX use camera's actual range
@@ -61,16 +61,17 @@ pro nufab_histogram::Create, wtop
   pl.add, plot(xrange, [0, 1], /nodata, current = wdrawid, $
                color = 'red', $
                xrange = xrange, /xstyle, $
-               xtitle = 'Intensity', ytitle = 'Counts', $
-               font_size = 9, margin = [0.15, 0.1, 0.05, 0.05])
+               xtitle = 'Intensity', ytitle = 'Counts (x1000)', $
+               font_size = 9, $
+               position = [45, 40, geometry.xsize-10, geometry.ysize-10], $
+               /device)
   pl.add, plot(xrange, [0, 1], /nodata, over = pl[0], $
                color = 'green')
   pl.add, plot(xrange, [0, 1], /nodata, over = pl[0], $
                color = 'blue')
 
-  data = self.cam.data
-  h = histogram(data, min = xrange[0], max = xrange[1])
-  pl[0].setdata, h
+  pl[0].setdata, $
+     histogram(self.cam.data, min = xrange[0], max = xrange[1]) / 1000.
   self.pl = pl
   
   widget_control, wid, timer = 0.2
