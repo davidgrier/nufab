@@ -33,11 +33,9 @@ pro nufab_histogram::handleEvent, event
         (self.pl)[0].setdata, histogram(data, min = 0, max = 255)/1000.
         for c = 1, 2 do $
            (self.pl)[c].setdata, [0, 0]
-     endif else begin
-        for c = 0, 2 do $
-           (self.pl)[c].setdata, $
-           histogram(data[c, *, *], min = 0, max = 255)/1000.
-     endelse                
+     endif else $
+        foreach pl, self.pl, c do $
+           pl.setdata, histogram(data[c, *, *], min = 0, max = 255)/1000.
   endif
 end
 
