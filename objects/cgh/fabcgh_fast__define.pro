@@ -92,10 +92,17 @@ pro fabCGH_fast::Refine
 
   COMPILE_OPT IDL2, HIDDEN
 
+  return                        ; locks up with large-format slm
   if self.traps.count() le 2 then return
+  print,'refining'
   self.interrupt = 0
   self.errordiffusion
-  self.project
+  if ~self.interrupt then begin
+     print,'... projecting'
+     self.project
+  endif else $
+     self.interrupt = 0
+  print,'... ... done'
 end
 
 ;;;;;
