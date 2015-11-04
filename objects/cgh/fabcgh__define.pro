@@ -495,8 +495,8 @@ pro fabCGH::SetDefaults
   self.q = 2./min(dimensions)
   self.aspect_ratio = 1.
   self.mat = identity(3)
-  self.setpropertyattribute, 'xi',  VALID_RANGE = [0., dimensions[1]]
-  self.setpropertyattribute, 'eta', VALID_RANGE = [0., dimensions[0]]
+  self.setpropertyattribute, 'xi',  VALID_RANGE = [0., dimensions[0]]
+  self.setpropertyattribute, 'eta', VALID_RANGE = [0., dimensions[1]]
 end
 
 ;;;;;

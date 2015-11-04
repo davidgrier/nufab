@@ -43,4 +43,6 @@ pro nuevent_motion, event
         s['roi'].r1 = xy
      else:
   endcase
+
+  s['wtraps'].refresh
 end

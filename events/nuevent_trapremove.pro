@@ -28,7 +28,8 @@ if event.press ne 4 then begin  ; Delete a trap
    if isa(group) then begin          ; ... found one
       obj_destroy, group             ; ... destroy it
       s['trappingpattern'].project   ; ... update CGH and representation
-      fab_properties, s, /reload
+;      fab_properties, s, /reload
+      s['wtraps'].reload
    endif
 endif else begin                ; Remove a trap from a group
    group = nuevent_foundtrap(s, xy, trap = trap, /movable)

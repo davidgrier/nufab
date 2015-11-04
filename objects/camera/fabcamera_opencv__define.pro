@@ -79,6 +79,8 @@ end
 ; fabcamera_opencv::Init()
 ;
 function fabcamera_opencv::Init, dimensions = _dimensions, $
+                                 order = order, $
+                                 hflip = hflip, $
                                  _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -91,6 +93,12 @@ function fabcamera_opencv::Init, dimensions = _dimensions, $
   if ~self.fabcamera::init(dimensions = dimensions, _extra = re) then $
      return, 0B
 
+  if isa(order, /number, /scalar) then $
+     self.order = keyword_set(order)
+
+  if isa(hflip, /number, /scalar) then $
+     self.hflip = keyword_set(hflip)
+  
   self.data = ptr_new(self.dgghwvideo::read(), /no_copy)
 
   self.name = 'fabcamera_opencv '

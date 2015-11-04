@@ -279,13 +279,12 @@ function fabTrap::Init, rc         = rc,        $
   self.name = 'fabTrap '
   self.description = 'Optical Trap '
   self.registerproperty, 'name', /string, /hide
-  self.registerproperty, 'description', /string
-  self.registerproperty, 'xc', /float, description = 'x'
-  self.registerproperty, 'yc', /float, description = 'y'
-  self.registerproperty, 'zc', /float, description = 'z'
-  self.registerproperty, 'amplitude', /float, description = 'amplitude', $
+  self.registerproperty, 'xc', /float, name = 'x'
+  self.registerproperty, 'yc', /float, name = 'y'
+  self.registerproperty, 'zc', /float, name = 'z'
+  self.registerproperty, 'amplitude', /float, name = 'a', $
      valid_range = [0., 100., 0.01]
-  self.registerproperty, 'phase', /float, description = 'phase', $
+  self.registerproperty, 'phase', /float, name = 'p', $
      valid_range = [0., 2.*!pi, 0.01]
 
   return, 1B

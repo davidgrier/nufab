@@ -21,11 +21,11 @@
 ;-
 pro nuevent_wheel, event
 
-COMPILE_OPT IDL2, HIDDEN
+  COMPILE_OPT IDL2, HIDDEN
 
-widget_control, event.top, get_uvalue = s
-group = nuevent_foundtrap(s, [event.x, event.y], /movable)
-if isa(group) then $
-   group.moveby, [0., 0., float(event.clicks)]
-
+  widget_control, event.top, get_uvalue = s
+  group = nuevent_foundtrap(s, [event.x, event.y], /movable)
+  if isa(group) then $
+     group.moveby, [0., 0., float(event.clicks)]
+  s['wtraps'].refresh
 end

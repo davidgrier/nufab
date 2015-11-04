@@ -66,7 +66,7 @@
 ; 01/22/2014 DGG Added RANDOMIZE method.
 ; 04/05/2014 DGG Revised amplitude definition.
 ;
-; Copyright (c) 2011-2014 David G. Grier
+; Copyright (c) 2011-2015 David G. Grier
 ;-
 ;;;;;
 ;
@@ -266,6 +266,6 @@ pro fabTrappingPattern__define
   struct = {fabTrappingPattern, $
             inherits IDLgrModel, $ ; graphical representation of traps
             inherits IDL_Object, $ ; for implicit get/set
-            cgh:  obj_new() $      ; pipeline for calculating hologram
+            cgh: obj_new() $       ; pipeline for calculating hologram
            }
 end
