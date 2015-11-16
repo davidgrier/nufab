@@ -35,8 +35,12 @@ which are distributed separately.
 for video cameras that are supported by the
 [OpenCV](http://opencv.org) library.
 
++ [*idlv4l2*](https://github.com/davidgrier/idlv4l2) Pure IDL interface
+for video cameras that are supported by the
+[Video4Linux2](http://linuxtv.org/downloads/v4l-dvb-apis/) API.
+
 + [*idlpgr*](https://github.com/davidgrier/idlpgr) IDL interface
-for [Point Grey](http://www.ptgrey.com/)  video cameras.
+for [Point Grey](http://www.ptgrey.com/) video cameras.
 
 ### Hardware acceleration
 
