@@ -51,7 +51,6 @@
 ; 10/26/2013 DGG Can rely on background being present.
 ; 04/05/2014 DGG traps now provide complex amplitudes.
 ; 07/21/2015 DGG added FIELD keyword.
-; 11/20/2015 DGG implemented Geometry() method.
 ;
 ; Copyright (c) 2011-2015 David G. Grier, David B. Ruffner and Ellery Russel
 ;-
@@ -122,26 +121,6 @@ pro fabCGH_fast::Compute
 
   ;; phase of the field in the plane of the projecting device
   self.quantize
-end
-
-;;;;;
-;
-; fabCGH_fast::Geometry()
-;
-; returns geometry structure for use in external programs
-;
-function fabCGH_fast::Geometry
-
-  COMPILE_OPT IDL2, HIDDEN
-
-  dim = self.slm.dimensions
-  kx = rebin(imaginary(*self.ikx), dim, /sample)
-  ky = rebin(transpose(imaginary(*self.iky)), dim, /sample)
-  geom = {kx: kx, $
-          ky: ky, $
-          kr: sqrt(kx^2 + ky^2), $
-          theta: atan(ky, kx) }
-  return, geom
 end
 
 ;;;;;
