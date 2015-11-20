@@ -139,7 +139,7 @@ function fabcamera_V4L2::Init, order = order, $
 
   self.name = 'fabcamera_V4L2 '
   self.description = 'V4L2 Camera '
-  self.registerproperty, 'greyscale', /boolean, sensitive = 0
+  self.registerproperty, 'grayscale', /boolean, sensitive = 0
   self.registerproperty, 'hflip', enum = ['Normal', 'Flipped']
   self.registerproperty, 'order', enum = ['Normal', 'Flipped']
 
