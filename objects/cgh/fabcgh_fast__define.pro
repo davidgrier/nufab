@@ -49,7 +49,7 @@
 ; 10/03/2013 DGG and DBR Project background even if there are no
 ;    traps.
 ; 10/26/2013 DGG Can rely on background being present.
-; 04/05/2014 DGG traps now provide complex amplitudes
+; 04/05/2014 DGG traps now provide complex amplitudes.
 ; 07/21/2015 DGG added FIELD keyword.
 ;
 ; Copyright (c) 2011-2015 David G. Grier, David B. Ruffner and Ellery Russel

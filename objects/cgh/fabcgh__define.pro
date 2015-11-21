@@ -42,6 +42,10 @@
 ; [IGS] WINDOWON: Flag.  If set, compensate trap amplitudes for
 ;       Nyquist windowing.
 ;
+; [ G ] GEOMETRY: anonymous structure describing the geometry
+;       at each pixel in the SLM plane: kx, ky, kr and theta.
+;       These quantities take into account geometric calibrations.
+;
 ; METHODS:
 ;    fabCGH::GetProperty
 ;
@@ -61,6 +65,10 @@
 ;                Default: Use data currently on CGH.
 ;            FIELD: If set, return complex-valued field.
 ;                Default: Return real-valued intensity.
+;
+;    fabCGH::Geometry()
+;        Returns structure containing arrays of pixel geometry data:
+;        kx, ky, kr and theta.
 ;
 ;    fabCGH::Allocate
 ;        Allocate computational resources based on SLM
@@ -99,6 +107,7 @@
 ; 07/07/2015 DGG Added RotateScale() internal method.
 ; 07/18/2015 DGG Added Show() method
 ; 07/25/2015 DGG Added WINDOWON proeprty.
+; 11/20/2015 DGG Implemented Geometry method and property.
 ;
 ; Copyright (c) 2011-2015 David G. Grier
 ;-
@@ -262,6 +271,33 @@ end
 
 ;;;;;
 ;
+; fabCGH::Geometry()
+;
+function fabCGH::Geometry
+
+  COMPILE_OPT IDL2, HIDDEN
+
+  if ~isa(self.slm, 'fabSLM') then $
+     return, {kx: 0, $
+              ky: 0, $
+              kr: 0, $
+              theta: 0}
+  
+  dim = self.slm.dimensions
+  kx = self.q * (findgen(dim[0]) - self.kc[0])
+  ky = self.aspect_ratio * $
+       self.q * (findgen(1, dim[1]) - self.kc[1])
+  kx = rebin(kx, dim, /sample)
+  ky = rebin(ky, dim, /sample)
+  geom = {kx: kx, $
+          ky: ky, $
+          kr: sqrt(kx^2 + ky^2), $
+          theta: atan(ky, kx) }
+  return, geom
+end
+
+;;;;;
+;
 ; fabCGH::Deallocate
 ;
 pro fabCGH::Deallocate
@@ -337,6 +373,7 @@ pro fabCGH::GetProperty, slm          = slm,          $
                          mat          = mat,          $
                          roi          = roi,          $
                          windowon     = windowon,     $
+                         geometry     = geometry,     $
                          _ref_extra   = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -370,6 +407,7 @@ pro fabCGH::GetProperty, slm          = slm,          $
 
   if arg_present(roi) then roi = self.roi
   if arg_present(windowon) then windowon = self.windowon
+  if arg_present(geometry) then geometry = self.geometry()
 end
 
 ;;;;;
