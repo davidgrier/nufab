@@ -449,11 +449,9 @@ pro fabCGH::SetProperty, slm          = slm,          $
   if isa(background, /number, /array) then begin
      if ~isa(self.slm, 'fabSLM') then begin
         message, 'must specify SLM before assigning a background', /info
-        self.background = ptr_new()
+        if array_equal(size(background, /dimensions), slm.dimensions) then $
+           self.background = ptr_new(complex(background))
      endif
-     if ~array_equal(size(background, /dimensions), slm.dimensions) then $
-        self.background = ptr_new()
-     self.background = ptr_new(complex(background))
   endif
 
   if isa(rc, /number) then begin
@@ -661,7 +659,7 @@ pro fabCGH__define
             inherits fab_object,        $ 
             slm:          obj_new(),    $ ; target SLM
             data:         ptr_new(),    $ ; byte-valued hologram
-            background:   ptr_new(),    $ ; complex-valued background phase
+            background:   ptr_new(),    $ ; complex-valued background field
             traps:        obj_new(),    $ ; list of trap objects
             rc:           fltarr(3),    $ ; center of trap coordinate system
             mat:          fltarr(3, 3), $ ; transformation matrix
