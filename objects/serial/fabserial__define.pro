@@ -228,8 +228,13 @@ if n_params() ne 1 then begin
    return, 0B
 endif
 
-if ~file_test(device, /read, /write, /character_special) then begin
-   message, device + ' is not an accessible serial port', /inf
+if ~file_test(device, /character_special) then begin
+   message, device + ': file not found', /inf
+   return, 0B
+endif
+
+if ~file_test(device, /read, /write) then begin
+   message, device + ' exists, but is not accessible. Check permissions.', /inf
    return, 0B
 endif
 
