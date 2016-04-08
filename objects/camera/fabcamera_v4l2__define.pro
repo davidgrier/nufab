@@ -38,6 +38,7 @@
 ; 09/16/2013 DGG record timestamp for each acquired frame.
 ; 01/01/2014 DGG Overhauled for new fab implementation.
 ; 05/29/2015 DGG formatting and debugging code.
+; 01/19/2016 DGG dimensions set by idlv4l2.
 ;
 ; Copyright (c) 2011-2015 David G. Grier
 ;-
@@ -49,7 +50,6 @@
 ; Set the camera properties
 ;
 pro fabcamera_V4L2::SetProperty, order = order, $
-                                 dimensions = dimension, $
                                  gain = gain, $
                                  _extra = re
 
@@ -57,9 +57,6 @@ pro fabcamera_V4L2::SetProperty, order = order, $
 
   if isa(order, /number, /scalar) then $
      self.idlv4l2::SetProperty, vflip = order
-
-  if isa(dimensions, /number) then $
-     self.idlv4l2::SetProperty, dimensions = dimensions
 
   if isa(gain, /number, /scalar) then $
      self.idlv4l2::SetProperty, contrast = gain
@@ -76,7 +73,6 @@ end
 ; underlying IDLgrImage object.
 ;
 pro fabcamera_V4L2::GetProperty, order = order, $
-                                 dimensions = dimensions, $
                                  gain = gain, $
                                  _ref_extra = re
 
@@ -84,9 +80,6 @@ pro fabcamera_V4L2::GetProperty, order = order, $
 
   if arg_present(order) then $
      self.idlv4l2::GetProperty, vflip = order
-
-  if arg_present(dimensions) then $
-     self.idlv4l2::GetProperty, dimensions = dimensions
 
   if arg_present(gain) then $
      self.idlv4l2::GetProperty, contrast = gain
@@ -118,7 +111,6 @@ end
 ; Load an image into the IDLgrImage object
 ;
 function fabcamera_V4L2::Init, order = order, $
-                               dimensions = dimensions, $
                                _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
