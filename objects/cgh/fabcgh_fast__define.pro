@@ -51,8 +51,9 @@
 ; 10/26/2013 DGG Can rely on background being present.
 ; 04/05/2014 DGG traps now provide complex amplitudes.
 ; 07/21/2015 DGG added FIELD keyword.
+; 02/22/2016 DGG fixed BACKGROUND property.
 ;
-; Copyright (c) 2011-2015 David G. Grier, David B. Ruffner and Ellery Russel
+; Copyright (c) 2011-2016 David G. Grier, David B. Ruffner and Ellery Russel
 ;-
 
 ;;;;;

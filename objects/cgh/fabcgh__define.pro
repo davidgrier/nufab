@@ -447,11 +447,13 @@ pro fabCGH::SetProperty, slm          = slm,          $
         self.traps = traps
 
   if isa(background, /number, /array) then begin
-     if ~isa(self.slm, 'fabSLM') then begin
-        message, 'must specify SLM before assigning a background', /info
-        if array_equal(size(background, /dimensions), slm.dimensions) then $
-           self.background = ptr_new(complex(background))
-     endif
+     if ~isa(self.slm, 'fabSLM') then $
+        message, 'must specify SLM before assigning a background', /info $
+     else if ~array_equal(size(background, /dimensions), $
+                          self.slm.dimensions) then $
+        message, 'field must have same dimensions as SLM', /info $
+     else $
+        self.background = ptr_new(complex(background))
   endif
 
   if isa(rc, /number) then begin
