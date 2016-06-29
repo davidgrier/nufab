@@ -22,7 +22,6 @@
 ; [IGS] AMPLITUDE: Relative amplitude.  Default: 1
 ; [IGS] PHASE: Phase [radians].  Default: Random value in [0, 2pi].
 ; [ G ] DATA: Trap characteristics: [xc, yc, zc, alpha, phase]
-; [IGS] STRUCTURE: Structuring field
 ;
 ; METHODS:
 ; GetProperty
@@ -159,7 +158,6 @@ pro fabTrap::SetProperty, rc         = rc,        $ ; position
                           zc         = zc,        $
                           amplitude  = amplitude, $ ; relative amplitude
                           phase      = phase,     $ ; relative phase
-                          structure  = structure, $ ; structure
                           _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -193,9 +191,6 @@ pro fabTrap::SetProperty, rc         = rc,        $ ; position
      self.alpha = self.amplitude * exp(complex(0., self.phase))
   endif
 
-  if isa(structure, 'pointer') then $
-     self.structure = structure
-
   self.drawgraphic
 end
 
@@ -210,7 +205,6 @@ pro fabTrap::GetProperty, rc         = rc,        $
                           alpha      = alpha,     $
                           amplitude  = amplitude, $
                           phase      = phase,     $
-                          structure  = structure, $
                           phi        = phi,       $
                           data       = data,      $
                           _ref_extra = re
@@ -233,9 +227,6 @@ pro fabTrap::GetProperty, rc         = rc,        $
   if arg_present(phase) then $
      phase = self.phase
 
-  if arg_present(structure) then $
-     structure = self.structure
-
   if arg_present(data) then $
      data = [self.rc, self.amplitude, self.phase]
 end
@@ -247,7 +238,6 @@ end
 function fabTrap::Init, rc         = rc,        $
                         amplitude  = amplitude, $
                         phase      = phase,     $
-                        structure  = structure, $
                         _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
@@ -270,9 +260,6 @@ function fabTrap::Init, rc         = rc,        $
                2. * !pi * randomu(seed)
 
   self.alpha = self.amplitude * exp(complex(0., self.phase))
-
-  if isa(structure, 'pointer') then $
-     self.structure = structure
 
   self.drawgraphic
 
@@ -302,8 +289,6 @@ pro fabTrap::Cleanup
 
   if isa(self.parent, 'fabtrapgroup') then $
      self.parent.remove, self
-
-  ptr_free, self.structure
 end
 
 ;;;;
@@ -323,7 +308,6 @@ pro fabTrap__define
             rc:        fltarr(3),   $ ; 3D position [pixels]
             alpha:     complex(0),  $ ; complex amplitude
             amplitude: 0.,          $ ; relative amplitude
-            phase:     0.,          $ ; relative phase
-            structure: ptr_new()    $ ; structuring field
+            phase:     0.           $ ; relative phase
            }
 end
