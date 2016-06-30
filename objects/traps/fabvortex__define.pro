@@ -140,6 +140,7 @@ pro fabVortex__define
   COMPILE_OPT IDL2
 
   struct = {fabVortex,        $
-            inherits fabTrap  $
+            inherits fabTrap, $
+            ell: 0L           $
            }
 end
