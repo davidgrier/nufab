@@ -10,14 +10,21 @@
 ;    IDLitComponent
 ;
 ; METHODS:
-;    fab_object::HasProperty(property)
+;    HasProperty(property)
 ;        Determine whether or not the fab_object has a named property.
 ;        INPUT:
 ;            property: string or string array of property names
 ;        OUTPUT:
 ;            * 1 if the object has the named property and 0 otherwise.
 ;            * array of 1's and 0's if the input is an array of names.
-;             
+;
+;    HasMethod(method)
+;        Determine whether or not the fab_object has a named method.
+;        INPUT:
+;            method: string containing property name
+;        OUTPUT:
+;            1 if the object has the named property and 0 otherwise.
+;
 ;    fab_object::GetProperty
 ;    fab_object::SetProperty
 ;
@@ -37,6 +44,7 @@
 ; 02/15/2015 DGG Added HasProperty method.
 ; 03/30/2015 DGG Clean up IDLitComponent.
 ; 07/30/2015 DGG Implemented LISTENER capability.
+; 06/30/2016 DGG Implemented HasMethod method.
 ;
 ; Copyright (c) 2013-2015 David G. Grier
 ;-
@@ -52,6 +60,17 @@ function fab_object::HasProperty, property
      return, self.queryproperty(property)
 
   return, 0
+end
+
+;;;;;
+;
+; fab_object::HasMethod()
+;
+function fab_object::HasMethod, method
+
+  COMPILE_OPT IDL2
+
+  return, isa(method, 'string') ? obj_hasmethod(self, method) : 0B
 end
 
 ;;;;;
