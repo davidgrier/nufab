@@ -82,8 +82,14 @@ pro fab_object::SetProperty, listener = listener, $
 
   COMPILE_OPT IDL2, HIDDEN
 
-  if obj_valid(listener) then $
-     self.listener = listener
+  if obj_valid(listener) then begin
+     if obj_hasmethod(listener, 'refresh') then $
+        self.listener = listener $
+     else begin
+        message, 'Object class' + obj_class(listener) + ' does not have REFRESH method.', /inf
+        message, 'Not adding as listener.', /inf
+     endelse
+  endif
 
   self.IDLitComponent::SetProperty, _extra = re
 
