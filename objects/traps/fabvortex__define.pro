@@ -106,12 +106,16 @@ end
 ;
 ; fabVortex::Init
 ;
-function fabVortex::Init, _ref_extra = re
+function fabVortex::Init, ell = ell, $
+                          _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
   if (self.fabTrap::Init(_extra = re) ne 1) then $
      return, 0
+
+  if isa(ell, /number, /scalar) then $
+     self.ell = long(ell)
 
   ; override graphic
   npts = 15

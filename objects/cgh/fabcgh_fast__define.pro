@@ -148,7 +148,7 @@ pro fabCGH_fast::Precompute
   ky *= ky
   *self.ikxsq = ci*kx
   *self.ikysq = ci*ky
-  *self.r = rebin(kx, dim, /sample) + rebin(transpose(ky), dim, /sample)
+  *self.kr = sqrt(rebin(kx, dim, /sample) + rebin(transpose(ky), dim, /sample))
 end
 
 ;;;;;
@@ -166,7 +166,7 @@ pro fabCGH_fast::Deallocate
   ptr_free, self.field, $
             self.ikx, self.iky, $
             self.ikxsq, self.ikysq, $
-            self.r, self.theta
+            self.kr, self.theta
 end
 
 ;;;;;
@@ -192,7 +192,7 @@ function fabCGH_fast::Allocate
   self.iky = ptr_new(complexarr(dimensions[1]), /no_copy)
   self.ikxsq = ptr_new(complexarr(dimensions[0]), /no_copy)
   self.ikysq = ptr_new(complexarr(dimensions[1]), /no_copy)
-  self.r = ptr_new(fltarr(dimensions), /no_copy)
+  self.kr = ptr_new(fltarr(dimensions), /no_copy)
   self.theta = ptr_new(fltarr(dimensions), /no_copy)
 
   return, 1B
@@ -205,12 +205,20 @@ end
 ; Get properties for CGH object
 ;
 pro fabCGH_fast::GetProperty, field = field, $
+                              kr = kr,       $
+                              theta = theta, $
                               _ref_extra = re
 
   COMPILE_OPT IDL2, HIDDEN
 
   if arg_present(field) then $
      field = *self.field
+
+  if arg_present(kr) then $
+     kr = *self.kr
+  
+  if arg_present(theta) then $
+     theta = *self.theta
 
   self.fabCGH::GetProperty, _extra = re
 end
@@ -262,7 +270,7 @@ pro fabCGH_fast__define
             iky:      ptr_new(), $
             ikxsq:    ptr_new(), $
             ikysq:    ptr_new(), $
-            r:        ptr_new(), $
+            kr:       ptr_new(), $
             theta:    ptr_new(), $
             interrupt: 0L        $
          }
