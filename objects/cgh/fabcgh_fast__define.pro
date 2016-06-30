@@ -52,6 +52,7 @@
 ; 04/05/2014 DGG traps now provide complex amplitudes.
 ; 07/21/2015 DGG added FIELD keyword.
 ; 02/22/2016 DGG fixed BACKGROUND property.
+; 06/30/2016 DGG Compute uses specialized method for each trap class.
 ;
 ; Copyright (c) 2011-2016 David G. Grier, David B. Ruffner and Ellery Russel
 ;-
@@ -120,12 +121,8 @@ pro fabCGH_fast::Compute
   self.interrupt = 1
   ;; field in the plane of the projecting device
   *self.field = *self.background
-  foreach trap, self.traps do begin
-     pr = self.rotatescale(trap.rc)
-     ex = exp(*self.ikx * pr[0] + *self.ikxsq * pr[2])
-     ey = exp(*self.iky * pr[1] + *self.ikysq * pr[2])
-     *self.field += trap.alpha * (ex # ey) * self.window(pr)
-  endforeach
+  foreach trap, self.traps do $
+     *self.field += call_method(obj_class(trap), self, trap)
 
   ;; phase of the field in the plane of the projecting device
   self.quantize

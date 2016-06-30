@@ -46,7 +46,7 @@
 ; 07/30/2015 DGG Implemented LISTENER capability.
 ; 06/30/2016 DGG Implemented HasMethod method.
 ;
-; Copyright (c) 2013-2015 David G. Grier
+; Copyright (c) 2013-2016 David G. Grier
 ;-
 ;;;;;
 ;
