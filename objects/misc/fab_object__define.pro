@@ -78,7 +78,7 @@ end
 ; fab_object::SetProperty
 ;
 pro fab_object::SetProperty, listener = listener, $
-                             _ref_extra = re
+                             _extra = ex
 
   COMPILE_OPT IDL2, HIDDEN
 
@@ -91,7 +91,7 @@ pro fab_object::SetProperty, listener = listener, $
      endelse
   endif
 
-  self.IDLitComponent::SetProperty, _extra = re
+  self.IDLitComponent::SetProperty, _extra = ex
 
   if obj_valid(self.listener) then $
      self.listener.refresh
