@@ -137,13 +137,18 @@ pro fabCGH_fast::Precompute
   COMPILE_OPT IDL2, HIDDEN
   
   ci = complex(0., 1.)
-  kx = self.q * (findgen((self.slm.dimensions)[0]) - self.kc[0])
+  dim = self.slm.dimensions
+  kx = self.q * (findgen(dim[0]) - self.kc[0])
   ky = self.aspect_ratio * $
-       self.q * (findgen((self.slm.dimensions)[1]) - self.kc[1])
-  *self.ikxsq = ci*kx^2
-  *self.ikysq = ci*ky^2
+       self.q * (findgen(dim[1]) - self.kc[1])
   *self.ikx = ci*kx
   *self.iky = ci*ky
+  *self.theta = atan(rebin(transpose(ky), dim, /sample), rebin(kx, dim, /sample))
+  kx *= kx
+  ky *= ky
+  *self.ikxsq = ci*kx
+  *self.ikysq = ci*ky
+  *self.r = rebin(kx, dim, /sample) + rebin(transpose(ky), dim, /sample)
 end
 
 ;;;;;
@@ -160,7 +165,8 @@ pro fabCGH_fast::Deallocate
 
   ptr_free, self.field, $
             self.ikx, self.iky, $
-            self.ikxsq, self.ikysq
+            self.ikxsq, self.ikysq, $
+            self.r, self.theta
 end
 
 ;;;;;
@@ -186,6 +192,8 @@ function fabCGH_fast::Allocate
   self.iky = ptr_new(complexarr(dimensions[1]), /no_copy)
   self.ikxsq = ptr_new(complexarr(dimensions[0]), /no_copy)
   self.ikysq = ptr_new(complexarr(dimensions[1]), /no_copy)
+  self.r = ptr_new(fltarr(dimensions), /no_copy)
+  self.theta = ptr_new(fltarr(dimensions), /no_copy)
 
   return, 1B
 end
@@ -254,6 +262,8 @@ pro fabCGH_fast__define
             iky:      ptr_new(), $
             ikxsq:    ptr_new(), $
             ikysq:    ptr_new(), $
+            r:        ptr_new(), $
+            theta:    ptr_new(), $
             interrupt: 0L        $
          }
 end
