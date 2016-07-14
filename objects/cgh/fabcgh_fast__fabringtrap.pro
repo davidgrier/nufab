@@ -15,6 +15,6 @@ function fabcgh_fast::fabRingtrap, trap
 
   COMPILE_OPT IDL2
 
-  return, trap.alpha * beselj(*self.kr*trap.r, trap.ell) * $
+  return, trap.alpha * beselj(*self.kr*trap.radius, trap.ell) * $
           exp(complex(0, 1) * trap.ell * *self.theta)
 end

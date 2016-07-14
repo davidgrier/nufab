@@ -29,8 +29,11 @@
 ;    PHASE [IGS] relative phase [radians].
 ;        Default: random number in [0, 2pi].
 ;
+;    RADIUS [IGS] radius of the ring trap [pixels]
+;        Default: 100
+;
 ;    ELL [IGS] winding number
-;        Defaults: 0
+;        Default: 0
 ;
 ; METHODS:
 ;    All user-accessible methods for fabTweezer are provided
@@ -44,6 +47,7 @@
 ; 02/04/2012 DGG ELL is a property of a fabTrap.  Initialize
 ;    fabTrap before vortex-specific initializations.  First
 ;    attempt at a graphical representation.
+; 07/01/2016 DGG ELL and RADIUS are properties of the ring trap.
 ;
 ; Copyright (c) 2010-2016, David G. Grier
 ;-
@@ -73,7 +77,7 @@ end
 ;
 ; fabRingtrap::GetProperty
 ;
-pro fabRingtrap::GetProperty, r = r, $
+pro fabRingtrap::GetProperty, radius = radius, $
                               ell = ell, $
                               _ref_extra = re
 
@@ -81,8 +85,8 @@ pro fabRingtrap::GetProperty, r = r, $
 
   self.fabTrap::GetProperty, _extra = re
 
-  if arg_present(r) then $
-     r = self.r
+  if arg_present(radius) then $
+     radius = self.radius
   
   if arg_present(ell) then $
      ell = self.ell
@@ -92,7 +96,7 @@ end
 ;
 ; fabRingtrap::SetProperty
 ;
-pro fabRingtrap::SetProperty, r = r, $
+pro fabRingtrap::SetProperty, radius = radius, $
                               ell = ell, $
                               _extra = re
 
@@ -107,7 +111,7 @@ pro fabRingtrap::SetProperty, r = r, $
   endif
 
   if isa(r, /number, /scalar) then begin
-     self.r = float(abs(r))
+     self.radius = float(abs(radius))
      doupdate = 1
   endif
   
@@ -121,7 +125,7 @@ end
 ;
 ; fabRingtrap::Init
 ;
-function fabRingtrap::Init, r = r, $
+function fabRingtrap::Init, radius = radius, $
                             ell = ell, $
                             _ref_extra = re
 
@@ -130,8 +134,8 @@ function fabRingtrap::Init, r = r, $
   if (self.fabTrap::Init(_extra = re) ne 1) then $
      return, 0
 
-  if isa(r, /number, /scalar) then $
-     self.r = float(abs(ell))
+  self.radius = (isa(radius, /number, /scalar)) ? $
+                float(abs(radius)) : 100.
   
   if isa(ell, /number, /scalar) then $
      self.ell = long(ell)
@@ -147,7 +151,7 @@ function fabRingtrap::Init, r = r, $
   self.name = 'fabRingtrap'
   self.identifier = 'fabRingtrap'
   self.description = 'Ring Trap'
-  self.registerproperty, 'r', /FLOAT, NAME = 'r', $
+  self.registerproperty, 'radius', /FLOAT, NAME = 'radius', $
      VALID_RANGE = [10., 100., 0.1]
   self.registerproperty, 'ell', /INTEGER, NAME = 'ell', $
      VALID_RANGE = [-100, 100]
@@ -166,7 +170,7 @@ pro fabRingtrap__define
 
   struct = {fabRingtrap,      $
             inherits fabTrap, $
-            r: 0.,            $
+            radius: 0.,       $
             ell: 0L           $
            }
 end
