@@ -44,6 +44,7 @@
 ; 02/04/2012 DGG ELL is a property of a fabTrap.  Initialize
 ;    fabTrap before vortex-specific initializations.  First
 ;    attempt at a graphical representation.
+; 07/01/2014 DGG ELL is specifically a property of an optical vortex.
 ;
 ; Copyright (c) 2010-2016, David G. Grier
 ;-
