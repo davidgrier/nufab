@@ -137,7 +137,8 @@ end
 ;
 ; fabVortex__define
 ;
-; An optical tweeer is an instance of an optical trap
+; An optical vortex is an instance of an optical trap
+; with helical wavefronts.
 ;
 pro fabVortex__define
 
