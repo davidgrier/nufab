@@ -15,6 +15,11 @@ function fabcgh_fast::fabRingtrap, trap
 
   COMPILE_OPT IDL2
 
-  return, trap.alpha * beselj(*self.kr*trap.radius, trap.ell) * $
+  pr = self.rotatescale(trap.rc)
+  ex = exp(*self.ikx * pr[0] + *self.ikxsq * pr[2])
+  ey = exp(*self.iky * pr[1] + *self.ikysq * pr[2])
+  return, trap.alpha * self.window(pr) * $
+          (ex # ey) * $
+          beselj(*self.kr*trap.radius, trap.ell) * $
           exp(complex(0, 1) * trap.ell * *self.theta)
 end
