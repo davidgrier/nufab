@@ -110,7 +110,7 @@ pro fabRingtrap::SetProperty, radius = radius, $
      doupdate = 1
   endif
 
-  if isa(r, /number, /scalar) then begin
+  if isa(radius, /number, /scalar) then begin
      self.radius = float(abs(radius))
      doupdate = 1
   endif
