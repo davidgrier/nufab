@@ -77,7 +77,7 @@
 pro fabTrappingPattern::Project
 
   COMPILE_OPT IDL2, HIDDEN
-  
+
   self.getproperty, traps = traps
   self.cgh.traps = traps
 end

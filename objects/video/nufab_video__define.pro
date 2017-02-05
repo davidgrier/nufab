@@ -129,10 +129,9 @@ end
 ;
 ; nufab_video::handleTimerEvent
 ;
-pro nufab_video::handleTimerEvent, id, debug
+pro nufab_video::handleTimerEvent, id, userdata
 
   COMPILE_OPT IDL2, HIDDEN
-  if debug then print, 'callback completed'
 
   self.timer = timer.set(self.time, self)
 
@@ -155,7 +154,7 @@ pro nufab_video::Update
 
 ;  void = timer.fire(self.timer) ; causes lock-ups under linux
   void = timer.cancel(/all)
-  self.handletimerevent,0,0
+  self.handletimerevent, 0, 0
 end
 
 ;;;;;

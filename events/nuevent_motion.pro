@@ -23,8 +23,9 @@
 ; 01/29/2014 Written by David G. Grier, New York University
 ; 03/30/2015 DGG fire video timer during motion events to prevent
 ;    event pile-up.
+; 02/04/2017 DGG only update video if video is playing.
 ;
-; Copyright (c) 2014-2015 David G. Grier
+; Copyright (c) 2014-2017 David G. Grier
 ;-
 pro nuevent_motion, event
 
@@ -33,8 +34,8 @@ pro nuevent_motion, event
   widget_control, event.top, get_uvalue = s
   xy = [event.x, event.y]
 
-  if float(!version.release) ge 8.4 then $
-     s['video'].update
+  if float(!version.release) eq 8.5 then $
+     if s['video'].playing then s['video'].update
 
   case s['action'] of
      2: s['selected'].moveto, xy ; translating
